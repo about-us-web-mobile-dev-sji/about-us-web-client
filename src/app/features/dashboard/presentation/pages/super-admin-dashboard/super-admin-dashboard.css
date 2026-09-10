@@ -1,0 +1,10 @@
+.super-admin-dashboard{
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.welcome{
+  font-size: 48px;
+  font-weight: 700;
+}
