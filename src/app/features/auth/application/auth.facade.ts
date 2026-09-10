@@ -1,22 +1,29 @@
-import { Injectable, signal, inject } from '@angular/core';
-import { LoginUseCase } from './use-cases/login.use-case';
-import { AuthenticatedUser } from '../domain/models/authenticated-user.model';
+import type { LoginResponse } from '../domain/models/authenticated-user.model';
+import { Injectable, inject } from '@angular/core';
+import { LoginCommand } from '../domain/ports/auth.repository';
+import { AuthStore } from './auth.store';
 
 @Injectable({ providedIn: 'root' })
 export class AuthFacade {
-  private readonly loginUseCase = inject(LoginUseCase);
+  private readonly store = inject(AuthStore);
 
-  readonly isLoading = signal(false);
-  readonly user = signal<AuthenticatedUser | null>(null);
+  readonly session = this.store.session;
+  readonly user = this.store.user;
+  readonly sessionId = this.store.sessionId;
+  readonly isLoading = this.store.isLoading;
+  readonly isInitialized = this.store.isInitialized;
+  readonly isAuthenticated = this.store.isAuthenticated;
+  readonly isSuperAdmin = this.store.isSuperAdmin;
+  readonly userName = this.store.userName;
+  readonly error = this.store.error;
 
-  async login(command: { email: string; password: string }) {
-    this.isLoading.set(true);
-    try {
-      const user = await this.loginUseCase.execute(command);
-      this.user.set(user);
-      return user;
-    } finally {
-      this.isLoading.set(false);
-    }
+  initialize(): Promise<void> {
+    return this.store.initialize();
+  }
+  login(command: LoginCommand): Promise<LoginResponse> {
+    return this.store.login(command);
+  }
+  logout(): Promise<void> {
+    return this.store.logout();
   }
 }

@@ -1,10 +1,15 @@
 import { LoginResponseDto } from '../dto/login-response.dto';
-import { AuthenticatedUser } from '../../domain/models/authenticated-user.model';
+import { LoginResponse } from '../../domain/models/authenticated-user.model';
 
-export function mapLoginResponse(dto: LoginResponseDto): AuthenticatedUser {
+export function mapLoginResponse(dto: LoginResponseDto): LoginResponse {
   return {
-    id: dto.id,
-    email: dto.email,
-    token: dto.access_token,
+    user: {
+      id: dto.user.id,
+      email: dto.user.email,
+      firstName: dto.user.firstName,
+      lastName: dto.user.lastName,
+      globalRole: dto.user.globalRole,
+    },
+    sessionId: dto.sessionId,
   };
 }
