@@ -1,5 +1,10 @@
 export interface LoginResponseDto {
-  id: string;
-  email: string;
-  access_token: string;
+  user: {
+    id: string;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+    globalRole: 'SUPER_ADMIN' | 'USER';
+  };
+  sessionId: string;
 }

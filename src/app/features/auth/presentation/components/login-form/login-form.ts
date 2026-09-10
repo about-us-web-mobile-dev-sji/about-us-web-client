@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import type { LoginCommand } from '../../../domain/ports/auth.repository';
+import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 @Component({
   imports: [ReactiveFormsModule],
@@ -7,11 +8,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
   templateUrl: './login-form.html',
 })
 export class LoginForm {
-  private fb = inject(FormBuilder);
+  @Input() isLoading = false;
 
-  @Output() submitCredentials = new EventEmitter<{ email: string; password: string }>();
+  private readonly fb = inject(FormBuilder);
 
-  credentialForm = this.fb.group({
+  @Output() submitCredentials = new EventEmitter<LoginCommand>();
+
+  readonly credentialForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
@@ -24,17 +27,11 @@ export class LoginForm {
     return this.credentialForm.get('password');
   }
 
-  updateEmail(){
-    // helper for demo
-    this.credentialForm.get('email')?.setValue('off');
-  }
-
-  onSubmit() {
-    if (this.credentialForm.invalid) {
+  onSubmit(): void {
+    if (this.isLoading || this.credentialForm.invalid) {
       return;
     }
 
-    const cmd = this.credentialForm.getRawValue() as { email: string; password: string };
-    this.submitCredentials.emit(cmd);
+    this.submitCredentials.emit(this.credentialForm.getRawValue());
   }
 }
