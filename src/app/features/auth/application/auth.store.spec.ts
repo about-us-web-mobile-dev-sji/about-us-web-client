@@ -11,9 +11,14 @@ const session: LoginResponse = {
   sessionId: 'session',
 };
 
-function createStore(repository: AuthRepository) {
+function createStore(repository: Omit<AuthRepository, 'changePassword'>) {
   TestBed.configureTestingModule({
-    providers: [{ provide: AUTH_REPOSITORY, useValue: repository }],
+    providers: [
+      {
+        provide: AUTH_REPOSITORY,
+        useValue: { ...repository, changePassword: async () => undefined },
+      },
+    ],
   });
   return TestBed.inject(AuthStore);
 }
