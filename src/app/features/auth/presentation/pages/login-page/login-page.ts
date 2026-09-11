@@ -1,3 +1,4 @@
+import type { LoginCommand } from '../../../domain/ports/auth.repository';
 import { Component, inject } from '@angular/core';
 import { LoginForm } from '../../components/login-form/login-form';
 import { AuthFacade } from '../../../application/auth.facade';
@@ -10,15 +11,19 @@ import { Router } from '@angular/router';
   templateUrl: './login-page.html',
 })
 export class LoginPage {
-  private readonly auth = inject(AuthFacade);
+  readonly auth = inject(AuthFacade);
   private readonly router = inject(Router);
 
-  async handleSubmit(event: { email: string; password: string }) {
+  async handleSubmit(event: LoginCommand): Promise<void> {
     try {
       await this.auth.login(event);
-      await this.router.navigate(['/']);
-    } catch (err) {
-      console.error('Login failed', err);
+    } catch {
+      // The store exposes the login error to the template.
+      return;
     }
+
+    const destination = this.auth.isSuperAdmin() ? '/s/home' : '/home';
+
+    await this.router.navigateByUrl(destination, { replaceUrl: true });
   }
 }

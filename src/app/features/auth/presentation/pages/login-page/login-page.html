@@ -1,3 +1,6 @@
 <div class="login-page">
-    <app-login-form (submitCredentials)="handleSubmit($event)"></app-login-form>
+    <app-login-form [isLoading]="auth.isLoading()" (submitCredentials)="handleSubmit($event)"></app-login-form>
+    @if (auth.error()) {
+        <p role="alert">{{ auth.error() }}</p>
+    }
 </div>

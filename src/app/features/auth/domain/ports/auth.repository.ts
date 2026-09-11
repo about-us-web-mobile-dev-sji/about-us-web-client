@@ -1,13 +1,13 @@
-import { InjectionToken } from '@angular/core';
-import { AuthenticatedUser } from '../models/authenticated-user.model';
+import type { LoginResponse } from '../models/authenticated-user.model';
 
 export interface LoginCommand {
-  email: string;
-  password: string;
+  readonly email: string;
+  readonly password: string;
 }
 
 export interface AuthRepository {
-  login(command: LoginCommand): Promise<AuthenticatedUser>;
+  login(command: LoginCommand): Promise<LoginResponse>;
+  /** Returns null when no valid session exists; rejects on technical failures. */
+  restoreSession(): Promise<LoginResponse | null>;
+  logout(): Promise<void>;
 }
-
-export const AUTH_REPOSITORY = new InjectionToken<AuthRepository>('AUTH_REPOSITORY');
