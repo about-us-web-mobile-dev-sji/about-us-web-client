@@ -1,3 +1,4 @@
+import { ChangePasswordCommand, PasswordChangeError } from '../domain/models/password-change.model';
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import type { LoginResponse } from '../domain/models/authenticated-user.model';
@@ -65,7 +66,6 @@ export const AuthStore = signalStore(
           try {
             const session = await authService.login(command);
             patchState(store, { session });
-            console.log(session);
             return session;
           } catch (error) {
             patchState(store, {
@@ -74,6 +74,19 @@ export const AuthStore = signalStore(
             throw error;
           } finally {
             patchState(store, { isLoading: false, isInitialized: true });
+          }
+        });
+      },
+      changePassword(command: ChangePasswordCommand): Promise<void> {
+        return operations.enqueue(async () => {
+          if (!store.isSuperAdmin()) throw new PasswordChangeError('forbidden');
+          patchState(store, { isLoading: true, error: null });
+          try {
+            await authService.changePassword(command);
+            // The backend has already revoked every session and cleared the cookies.
+            patchState(store, { session: null, isInitialized: true });
+          } finally {
+            patchState(store, { isLoading: false });
           }
         });
       },

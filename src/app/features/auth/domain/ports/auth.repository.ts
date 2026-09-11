@@ -1,3 +1,4 @@
+import type { ChangePasswordCommand } from '../models/password-change.model';
 import type { LoginResponse } from '../models/authenticated-user.model';
 
 export interface LoginCommand {
@@ -10,4 +11,5 @@ export interface AuthRepository {
   /** Returns null when no valid session exists; rejects on technical failures. */
   restoreSession(): Promise<LoginResponse | null>;
   logout(): Promise<void>;
+  changePassword(command: ChangePasswordCommand): Promise<void>;
 }

@@ -1,3 +1,8 @@
+import {
+  ChangePasswordCommand,
+  PasswordChangeError,
+  PasswordChangeFailure,
+} from '../../domain/models/password-change.model';
 import { AUTH_REPOSITORY } from '../../application/auth.tokens';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -41,6 +46,32 @@ export class HttpAuthRepository implements AuthRepository {
     await firstValueFrom(
       this.http.post<void>(`${this.baseUrl}/auth/web/logout`, {}, { withCredentials: true }),
     );
+  }
+  async changePassword(command: ChangePasswordCommand): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.patch<void>(
+          `${this.baseUrl}/auth/password`,
+          {
+            currentPassword: command.currentPassword,
+            newPassword: command.newPassword,
+          },
+          { withCredentials: true },
+        ),
+      );
+    } catch (error) {
+      const reasons: Record<number, PasswordChangeFailure> = {
+        400: 'invalid',
+        401: 'unauthorized',
+        403: 'forbidden',
+        409: 'conflict',
+      };
+      throw new PasswordChangeError(
+        error instanceof HttpErrorResponse
+          ? (reasons[error.status] ?? 'unavailable')
+          : 'unavailable',
+      );
+    }
   }
 }
 
