@@ -18,6 +18,7 @@ import { USER_REPOSITORY_PROVIDER } from './features/users/infrastructure/reposi
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideRouter(routes),
     provideHttpClient(),
     providePrimeNG({
       theme: { preset: AppTheme, options: { darkModeSelector: false } },

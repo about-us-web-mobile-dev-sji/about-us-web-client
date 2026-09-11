@@ -19,10 +19,11 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: SuperAdminDashboard },
       { path: 'settings', component: AdminSettingsPage },
+      {path: 'users', component: UsersPage},
       { path: '', pathMatch: 'full', redirectTo: 'home' },
     ],
   },
   { path: 'forbidden', component: ForbiddenPage },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  {path: 'users', component: UsersPage},
+  
 ];
