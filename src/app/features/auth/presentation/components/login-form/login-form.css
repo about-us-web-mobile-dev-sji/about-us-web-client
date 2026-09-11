@@ -1,17 +1,67 @@
-.login-form{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  
-    width:300px;
-    gap: 10px;
+:host {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
 }
 
-button{
-    background-color: #4CAF50;
-    color: white;
-    padding: 5px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+.login-form,
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form {
+  gap: 1.5rem;
+}
+.form-field {
+  gap: 0.5rem;
+}
+.form-field label {
+  font-weight: 500;
+}
+.password-field {
+  position: relative;
+}
+.password-field input {
+  width: 100%;
+  padding-inline-end: 3rem;
+}
+.password-toggle {
+  position: absolute;
+  inset-inline-end: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: var(--p-border-radius-sm);
+  background: transparent;
+  color: var(--p-text-muted-color);
+  cursor: pointer;
+}
+.password-toggle:focus-visible {
+  outline: 2px solid var(--p-primary-color);
+  outline-offset: 2px;
+}
+.submit-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+  }
 }

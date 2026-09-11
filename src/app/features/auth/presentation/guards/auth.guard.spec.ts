@@ -71,4 +71,31 @@ describe('Protected application routes', () => {
     expect(initialize).toHaveBeenCalled();
     expect(TestBed.inject(Router).url).toBe('/home');
   });
+  it('keeps the layout while navigating to settings and toggles the sidebar', async () => {
+    currentUser.set({ ...user, globalRole: 'SUPER_ADMIN' });
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/s');
+    expect(TestBed.inject(Router).url).toBe('/s/home');
+    const layout = harness.routeNativeElement;
+    const trigger = layout!.querySelector('[pSidebarTrigger]') as HTMLButtonElement;
+    const expanded = trigger.getAttribute('aria-expanded');
+    trigger.click();
+    harness.detectChanges();
+    expect(trigger.getAttribute('aria-expanded')).not.toBe(expanded);
+    await harness.navigateByUrl('/s/settings');
+    expect(harness.routeNativeElement).toBe(layout);
+    expect(layout!.querySelector('h1')?.textContent).toBe('Paramètres');
+    expect(layout!.querySelector('a[href="/s/settings"]')?.getAttribute('aria-current')).toBe(
+      'page',
+    );
+  });
+
+  it('checks permissions again when navigating between admin children', async () => {
+    currentUser.set({ ...user, globalRole: 'SUPER_ADMIN' });
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/s/home');
+    currentUser.set(user);
+    await harness.navigateByUrl('/s/settings');
+    expect(TestBed.inject(Router).url).toBe('/forbidden');
+  });
 });

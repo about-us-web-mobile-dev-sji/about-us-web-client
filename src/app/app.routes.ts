@@ -1,3 +1,5 @@
+import { AdminLayout } from './core/layout/admin-layout/admin-layout';
+import { AdminSettingsPage } from './features/settings/presentation/pages/admin-settings-page/admin-settings-page';
 import { Routes } from '@angular/router';
 import { LoginPage } from './features/auth/presentation/pages/login-page/login-page';
 import { ForbiddenPage } from './features/auth/presentation/pages/forbidden-page/forbidden-page';
@@ -10,11 +12,18 @@ export const routes: Routes = [
   { path: 'login', component: LoginPage },
   { path: 'home', component: HomePage, canActivate: [authGuard()] },
   {
-    path: 's/home',
-    component: SuperAdminDashboard,
+    path: 's',
+    component: AdminLayout,
     canActivate: [authGuard(['SUPER_ADMIN'])],
+    canActivateChild: [authGuard(['SUPER_ADMIN'])],
+    children: [
+      { path: 'home', component: SuperAdminDashboard },
+      { path: 'settings', component: AdminSettingsPage },
+      {path: 'users', component: UsersPage},
+      { path: '', pathMatch: 'full', redirectTo: 'home' },
+    ],
   },
   { path: 'forbidden', component: ForbiddenPage },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  {path: 'users', component: UsersPage},
+  
 ];

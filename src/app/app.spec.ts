@@ -1,24 +1,29 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { App } from './app';
+import { appConfig } from './app.config';
+import { AuthStore } from './features/auth/application/auth.store';
+import { AuthFacade } from './features/auth/application/auth.facade';
 
-describe('App', () => {
+describe('App routing configuration', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-    })
-      .compileComponents();
+      providers: [
+        ...appConfig.providers,
+        { provide: AuthStore, useValue: { initialize: async () => undefined } },
+        { provide: AuthFacade, useValue: { isLoading: signal(false), error: signal(null) } },
+      ],
+    }).compileComponents();
   });
 
-  it('should create the app', () => {
+  it('renders the login route with the actual application providers', async () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render title', async () => {
-    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    await TestBed.inject(Router).navigateByUrl('/login');
     await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, about-us');
+    expect(fixture.nativeElement.querySelector('app-login-page')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('input[formControlName="email"]')).toBeTruthy();
   });
 });

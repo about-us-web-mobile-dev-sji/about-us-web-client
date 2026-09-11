@@ -1,0 +1,95 @@
+<p-sidebar-layout>
+  <p-sidebar
+    id="admin-sidebar"
+    [(open)]="sidebarOpen"
+    variant="sidebar"
+    collapsible="icon"
+    side="left"
+    [overlay]="false"
+    [openOnHover]="false"
+    width="15rem"
+  >
+    <p-sidebar-spacer />
+    <p-sidebar-aside>
+      <p-sidebar-panel>
+        <p-sidebar-header>
+          <p-sidebar-menu>
+            <p-sidebar-menu-item>
+              <a pSidebarMenuButton routerLink="/s/home" aria-label="About Us — Accueil" style="padding: 0px;">
+                <img src="favicon.png" width="25px" height="25px">
+                <span class="brand-name">About Us</span>
+              </a>
+            </p-sidebar-menu-item>
+          </p-sidebar-menu>
+        </p-sidebar-header>
+        <p-sidebar-content>
+          <nav aria-label="Navigation administrateur">
+            @for (group of navGroups; track group.label) {
+              <p-sidebar-group>
+                <p-sidebar-group-label>{{ group.label }}</p-sidebar-group-label>
+                <p-sidebar-group-content>
+                  <p-sidebar-menu>
+                    @for (item of group.items; track item.route) {
+                      <p-sidebar-menu-item>
+                        <a
+                          pSidebarMenuButton
+                          [routerLink]="item.route"
+                          routerLinkActive="active-link"
+                          #link="routerLinkActive"
+                          [isActive]="link.isActive"
+                          ariaCurrentWhenActive="page"
+                          [attr.aria-label]="item.label"
+                          [title]="item.label"
+                        >
+                          <svg [pIcon]="item.icon" aria-hidden="true"></svg
+                          ><span>{{ item.label }}</span>
+                        </a>
+                      </p-sidebar-menu-item>
+                    }
+                  </p-sidebar-menu>
+                </p-sidebar-group-content>
+              </p-sidebar-group>
+            }
+          </nav>
+        </p-sidebar-content>
+        <p-sidebar-footer>
+          <p-sidebar-menu>
+            <p-sidebar-menu-item>
+              <a
+                pSidebarMenuButton
+                routerLink="/s/settings"
+                [attr.aria-label]="'Compte de ' + auth.userName()"
+              >
+                <p-avatar [label]="initials()" shape="circle" />
+                <span>{{ auth.userName() }}</span>
+              </a>
+            </p-sidebar-menu-item>
+          </p-sidebar-menu>
+        </p-sidebar-footer>
+        <button
+          pSidebarRail
+          type="button"
+          aria-label="Réduire ou ouvrir la barre latérale"
+        ></button>
+      </p-sidebar-panel>
+    </p-sidebar-aside>
+  </p-sidebar>
+  <p-sidebar-main>
+    <header class="admin-header">
+      <button
+        pButton
+        pSidebarTrigger
+        target="admin-sidebar"
+        type="button"
+        severity="secondary"
+        text
+        size="small"
+        aria-label="Ouvrir ou fermer le menu administrateur"
+      >
+        <svg data-p-icon="sidebar" aria-hidden="true"></svg>
+      </button>
+      <span>Espace administrateur</span>
+    </header>
+    <main class="admin-content"><router-outlet /></main>
+  </p-sidebar-main>
+</p-sidebar-layout>
