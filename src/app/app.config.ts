@@ -13,11 +13,11 @@ import { routes } from './app.routes';
 import { AUTH_REPOSITORY_PROVIDER } from './features/auth/infrastructure/repositories/http-auth.repository';
 import { API_BASE_URL } from './core/config/api.config';
 import { environment } from '../environments/environment';
+import { USER_REPOSITORY_PROVIDER } from './features/users/infrastructure/repositories/http-user.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
     provideHttpClient(),
     providePrimeNG({
       theme: { preset: AppTheme, options: { darkModeSelector: false } },
@@ -26,6 +26,7 @@ export const appConfig: ApplicationConfig = {
     }),
     provideAppInitializer(() => inject(AuthStore).initialize()),
     AUTH_REPOSITORY_PROVIDER,
+    USER_REPOSITORY_PROVIDER,
     { provide: API_BASE_URL, useValue: environment.apiUrl },
   ],
 };

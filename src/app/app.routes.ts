@@ -5,6 +5,7 @@ import { LoginPage } from './features/auth/presentation/pages/login-page/login-p
 import { ForbiddenPage } from './features/auth/presentation/pages/forbidden-page/forbidden-page';
 import { authGuard } from './features/auth/presentation/guards/auth.guard';
 import { SuperAdminDashboard } from './features/dashboard/presentation/pages/super-admin-dashboard/super-admin-dashboard';
+import { UsersPage } from './features/users/presentation/pages/users-page/users-page';
 import { HomePage } from './features/dashboard/presentation/pages/home-page/home-page';
 
 export const routes: Routes = [
@@ -23,4 +24,5 @@ export const routes: Routes = [
   },
   { path: 'forbidden', component: ForbiddenPage },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
+  {path: 'users', component: UsersPage},
 ];
