@@ -36,6 +36,7 @@ button:disabled { cursor: wait; opacity: .55; }
 .role { min-width: 120px; }
 .status-actions { display: flex; align-items: center; gap: 8px; }
 .status { min-width: 74px; color: #53716b; font-size: 12px; font-weight: 700; }
+.logs-link { color: #286341; font-size: 14px; }
 .activate-button { border-color: #79a990; color: #286341; }
 .suspend-button { border-color: #d2a09a; color: #913d35; }
 .error { padding: 12px 16px; border-left: 4px solid #b64b4b; background: #fff0ef; color: #8b2f2f; }
