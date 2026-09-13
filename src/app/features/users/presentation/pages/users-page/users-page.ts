@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { UsersFacade } from '../../../application/users.facade';
 import { UserStatus } from '../../../domain/models/user.model';
 
@@ -7,6 +8,7 @@ import { UserStatus } from '../../../domain/models/user.model';
   templateUrl: './users-page.html',
   styleUrl: './users-page.css',
   standalone: true,
+  imports: [RouterLink],
 })
 export class UsersPage implements OnInit {
   protected readonly usersFacade = inject(UsersFacade);
