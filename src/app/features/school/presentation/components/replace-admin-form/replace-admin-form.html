@@ -1,0 +1,44 @@
+<form
+  [formGroup]="replaceForm"
+  (ngSubmit)="onSubmit()"
+  class="replace-admin-form"
+  novalidate
+  [attr.aria-busy]="isLoading"
+>
+  <div class="form-section">
+    <h2 class="section-title">Nouvel administrateur</h2>
+
+    <div class="form-field">
+      <label for="newAdminUserId">ID du nouvel administrateur *</label>
+      <input pInputText id="newAdminUserId" type="text" formControlName="newAdminUserId"
+        [readonly]="isLoading" [invalid]="newAdminUserIdControl.invalid && newAdminUserIdControl.touched"
+        [attr.aria-invalid]="newAdminUserIdControl.invalid && newAdminUserIdControl.touched"
+        [attr.aria-describedby]="newAdminUserIdControl.invalid && newAdminUserIdControl.touched ? 'user-id-error' : null"
+        placeholder="Identifiant de l'utilisateur" />
+      @if (newAdminUserIdControl.invalid && newAdminUserIdControl.touched) {
+        <p-message id="user-id-error" severity="error" variant="simple" size="small">
+          L'identifiant de l'utilisateur est obligatoire.
+        </p-message>
+      }
+      <small class="form-hint">
+        Renseigne l'identifiant unique de l'utilisateur qui deviendra l'administrateur principal.
+      </small>
+    </div>
+  </div>
+
+  <div class="warning-section">
+    <p-message severity="warn" variant="simple">
+      Cette action est irréversible. L'ancien administrateur perdra ses droits d'administration
+      mais conservera son historique d'activité.
+    </p-message>
+  </div>
+
+  <div class="form-actions">
+    <button pButton type="submit" [disabled]="isLoading" class="submit-button">
+      @if (isLoading) {
+        <svg data-p-icon="spinner" class="loading-spinner" aria-hidden="true"></svg>
+      }
+      <span>{{ isLoading ? 'Remplacement en cours…' : 'Remplacer l\'administrateur' }}</span>
+    </button>
+  </div>
+</form>
