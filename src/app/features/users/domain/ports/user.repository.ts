@@ -6,6 +6,7 @@ export interface ListUsersQuery {
   limit: number;
   status?: UserStatus;
   search?: string;
+  schoolId?: string;
 }
 
 export interface UpdateUserStatusCommand {
