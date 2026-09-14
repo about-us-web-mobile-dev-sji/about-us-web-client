@@ -9,12 +9,18 @@
     </button>
   </header>
 
-  <form class="filters" (submit)="$event.preventDefault(); applyFilters(search.value, status.value)">
+  <form class="filters" (submit)="$event.preventDefault(); applyFilters(search.value, status.value, schoolId.value)">
     <input #search type="search" placeholder="Rechercher par nom ou email">
     <select #status>
       <option value="">Tous les statuts</option>
       @for (statusOption of statusOptions; track statusOption) {
         <option [value]="statusOption">{{ statusOption }}</option>
+      }
+    </select>
+    <select #schoolId>
+      <option value="">Toutes les écoles</option>
+      @for (school of schools(); track school.id) {
+        <option [value]="school.id">{{ school.name }}</option>
       }
     </select>
     <button type="submit">Filtrer</button>

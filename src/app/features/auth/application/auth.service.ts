@@ -1,3 +1,4 @@
+import type { ChangePasswordCommand } from '../domain/models/password-change.model';
 import type { AuthRepository, LoginCommand } from '../domain/ports/auth.repository';
 import type { LoginResponse } from '../domain/models/authenticated-user.model';
 
@@ -14,5 +15,8 @@ export class AuthService {
 
   logout(): Promise<void> {
     return this.repository.logout();
+  }
+  changePassword(command: ChangePasswordCommand): Promise<void> {
+    return this.repository.changePassword(command);
   }
 }

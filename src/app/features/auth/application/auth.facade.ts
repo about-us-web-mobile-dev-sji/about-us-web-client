@@ -1,3 +1,4 @@
+import type { ChangePasswordCommand } from '../domain/models/password-change.model';
 import type { LoginResponse } from '../domain/models/authenticated-user.model';
 import { Injectable, inject } from '@angular/core';
 import { LoginCommand } from '../domain/ports/auth.repository';
@@ -25,5 +26,8 @@ export class AuthFacade {
   }
   logout(): Promise<void> {
     return this.store.logout();
+  }
+  changePassword(command: ChangePasswordCommand): Promise<void> {
+    return this.store.changePassword(command);
   }
 }

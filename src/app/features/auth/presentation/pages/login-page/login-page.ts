@@ -2,7 +2,7 @@ import type { LoginCommand } from '../../../domain/ports/auth.repository';
 import { Component, inject } from '@angular/core';
 import { LoginForm } from '../../components/login-form/login-form';
 import { AuthFacade } from '../../../application/auth.facade';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   imports: [LoginForm],
@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
   templateUrl: './login-page.html',
 })
 export class LoginPage {
+  readonly passwordChanged =
+    inject(ActivatedRoute).snapshot.queryParamMap.get('passwordChanged') === '1';
   readonly auth = inject(AuthFacade);
   private readonly router = inject(Router);
 

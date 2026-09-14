@@ -1,6 +1,15 @@
 <div class="login-page">
-    <app-login-form [isLoading]="auth.isLoading()" (submitCredentials)="handleSubmit($event)"></app-login-form>
-    @if (auth.error()) {
-        <p role="alert">{{ auth.error() }}</p>
-    }
+  @if (passwordChanged) {
+    <p role="status">
+      Mot de passe modifié. Toutes les sessions ont été fermées. Connecte-toi avec ton nouveau mot
+      de passe.
+    </p>
+  }
+  <app-login-form
+    [isLoading]="auth.isLoading()"
+    (submitCredentials)="handleSubmit($event)"
+  ></app-login-form>
+  @if (auth.error()) {
+    <p role="alert">{{ auth.error() }}</p>
+  }
 </div>
