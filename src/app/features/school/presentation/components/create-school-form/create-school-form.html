@@ -1,0 +1,242 @@
+<form
+  [formGroup]="schoolForm"
+  (ngSubmit)="onSubmit()"
+  class="create-school-form"
+  novalidate
+  [attr.aria-busy]="isLoading"
+>
+  <div class="form-section">
+    <h2 class="section-title">Informations de l'école</h2>
+
+    <!-- Nom de l'école -->
+    <div class="form-field">
+      <label for="name">Nom de l'école *</label>
+      <input
+        pInputText
+        id="name"
+        type="text"
+        formControlName="name"
+        [readonly]="isLoading"
+        [invalid]="nameControl.invalid && nameControl.touched"
+        [attr.aria-invalid]="nameControl.invalid && nameControl.touched"
+        [attr.aria-describedby]="nameControl.invalid && nameControl.touched ? 'name-error' : null"
+        placeholder="École primaire Jean Moulin"
+      />
+      @if (nameControl.invalid && nameControl.touched) {
+        <p-message id="name-error" severity="error" variant="simple" size="small">
+          {{
+            nameControl.hasError('required')
+              ? 'Le nom de l\'école est obligatoire.'
+              : 'Le nom doit contenir au moins 3 caractères.'
+          }}
+        </p-message>
+      }
+    </div>
+
+    <!-- Code de l'école -->
+    <div class="form-field">
+      <label for="code">Code de l'école *</label>
+      <input
+        pInputText
+        id="code"
+        type="text"
+        formControlName="code"
+        [readonly]="isLoading"
+        [invalid]="codeControl.invalid && codeControl.touched"
+        [attr.aria-invalid]="codeControl.invalid && codeControl.touched"
+        [attr.aria-describedby]="codeControl.invalid && codeControl.touched ? 'code-error' : null"
+        placeholder="ECO-2024-001"
+      />
+      @if (codeControl.invalid && codeControl.touched) {
+        <p-message id="code-error" severity="error" variant="simple" size="small">
+          {{
+            codeControl.hasError('required')
+              ? 'Le code de l\'école est obligatoire.'
+              : 'Le code doit contenir uniquement des lettres majuscules, chiffres, tirets et underscores.'
+          }}
+        </p-message>
+      }
+    </div>
+
+    <!-- Email -->
+    <div class="form-field">
+      <label for="email">Email de l'école *</label>
+      <input
+        pInputText
+        id="email"
+        type="email"
+        formControlName="email"
+        [readonly]="isLoading"
+        [invalid]="emailControl.invalid && emailControl.touched"
+        [attr.aria-invalid]="emailControl.invalid && emailControl.touched"
+        [attr.aria-describedby]="emailControl.invalid && emailControl.touched ? 'email-error' : null"
+        placeholder="contact@ecole.fr"
+      />
+      @if (emailControl.invalid && emailControl.touched) {
+        <p-message id="email-error" severity="error" variant="simple" size="small">
+          {{
+            emailControl.hasError('required')
+              ? 'L\'email est obligatoire.'
+              : 'Renseigne une adresse email valide.'
+          }}
+        </p-message>
+      }
+    </div>
+
+    <!-- Téléphone -->
+    <div class="form-field">
+      <label for="phone">Téléphone *</label>
+      <input
+        pInputText
+        id="phone"
+        type="tel"
+        formControlName="phone"
+        [readonly]="isLoading"
+        [invalid]="phoneControl.invalid && phoneControl.touched"
+        [attr.aria-invalid]="phoneControl.invalid && phoneControl.touched"
+        [attr.aria-describedby]="phoneControl.invalid && phoneControl.touched ? 'phone-error' : null"
+        placeholder="+33 1 23 45 67 89"
+      />
+      @if (phoneControl.invalid && phoneControl.touched) {
+        <p-message id="phone-error" severity="error" variant="simple" size="small">
+          {{
+            phoneControl.hasError('required')
+              ? 'Le téléphone est obligatoire.'
+              : 'Renseigne un numéro de téléphone valide.'
+          }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="section-title">Adresse</h2>
+
+    <!-- Adresse -->
+    <div class="form-field">
+      <label for="address">Adresse *</label>
+      <input
+        pInputText
+        id="address"
+        type="text"
+        formControlName="address"
+        [readonly]="isLoading"
+        [invalid]="addressControl.invalid && addressControl.touched"
+        [attr.aria-invalid]="addressControl.invalid && addressControl.touched"
+        [attr.aria-describedby]="addressControl.invalid && addressControl.touched ? 'address-error' : null"
+        placeholder="12 rue de la République"
+      />
+      @if (addressControl.invalid && addressControl.touched) {
+        <p-message id="address-error" severity="error" variant="simple" size="small">
+          L'adresse est obligatoire.
+        </p-message>
+      }
+    </div>
+
+    <!-- Ville et Code postal -->
+    <div class="form-row">
+      <div class="form-field">
+        <label for="city">Ville *</label>
+        <input
+          pInputText
+          id="city"
+          type="text"
+          formControlName="city"
+          [readonly]="isLoading"
+          [invalid]="cityControl.invalid && cityControl.touched"
+          [attr.aria-invalid]="cityControl.invalid && cityControl.touched"
+          [attr.aria-describedby]="cityControl.invalid && cityControl.touched ? 'city-error' : null"
+          placeholder="Paris"
+        />
+        @if (cityControl.invalid && cityControl.touched) {
+          <p-message id="city-error" severity="error" variant="simple" size="small">
+            La ville est obligatoire.
+          </p-message>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="postalCode">Code postal *</label>
+        <input
+          pInputText
+          id="postalCode"
+          type="text"
+          formControlName="postalCode"
+          [readonly]="isLoading"
+          [invalid]="postalCodeControl.invalid && postalCodeControl.touched"
+          [attr.aria-invalid]="postalCodeControl.invalid && postalCodeControl.touched"
+          [attr.aria-describedby]="postalCodeControl.invalid && postalCodeControl.touched ? 'postalCode-error' : null"
+          placeholder="75001"
+        />
+        @if (postalCodeControl.invalid && postalCodeControl.touched) {
+          <p-message id="postalCode-error" severity="error" variant="simple" size="small">
+            {{
+              postalCodeControl.hasError('required')
+                ? 'Le code postal est obligatoire.'
+                : 'Le code postal doit contenir 5 chiffres.'
+            }}
+          </p-message>
+        }
+      </div>
+    </div>
+
+    <!-- Pays -->
+    <div class="form-field">
+      <label for="country">Pays *</label>
+      <input
+        pInputText
+        id="country"
+        type="text"
+        formControlName="country"
+        [readonly]="isLoading"
+        [invalid]="countryControl.invalid && countryControl.touched"
+        [attr.aria-invalid]="countryControl.invalid && countryControl.touched"
+        [attr.aria-describedby]="countryControl.invalid && countryControl.touched ? 'country-error' : null"
+        placeholder="France"
+      />
+      @if (countryControl.invalid && countryControl.touched) {
+        <p-message id="country-error" severity="error" variant="simple" size="small">
+          Le pays est obligatoire.
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="section-title">Administration</h2>
+
+    <!-- ID Administrateur principal (optionnel) -->
+    <div class="form-field">
+      <label for="principalAdminId">ID Administrateur principal (optionnel)</label>
+      <input
+        pInputText
+        id="principalAdminId"
+        type="text"
+        formControlName="principalAdminId"
+        [readonly]="isLoading"
+        placeholder="admin-123"
+      />
+      <small class="form-hint">Laisse vide si aucun administrateur n'est encore assigné</small>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="form-actions">
+    <button
+      pButton
+      type="button"
+      severity="secondary"
+      (click)="onReset()"
+      [disabled]="isLoading"
+      class="reset-button"
+    >
+      Réinitialiser
+    </button>
+    <button pButton type="submit" [disabled]="isLoading" class="submit-button">
+      @if (isLoading) {
+        <svg data-p-icon="spinner" class="loading-spinner" aria-hidden="true"></svg>
+      }
+      <span>{{ isLoading ? 'Enregistrement…' : 'Enregistrer l\'école' }}</span>
+    </button>
+  </div>
+</form>

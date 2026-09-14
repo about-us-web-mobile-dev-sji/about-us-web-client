@@ -7,6 +7,8 @@ import { authGuard } from './features/auth/presentation/guards/auth.guard';
 import { SuperAdminDashboard } from './features/dashboard/presentation/pages/super-admin-dashboard/super-admin-dashboard';
 import { UsersPage } from './features/users/presentation/pages/users-page/users-page';
 import { HomePage } from './features/dashboard/presentation/pages/home-page/home-page';
+import { CreateSchoolPage } from './features/school/presentation/pages/create-school-page/create-school-page';
+import { ReplaceAdminPage } from './features/school/presentation/pages/replace-admin-page/replace-admin-page';
 
 export const routes: Routes = [
   { path: 'login', component: LoginPage },
@@ -19,11 +21,12 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: SuperAdminDashboard },
       { path: 'settings', component: AdminSettingsPage },
-      {path: 'users', component: UsersPage},
+      { path: 'users', component: UsersPage },
+      { path: 'schools/create', component: CreateSchoolPage },
+      { path: 'schools/:schoolId/replace-admin', component: ReplaceAdminPage },
       { path: '', pathMatch: 'full', redirectTo: 'home' },
     ],
   },
   { path: 'forbidden', component: ForbiddenPage },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  
 ];
