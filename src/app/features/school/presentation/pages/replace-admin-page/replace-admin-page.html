@@ -1,0 +1,45 @@
+<div class="replace-admin-page">
+  <div class="page-header">
+    <h1 class="page-title">Remplacer l'administrateur principal</h1>
+    <p class="page-description">
+      Sélectionne un nouvel administrateur pour prendre en charge la gestion de l'école.
+    </p>
+  </div>
+
+  <div class="page-content">
+    @if (isSchoolLoading()) {
+      <p-message severity="info" variant="simple">
+        Chargement des informations de l'école...
+      </p-message>
+    } @else if (school(); as currentSchool) {
+      <div class="school-info">
+        <h2 class="school-name">{{ currentSchool.name }}</h2>
+        @if (currentSchool.principalAdminId) {
+          <p class="current-admin">
+            Administrateur actuel : <strong>{{ currentSchool.principalAdminId }}</strong>
+          </p>
+        } @else {
+          <p class="current-admin">
+            Aucun administrateur principal assigné.
+          </p>
+        }
+      </div>
+
+      <p-message severity="info" variant="simple">
+        L'ancien administrateur conservera son historique mais perdra ses droits d'administration.
+      </p-message>
+
+      <app-replace-admin-form
+        [isLoading]="isLoading()"
+        [schoolId]="currentSchool.id"
+        (submitReplace)="onReplaceSubmit($event)"
+      ></app-replace-admin-form>
+    } @else {
+      <p-message severity="error" variant="simple">
+        École introuvable.
+      </p-message>
+    }
+  </div>
+</div>
+
+<p-toast position="top-right" />

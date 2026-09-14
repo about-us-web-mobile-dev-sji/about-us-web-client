@@ -14,6 +14,7 @@ import { AUTH_REPOSITORY_PROVIDER } from './features/auth/infrastructure/reposit
 import { API_BASE_URL } from './core/config/api.config';
 import { environment } from '../environments/environment';
 import { USER_REPOSITORY_PROVIDER } from './features/users/infrastructure/repositories/http-user.repository';
+import { SCHOOL_REPOSITORY_PROVIDER } from './features/school/infrastructure/repositories/http-school.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,6 +29,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(AuthStore).initialize()),
     AUTH_REPOSITORY_PROVIDER,
     USER_REPOSITORY_PROVIDER,
+    SCHOOL_REPOSITORY_PROVIDER,
     { provide: API_BASE_URL, useValue: environment.apiUrl },
   ],
 };

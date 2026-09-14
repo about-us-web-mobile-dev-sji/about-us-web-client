@@ -1,0 +1,48 @@
+.create-school-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background: var(--surface-ground);
+}
+
+.page-header {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 1rem 0;
+}
+
+.page-description {
+  font-size: 1.125rem;
+  color: var(--text-color-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.page-content {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .create-school-page {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .page-description {
+    font-size: 1rem;
+  }
+}
