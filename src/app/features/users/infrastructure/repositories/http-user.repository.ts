@@ -21,8 +21,14 @@ export class HttpUserRepository {
     if (query.search) {
       params = params.set('search', query.search);
     }
+    if (query.schoolId) {
+      params = params.set('schoolId', query.schoolId);
+    }
     const dto = await firstValueFrom(
-      this.http.get<ListUsersResponseDto>(`${this.baseUrl}/users`, { params }),
+      this.http.get<ListUsersResponseDto>(`${this.baseUrl}/users`, {
+        params,
+        withCredentials: true,
+      }),
     );
     return mapListUsersResponse(dto);
   }
@@ -32,6 +38,7 @@ export class HttpUserRepository {
       this.http.patch<UpdateUserStatusResponseDto>(
         `${this.baseUrl}/users/${command.userId}/status`,
         { status: command.status },
+        { withCredentials: true },
       ),
     );
     return mapUserResponse(dto.user);

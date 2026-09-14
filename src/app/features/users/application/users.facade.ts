@@ -15,7 +15,7 @@ export class UsersFacade {
   readonly page = signal(1);
   readonly limit = signal(10);
   readonly totalPages = signal(1);
-  readonly filters = signal<Pick<ListUsersQuery, 'status' | 'search'>>({});
+  readonly filters = signal<Pick<ListUsersQuery, 'status' | 'search' | 'schoolId'>>({});
   readonly isLoading = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -42,7 +42,7 @@ export class UsersFacade {
     }
   }
 
-  async applyFilters(filters: Pick<ListUsersQuery, 'status' | 'search'>) {
+  async applyFilters(filters: Pick<ListUsersQuery, 'status' | 'search' | 'schoolId'>) {
     this.filters.set(filters);
     await this.loadUsers(1, this.limit(), filters);
   }
