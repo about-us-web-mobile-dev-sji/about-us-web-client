@@ -1,22 +1,26 @@
-import { GlobalRole, UserStatus } from '../../domain/models/user.model';
+import type { GlobalRole, UserStatus } from '../../domain/models/user.model';
 
 export interface UserResponseDto {
-  id: string | undefined;
-  firstName: string | null;
-  lastName: string | null;
-  email: string;
-  status: UserStatus;
-  globalRole: GlobalRole;
+  readonly id: string;
+  readonly firstName: string | null;
+  readonly lastName: string | null;
+  readonly email: string;
+  readonly status: UserStatus;
+  readonly globalRole: GlobalRole;
 }
 
 export interface ListUsersResponseDto {
-  items: UserResponseDto[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  readonly items: readonly UserResponseDto[];
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly totalPages: number;
 }
 
 export interface UpdateUserStatusResponseDto {
-  user: UserResponseDto;
+  readonly user: UserResponseDto;
+}
+
+export interface UpdateUserStatusRequestDto {
+  readonly status: UserStatus;
 }

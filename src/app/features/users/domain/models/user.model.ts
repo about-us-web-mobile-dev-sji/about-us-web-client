@@ -9,18 +9,31 @@ export enum GlobalRole {
 }
 
 export interface User {
-  id: string | undefined;
-  firstName: string | null;
-  lastName: string | null;
-  email: string;
-  status: UserStatus;
-  globalRole: GlobalRole;
+  readonly id: string;
+  readonly firstName: string | null;
+  readonly lastName: string | null;
+  readonly email: string;
+  readonly status: UserStatus;
+  readonly globalRole: GlobalRole;
 }
 
 export interface ListUsersResult {
-  items: User[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  readonly items: readonly User[];
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly totalPages: number;
 }
+
+export type UpdateUserStatusCommand = {
+  readonly userId: string;
+  readonly status: UserStatus;
+};
+
+export type ListUsersQuery = {
+  readonly page: number;
+  readonly limit: number;
+  readonly status?: UserStatus;
+  readonly search?: string;
+  readonly schoolId?: string;
+};

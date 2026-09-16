@@ -1,76 +1,85 @@
 <main class="users-page">
+  <p-menu #menu [model]="menuItems" [popup]="true" [appendTo]="'body'" />
   <header class="page-header">
     <div>
-      <p class="eyebrow">Test feature users</p>
+      <p>Gestion des utilisateurs</p>
       <h1>Utilisateurs</h1>
     </div>
-    <button type="button" (click)="usersFacade.loadUsers()" [disabled]="usersFacade.isLoading()">
-      {{ usersFacade.isLoading() ? 'Chargement...' : 'Actualiser' }}
-    </button>
+    <p-button label="Actualiser" icon="pi pi-refresh" [loading]="facade.users.loading()"
+      (onClick)="facade.users.refresh()" />
+
   </header>
+  <body >
+    <input pInputText type="search" placeholder="Rechercher par nom ou email" #searchInput
+    (input)="search(searchInput.value)" />
 
-  <form class="filters" (submit)="$event.preventDefault(); applyFilters(search.value, status.value, schoolId.value)">
-    <input #search type="search" placeholder="Rechercher par nom ou email">
-    <select #status>
-      <option value="">Tous les statuts</option>
-      @for (statusOption of statusOptions; track statusOption) {
-        <option [value]="statusOption">{{ statusOption }}</option>
-      }
-    </select>
-    <select #schoolId>
-      <option value="">Toutes les écoles</option>
-      @for (school of schools(); track school.id) {
-        <option [value]="school.id">{{ school.name }}</option>
-      }
-    </select>
-    <button type="submit">Filtrer</button>
-  </form>
+  <p-select [options]="statusOptions" placeholder="Tous les statuts" [showClear]="true"
+    (onChange)="filterStatus($event.value)" />
 
-  @if (usersFacade.error(); as error) {
-    <p class="error" role="alert">{{ error }}</p>
+  <!-- <p-select [options]="schoolOptions()" optionLabel="name" optionValue="id" placeholder="Toutes les écoles"
+    [showClear]="true" (onChange)="filterSchool($event.value)" /> -->
+
+
+
+  @if (facade.users.error()) {
+
+  <p class="error">
+    Impossible de charger les utilisateurs.
+  </p>
+
   }
 
-  <section class="user-list" aria-label="Liste des utilisateurs">
-    @if (usersFacade.isLoading()) {
-      <p class="empty-state">Chargement des utilisateurs...</p>
-    } @else if (usersFacade.users().length === 0) {
-      <p class="empty-state">Aucun utilisateur trouve.</p>
-    } @else {
-      @for (user of usersFacade.users(); track user.id) {
-        <article class="user-row">
-          <div class="user-identity">
-            <strong>{{ user.firstName || '' }} {{ user.lastName || '' }}</strong>
-            <span>{{ user.email }}</span>
-          </div>
-          <span class="role">{{ user.globalRole }}</span>
-          <div class="status-actions" aria-label="Actions de statut">
-            <span class="status">{{ user.status }}</span>
-            <button
-              type="button"
-              class="activate-button"
-              (click)="updateStatus(user.id, activeStatus)"
-              [disabled]="user.status === activeStatus || usersFacade.isLoading()">
-              Activer
-            </button>
-            <button
-              type="button"
-              class="suspend-button"
-              (click)="updateStatus(user.id, suspendedStatus)"
-              [disabled]="user.status === suspendedStatus || usersFacade.isLoading()">
-              Désactiver
-            </button>
-          </div>
-        </article>
-      }
-    }
-  </section>
+  <p-table [value]="facade.users.data()" [loading]="facade.users.loading()" [tableStyle]="{'min-width': '50rem'}">
+    <ng-template #header>
+      <tr>
+        <th>Utilisateur</th>
+        <th>Email</th>
+        <th>Statut</th>
+        <th class="w-5"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-user>
+      <tr>
+        <td>
+          {{ user.firstName }}
+          {{ user.lastName }}
+        </td>
+        <td>
+          {{ user.email }}
+        </td>
+        <td>
+          {{ user.status.toLowerCase() }}
+        </td>
+        <td>
+          <p-button icon="pi pi-ellipsis-v" severity="secondary" [text]="true" [rounded]="true" ariaLabel="Actions"
+            (onClick)="openMenu($event, user)" />
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="4">
+          Aucun utilisateur trouvé.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <!-- Pagination -->
+  <p-paginator [first]="
+      (facade.users.page() - 1)
+      * facade.users.pageSize()
+    " [rows]="
+      facade.users.pageSize()
+    " [totalRecords]="
+      facade.users.total()
+    " [rowsPerPageOptions]="[
+      10,
+      20,
+      50
+    ]" (onPageChange)="changePage($event)" />
 
-  <footer class="pagination">
-    <span>{{ usersFacade.total() }} utilisateur(s)</span>
-    <div>
-      <button type="button" (click)="changePage(usersFacade.page() - 1)" [disabled]="usersFacade.page() <= 1">Precedent</button>
-      <span>Page {{ usersFacade.page() }} / {{ usersFacade.totalPages() }}</span>
-      <button type="button" (click)="changePage(usersFacade.page() + 1)" [disabled]="usersFacade.page() >= usersFacade.totalPages()">Suivant</button>
-    </div>
-  </footer>
+
+  </body>
+
+  
 </main>
