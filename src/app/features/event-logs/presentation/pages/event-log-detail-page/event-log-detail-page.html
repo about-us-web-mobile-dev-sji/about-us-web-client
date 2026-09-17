@@ -1,22 +1,22 @@
-<main class="event-log-detail-page">
-  <a class="back-link" routerLink="/s/events">Retour aux journaux</a>
-  <header class="page-header">
-    <p class="eyebrow">Détail du journal</p>
-    <h1>{{ log?.name || 'Journal d’événement' }}</h1>
+<main i18n class="event-log-detail-page">
+  <a i18n class="back-link" routerLink="/s/events">Retour aux journaux</a>
+  <header i18n class="page-header">
+    <p i18n class="eyebrow">Détail du journal</p>
+    <h1 i18n >{{ log?.name || 'Journal d’événement' }}</h1>
   </header>
 
   @if (eventLogsFacade.isLoading()) {
-    <p class="empty-state">Chargement du détail...</p>
+    <p i18n class="empty-state">Chargement du détail...</p>
   } @else if (eventLogsFacade.error(); as error) {
-    <p class="error" role="alert">{{ error }}</p>
+    <p i18n class="error" role="alert">{{ error }}</p>
   } @else if (log) {
     <dl class="details">
-      <div><dt>Identifiant</dt><dd>{{ log.id }}</dd></div>
-      <div><dt>Type d’entité</dt><dd>{{ log.entityType }}</dd></div>
-      <div><dt>Identifiant de l’entité</dt><dd>{{ log.entityId }}</dd></div>
-      <div><dt>Acteur</dt><dd>{{ log.actorId || 'Non renseigné' }}</dd></div>
-      <div><dt>Date</dt><dd>{{ formatDate(log.occurredAt) }}</dd></div>
-      <div class="payload"><dt>Payload</dt><dd><pre>{{ log.payload | json }}</pre></dd></div>
+      <div i18n><dt>Identifiant</dt><dd>{{ log.id }}</dd></div>
+      <div i18n><dt>Type d’entité</dt><dd>{{ log.entityType }}</dd></div>
+      <div i18n><dt>Identifiant de l’entité</dt><dd>{{ log.entityId }}</dd></div>
+      <div i18n><dt>Acteur</dt><dd>{{ log.actorId || 'Non renseigné' }}</dd></div>
+      <div i18n><dt>Date</dt><dd>{{ formatDate(log.occurredAt) }}</dd></div>
+      <div i18n class="payload"><dt>Payload</dt><dd><pre>{{ log.payload | json }}</pre></dd></div>
     </dl>
   }
 </main>
