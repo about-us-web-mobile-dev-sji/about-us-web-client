@@ -11,21 +11,15 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './login-page.html',
 })
 export class LoginPage {
-  readonly passwordChanged =
-    inject(ActivatedRoute).snapshot.queryParamMap.get('passwordChanged') === '1';
+  readonly passwordChanged = inject(ActivatedRoute).snapshot.queryParamMap.get('passwordChanged') === '1';
   readonly auth = inject(AuthFacade);
   private readonly router = inject(Router);
 
   async handleSubmit(event: LoginCommand): Promise<void> {
     try {
       await this.auth.login(event);
-    } catch {
-      // The store exposes the login error to the template.
-      return;
-    }
-
+    } catch {return;}
     const destination = this.auth.isSuperAdmin() ? '/s/home' : '/home';
-
     await this.router.navigateByUrl(destination, { replaceUrl: true });
   }
 }

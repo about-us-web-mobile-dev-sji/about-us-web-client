@@ -1,5 +1,5 @@
-import { ListUsersResult, User } from '../../domain/models/user.model';
-import { ListUsersResponseDto, UserResponseDto } from '../dto/user.dto';
+import type { ListUsersResult, User } from '../../domain/models/user.model';
+import type { ListUsersResponseDto, UserResponseDto } from '../dto/user.dto';
 
 export function mapUserResponse(dto: UserResponseDto): User {
   return {
@@ -20,4 +20,8 @@ export function mapListUsersResponse(dto: ListUsersResponseDto): ListUsersResult
     limit: dto.limit,
     totalPages: dto.totalPages,
   };
+}
+
+export function mapUpdateUserStatusRequest(status: User['status']): { status: User['status'] } {
+  return { status };
 }

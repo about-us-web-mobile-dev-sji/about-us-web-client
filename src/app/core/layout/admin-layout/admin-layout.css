@@ -31,7 +31,12 @@ p-sidebar-main {
 .brand-name {
   font-weight: 600;
 }
-.active-link {
+a[pSidebarMenuButton].active-link,
+a[pSidebarMenuButton].active-link:hover {
+  background: #ffffff;
+  color: var(--p-primary-color);
+}
+a[pSidebarMenuButton].active-link svg {
   color: var(--p-primary-color);
 }
 .admin-header {
@@ -41,8 +46,8 @@ p-sidebar-main {
   gap: 0.5rem;
   min-height: 3rem;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--p-content-border-color);
-  background: var(--p-content-background);
+  border-bottom: none;
+  background: #ffffff;
 }
 .admin-header span {
   font-weight: 400;

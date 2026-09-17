@@ -9,6 +9,8 @@ import { UsersPage } from './features/users/presentation/pages/users-page/users-
 import { HomePage } from './features/dashboard/presentation/pages/home-page/home-page';
 import { CreateSchoolPage } from './features/school/presentation/pages/create-school-page/create-school-page';
 import { ReplaceAdminPage } from './features/school/presentation/pages/replace-admin-page/replace-admin-page';
+import { EventLogsPage } from './features/event-logs/presentation/pages/event-logs-page/event-logs-page';
+import { EventLogDetailPage } from './features/event-logs/presentation/pages/event-log-detail-page/event-log-detail-page';
 
 export const routes: Routes = [
   { path: 'login', component: LoginPage },
