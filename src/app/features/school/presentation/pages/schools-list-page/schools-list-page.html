@@ -1,0 +1,100 @@
+<div class="schools-list-page">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 i18n class="page-title">Liste des écoles</h1>
+        <p i18n class="page-description">
+          Consultez et gérez toutes les écoles enregistrées sur la plateforme.
+        </p>
+      </div>
+      <button
+        pButton
+        type="button"
+        i18n
+        label="Nouvelle école"
+        icon="pi pi-plus"
+        (click)="navigateToCreate()"
+        class="create-button"
+      ></button>
+    </div>
+  </div>
+
+  <div class="page-content">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <p-progressSpinner strokeWidth="4" />
+        <p i18n class="loading-text">Chargement des écoles…</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-container">
+        <p i18n class="error-text">{{ errorMessage() }}</p>
+        <button
+          pButton
+          type="button"
+          i18n
+          label="Réessayer"
+          icon="pi pi-refresh"
+          severity="secondary"
+          (click)="loadSchools()"
+        ></button>
+      </div>
+    } @else if (schools().length === 0) {
+      <div class="empty-container">
+        <div class="empty-icon">
+          <svg data-p-icon="building" aria-hidden="true" style="font-size: 3rem; color: var(--text-color-secondary);"></svg>
+        </div>
+        <h2 i18n class="empty-title">Aucune école enregistrée</h2>
+        <p i18n class="empty-description">
+          Commencez par ajouter votre première école à la plateforme.
+        </p>
+        <button
+          pButton
+          type="button"
+          i18n
+          label="Créer une école"
+          icon="pi pi-plus"
+          (click)="navigateToCreate()"
+        ></button>
+      </div>
+    } @else {
+      <div class="schools-grid">
+        @for (school of schools(); track school.id) {
+          <div class="school-card">
+            <div class="card-visual">
+              <div class="school-avatar" [attr.data-status]="school.status">
+                <span class="avatar-initials">{{ getSchoolInitial(school.name) }}</span>
+              </div>
+            </div>
+            <div class="card-content">
+              <div class="card-header">
+                <h3 class="school-name">{{ school.name }}</h3>
+                <p-tag
+                  [value]="getStatusLabel(school.status)"
+                  [severity]="getStatusSeverity(school.status)"
+                  styleClass="status-tag"
+                />
+              </div>
+              <div class="school-details">
+                <div class="detail-item">
+                  <svg data-p-icon="map-marker" aria-hidden="true"></svg>
+                  <span>{{ school.city }}, {{ school.country }}</span>
+                </div>
+                <div class="detail-item">
+                  <svg data-p-icon="envelope" aria-hidden="true"></svg>
+                  <span>{{ school.email }}</span>
+                </div>
+                <div class="detail-item">
+                  <svg data-p-icon="phone" aria-hidden="true"></svg>
+                  <span>{{ school.phone }}</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span class="school-code">{{ school.code }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

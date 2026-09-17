@@ -29,7 +29,7 @@ export class AdminLayout {
       items: [
         { icon: 'home', label: 'Accueil', route: '/s/home' },
         { icon: 'users', label: 'Utilisateurs', route: '/s/users' },
-        { icon: 'users', label: 'Ecoles', route: '/s/schools/create' },
+        { icon: 'building', label: 'Écoles', route: '/s/schools' },
         { icon: 'history', label: 'Évènements', route: '/s/events' },
 
         

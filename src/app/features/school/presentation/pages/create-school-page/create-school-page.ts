@@ -31,14 +31,12 @@ export class CreateSchoolPage {
         severity: 'success',
         summary: 'École créée',
         detail: `L'école "${createdSchool.name}" a été enregistrée avec succès.`,
-        life: 5000,
+        life: 3000,
       });
 
-      // Optionnel : Naviguer vers la liste des écoles ou vers la page de détail
-      // this.router.navigate(['/schools', createdSchool.id]);
-
-      // Optionnel : Réinitialiser le formulaire
-      // this.schoolForm.reset();
+      setTimeout(() => {
+        this.router.navigate(['/s/schools']);
+      }, 1500);
     } catch (error: any) {
       console.error('Erreur lors de la création de l\'école:', error);
 

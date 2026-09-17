@@ -8,6 +8,7 @@ import { SuperAdminDashboard } from './features/dashboard/presentation/pages/sup
 import { UsersPage } from './features/users/presentation/pages/users-page/users-page';
 import { HomePage } from './features/dashboard/presentation/pages/home-page/home-page';
 import { CreateSchoolPage } from './features/school/presentation/pages/create-school-page/create-school-page';
+import { SchoolsListPage } from './features/school/presentation/pages/schools-list-page/schools-list-page';
 import { ReplaceAdminPage } from './features/school/presentation/pages/replace-admin-page/replace-admin-page';
 import { EventLogsPage } from './features/event-logs/presentation/pages/event-logs-page/event-logs-page';
 import { EventLogDetailPage } from './features/event-logs/presentation/pages/event-log-detail-page/event-log-detail-page';
@@ -24,6 +25,7 @@ export const routes: Routes = [
       { path: 'home', component: SuperAdminDashboard },
       { path: 'settings', component: AdminSettingsPage },
       { path: 'users', component: UsersPage },
+      { path: 'schools', component: SchoolsListPage },
       { path: 'schools/create', component: CreateSchoolPage },
       { path: 'schools/:schoolId/replace-admin', component: ReplaceAdminPage },
       { path: 'events', component: EventLogsPage },
