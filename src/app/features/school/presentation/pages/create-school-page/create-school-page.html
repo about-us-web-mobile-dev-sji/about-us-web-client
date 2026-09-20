@@ -1,22 +1,23 @@
 <div class="create-school-page">
-  <div class="page-header">
-    <h1 class="page-title">Enregistrer une nouvelle école</h1>
-    <p class="page-description">
+  <div i18n class="page-header">
+    <h1  i18n class="page-title">Enregistrer une nouvelle école</h1>
+    <p  i18n class="page-description">
       Remplis les informations ci-dessous pour créer un nouvel espace administratif sur la
       plateforme.
     </p>
   </div>
 
-  <div class="page-content">
-    <p-message severity="info" variant="simple">
+  <div  i18n class="page-content">
+    <p-message i18n  severity="info" variant="simple">
       Les champs marqués d'un astérisque (*) sont obligatoires.
     </p-message>
 
     <app-create-school-form
+     i18n 
       [isLoading]="isLoading"
       (submitSchool)="onSchoolSubmit($event)"
     ></app-create-school-form>
   </div>
 </div>
 
-<p-toast position="top-right" />
+<p-toast i18n  position="top-right" />

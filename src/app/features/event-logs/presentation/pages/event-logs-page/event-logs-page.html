@@ -1,10 +1,11 @@
 <main class="event-logs-page">
   <header class="page-header">
     <div>
-      <p class="eyebrow">Administration</p>
-      <h1>Journaux d’événements</h1>
+      <p i18n class="eyebrow">Administration</p>
+      <h1 i18n>Journaux d’événements</h1>
     </div>
     <button
+      i18n
       type="button"
       (click)="eventLogsFacade.load()"
       [disabled]="eventLogsFacade.isLoading()"
@@ -21,19 +22,19 @@
     <form class="filters" (submit)="$event.preventDefault(); applyFilters(search.value, entityTypeFilter.value)">
       <input #search type="search" placeholder="Rechercher un journal">
       <select #entityTypeFilter aria-label="Filtrer par type d’entité">
-        <option value="">Tous les types</option>
-        <option value="user">user</option>
-        <option value="super-admin">super-admin</option>
+        <option i18n value="">Tous les types</option>
+        <option i18n value="user">user</option>
+        <option i18n  value="super-admin">super-admin</option>
       </select>
-      <button type="submit">Filtrer</button>
+      <button i18n type="submit">Filtrer</button>
     </form>
   }
 
-  <section class="log-list" aria-label="Liste des journaux d’événements">
+  <section i18n class="log-list" aria-label="Liste des journaux d’événements">
       @if (eventLogsFacade.isLoading()) {
-        <p class="empty-state">Chargement des journaux...</p>
+        <p i18n class="empty-state">Chargement des journaux...</p>
       } @else if (eventLogsFacade.logs().length === 0) {
-        <p class="empty-state">Aucun journal disponible.</p>
+        <p i18n class="empty-state">Aucun journal disponible.</p>
       } @else {
         @for (log of eventLogsFacade.logs(); track log.id) {
           <article class="log-row">
