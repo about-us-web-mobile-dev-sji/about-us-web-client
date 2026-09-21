@@ -32,9 +32,9 @@
 
   <section i18n class="log-list" aria-label="Liste des journaux d’événements">
       @if (eventLogsFacade.isLoading()) {
-        <p i18n class="empty-state">Chargement des journaux...</p>
+        <p class="empty-state">Chargement des journaux...</p>
       } @else if (eventLogsFacade.logs().length === 0) {
-        <p i18n class="empty-state">Aucun journal disponible.</p>
+        <p class="empty-state">Aucun journal disponible.</p>
       } @else {
         @for (log of eventLogsFacade.logs(); track log.id) {
           <article class="log-row">

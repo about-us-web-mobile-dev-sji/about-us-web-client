@@ -1,15 +1,15 @@
 <div i18n class="login-page">
   @if (passwordChanged) {
-    <p i18n role="status">
+    <p role="status">
       Mot de passe modifié. Toutes les sessions ont été fermées. Connecte-toi avec ton nouveau mot
       de passe.
     </p>
   }
-  <app-login-form i18n
+  <app-login-form
     [isLoading]="auth.isLoading()"
     (submitCredentials)="handleSubmit($event)"
   ></app-login-form>
   @if (auth.error()) {
-    <p i18n role="alert">{{ auth.error() }}</p>
+    <p role="alert">{{ auth.error() }}</p>
   }
 </div>
