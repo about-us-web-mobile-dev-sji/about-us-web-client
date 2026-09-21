@@ -25,15 +25,15 @@ import { AuthFacade } from '../../../features/auth/application/auth.facade';
 export class AdminLayout {
   readonly auth = inject(AuthFacade);
   readonly navGroups = [
-    { label: 'Navigation', 
+    {
+      label: 'Navigation',
       items: [
         { icon: 'home', label: 'Accueil', route: '/s/home' },
         { icon: 'users', label: 'Utilisateurs', route: '/s/users' },
-        { icon: 'users', label: 'Ecoles', route: '/s/schools/create' },
+        { icon: 'users', label: 'Ecoles', route: '/s/schools' },
         { icon: 'history', label: 'Évènements', route: '/s/events' },
-
-        
-      ] },
+      ],
+    },
     {
       label: 'Administration',
       items: [{ icon: 'cog', label: 'Paramètres', route: '/s/settings' }],

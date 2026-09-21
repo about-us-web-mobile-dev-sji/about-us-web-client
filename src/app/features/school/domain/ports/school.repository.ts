@@ -1,12 +1,11 @@
 import { InjectionToken } from '@angular/core';
-import type { School, CreateSchoolCommand } from '../models/school.model';
-
-export const SCHOOL_REPOSITORY = new InjectionToken<SchoolRepository>('SCHOOL_REPOSITORY');
+import type { CreateSchoolCommand, School, SchoolSummary } from '../models/school.model';
 
 export interface SchoolRepository {
+  list(): Promise<SchoolSummary[]>;
   create(command: CreateSchoolCommand): Promise<School>;
-  findById(id: string): Promise<School | null>;
-  findAll(): Promise<School[]>;
   update(id: string, command: Partial<CreateSchoolCommand>): Promise<School>;
-  delete(id: string): Promise<void>;
+  toggleBlock(id: string): Promise<School>;
 }
+
+export const SCHOOL_REPOSITORY = new InjectionToken<SchoolRepository>('SCHOOL_REPOSITORY');

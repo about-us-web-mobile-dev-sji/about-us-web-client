@@ -1,29 +1,24 @@
 import { Injectable, inject } from '@angular/core';
 import { SCHOOL_REPOSITORY } from '../domain/ports/school.repository';
-import type { School, CreateSchoolCommand } from '../domain/models/school.model';
+import type { CreateSchoolCommand, School, SchoolSummary } from '../domain/models/school.model';
 
 @Injectable({ providedIn: 'root' })
 export class SchoolService {
   private readonly repository = inject(SCHOOL_REPOSITORY);
 
-  async createSchool(command: CreateSchoolCommand): Promise<School> {
-    // Ici tu peux ajouter de la logique métier supplémentaire avant d'appeler le repository
-    return await this.repository.create(command);
+  listSchools(): Promise<SchoolSummary[]> {
+    return this.repository.list();
   }
 
-  async getSchoolById(id: string): Promise<School | null> {
-    return await this.repository.findById(id);
+  createSchool(command: CreateSchoolCommand): Promise<School> {
+    return this.repository.create(command);
   }
 
-  async getAllSchools(): Promise<School[]> {
-    return await this.repository.findAll();
+  updateSchool(id: string, command: Partial<CreateSchoolCommand>): Promise<School> {
+    return this.repository.update(id, command);
   }
 
-  async updateSchool(id: string, command: Partial<CreateSchoolCommand>): Promise<School> {
-    return await this.repository.update(id, command);
-  }
-
-  async deleteSchool(id: string): Promise<void> {
-    return await this.repository.delete(id);
+  toggleBlock(id: string): Promise<School> {
+    return this.repository.toggleBlock(id);
   }
 }

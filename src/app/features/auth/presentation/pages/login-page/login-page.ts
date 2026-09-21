@@ -19,7 +19,7 @@ export class LoginPage {
     try {
       await this.auth.login(event);
     } catch {return;}
-    const destination = this.auth.isSuperAdmin() ? '/s/home' : '/home';
+    const destination = this.auth.isSuperAdmin() ? '/s/schools' : '/home';
     await this.router.navigateByUrl(destination, { replaceUrl: true });
   }
 }
