@@ -1,100 +1,151 @@
-<div class="schools-list-page">
-  <div class="page-header">
-    <div class="header-content">
-      <div class="header-text">
-        <h1 i18n class="page-title">Liste des écoles</h1>
-        <p i18n class="page-description">
-          Consultez et gérez toutes les écoles enregistrées sur la plateforme.
-        </p>
-      </div>
-      <button
-        pButton
-        type="button"
-        i18n
-        label="Nouvelle école"
-        icon="pi pi-plus"
-        (click)="navigateToCreate()"
-        class="create-button"
-      ></button>
+<div class="page">
+  <!-- En-tête de la page -->
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Tableau de bord</h1>
+      <p class="page-subtitle">Gérez les établissements scolaires.</p>
     </div>
-  </div>
+    <button
+      type="button"
+      class="btn-add"
+      (click)="openCreateDialog()"
+      [disabled]="facade.isLoading()"
+    >
+      + Ajouter une école
+    </button>
+  </header>
 
-  <div class="page-content">
-    @if (isLoading()) {
-      <div class="loading-container">
-        <p-progressSpinner strokeWidth="4" />
-        <p i18n class="loading-text">Chargement des écoles…</p>
-      </div>
-    } @else if (errorMessage()) {
-      <div class="error-container">
-        <p i18n class="error-text">{{ errorMessage() }}</p>
-        <button
-          pButton
-          type="button"
-          i18n
-          label="Réessayer"
-          icon="pi pi-refresh"
-          severity="secondary"
-          (click)="loadSchools()"
-        ></button>
-      </div>
-    } @else if (schools().length === 0) {
-      <div class="empty-container">
-        <div class="empty-icon">
-          <svg data-p-icon="building" aria-hidden="true" style="font-size: 3rem; color: var(--text-color-secondary);"></svg>
-        </div>
-        <h2 i18n class="empty-title">Aucune école enregistrée</h2>
-        <p i18n class="empty-description">
-          Commencez par ajouter votre première école à la plateforme.
-        </p>
-        <button
-          pButton
-          type="button"
-          i18n
-          label="Créer une école"
-          icon="pi pi-plus"
-          (click)="navigateToCreate()"
-        ></button>
-      </div>
+  <!-- Toast -->
+  <p-toast position="top-right"></p-toast>
+
+  <!-- Carte contenant le tableau -->
+  <section class="card">
+    <h2 class="card-title">Liste des écoles</h2>
+
+    @if (facade.isLoading()) {
+      <p class="empty-state">Chargement des écoles…</p>
+    } @else if (facade.schools().length === 0) {
+      <p class="empty-state">Aucune école enregistrée pour le moment.</p>
     } @else {
-      <div class="schools-grid">
-        @for (school of schools(); track school.id) {
-          <div class="school-card">
-            <div class="card-visual">
-              <div class="school-avatar" [attr.data-status]="school.status">
-                <span class="avatar-initials">{{ getSchoolInitial(school.name) }}</span>
-              </div>
-            </div>
-            <div class="card-content">
-              <div class="card-header">
-                <h3 class="school-name">{{ school.name }}</h3>
-                <p-tag
-                  [value]="getStatusLabel(school.status)"
-                  [severity]="getStatusSeverity(school.status)"
-                  styleClass="status-tag"
-                />
-              </div>
-              <div class="school-details">
-                <div class="detail-item">
-                  <svg data-p-icon="map-marker" aria-hidden="true"></svg>
-                  <span>{{ school.city }}, {{ school.country }}</span>
-                </div>
-                <div class="detail-item">
-                  <svg data-p-icon="envelope" aria-hidden="true"></svg>
-                  <span>{{ school.email }}</span>
-                </div>
-                <div class="detail-item">
-                  <svg data-p-icon="phone" aria-hidden="true"></svg>
-                  <span>{{ school.phone }}</span>
-                </div>
-              </div>
-              <div class="card-footer">
-                <span class="school-code">{{ school.code }}</span>
-              </div>
-            </div>
-          </div>
-        }
+      <div class="table-wrapper">
+        <table class="school-table">
+          <thead>
+            <tr>
+              <th scope="col">Nom</th>
+              <th scope="col">Ville, Pays</th>
+              <th scope="col">Email</th>
+              <th scope="col">Statut</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (school of facade.schools(); track school.id) {
+              <tr>
+                <td class="school-name">{{ school.name }}</td>
+                <td>{{ school.city }}, {{ school.country }}</td>
+                <td>{{ school.email }}</td>
+                <td>
+                  <span class="badge" [class.badge-active]="school.status === SchoolStatus.ACTIVE" [class.badge-blocked]="school.status === SchoolStatus.BLOCKED">
+                    {{ statusLabel(school.status) }}
+                  </span>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button type="button" class="btn-action" (click)="openEditDialog(school)">
+                      Modifier
+                    </button>
+                    @if (school.status === SchoolStatus.BLOCKED) {
+                      <button
+                        type="button"
+                        class="btn-action btn-unblock"
+                        (click)="toggleStatus(school)"
+                      >
+                        Débloquer
+                      </button>
+                    } @else {
+                      <button
+                        type="button"
+                        class="btn-action btn-block"
+                        (click)="toggleStatus(school)"
+                      >
+                        Bloquer
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
     }
-  </div>
+  </section>
+
+  <!-- Modal d'ajout d'une école -->
+  @if (showCreateDialog()) {
+    <div class="modal-backdrop" (click)="!isCreating() && closeCreateDialog()">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 id="modal-title">
+            {{ editingSchool() ? "Modifier l'établissement" : 'Créer un établissement' }}
+          </h2>
+          <button type="button" class="modal-close" [disabled]="isCreating()" (click)="closeCreateDialog()" aria-label="Fermer">
+            ×
+          </button>
+        </div>
+
+        <form [formGroup]="createForm" (ngSubmit)="onCreateSubmit()" novalidate>
+          <div class="form-field">
+            <label for="create-form-name">Nom *</label>
+            <input
+              id="create-form-name"
+              type="text"
+              formControlName="name"
+              placeholder="École primaire Jean Moulin"
+            />
+            @if (nameControl.invalid && nameControl.touched) {
+              <p class="field-error">
+                {{
+                  nameControl.hasError('required')
+                    ? 'Le nom est obligatoire.'
+                    : 'Le nom doit contenir au moins 3 caractères.'
+                }}
+              </p>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="create-form-city">Ville</label>
+            <input id="create-form-city" type="text" formControlName="city" placeholder="Yaoundé" />
+          </div>
+
+          <div class="form-field">
+            <label for="create-form-country">Pays</label>
+            <input id="create-form-country" type="text" formControlName="country" placeholder="Cameroun" />
+          </div>
+
+          <div class="form-field">
+            <label for="create-form-email">Email</label>
+            <input id="create-form-email" type="email" formControlName="email" placeholder="contact@ecole.fr" />
+            @if (emailControl.invalid && emailControl.touched) {
+              <p class="field-error">Renseigne une adresse email valide.</p>
+            }
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" [disabled]="isCreating()" (click)="closeCreateDialog()">
+              Annuler
+            </button>
+            <button type="submit" class="btn-submit" [disabled]="isCreating()">
+              {{
+                editingSchool()
+                  ? (isCreating() ? 'Modification…' : 'Modifier')
+                  : (isCreating() ? 'Ajout…' : 'Ajouter')
+              }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
 </div>

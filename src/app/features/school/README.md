@@ -1,122 +1,73 @@
 # Module School
 
-Ce module gère les écoles sur la plateforme.
+Ce module gère les écoles sur la plateforme (vue Super-Administrateur).
 
 ## 🔌 Configuration Backend
 
 ### URL de l'API
 
-L'URL du backend est configurée dans le fichier d'environnement :
+L'URL du backend est configurée dans `src/app/core/config/api.config.ts` (via les environnements) :
 
 ```typescript
 // src/environments/environment.ts
 export const environment = {
-  apiUrl: "http://localhost:3000"  // URL de ton backend
+  production: false,
+  apiUrl: "http://localhost:3000"
 };
 ```
 
-### Endpoints attendus
+### Contrat de l'API écoles (côté backend)
 
-Le module school attend que ton backend expose les endpoints suivants :
+| But                          | Méthode | Corps                                                                                                              |
+| ---------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------ |
+| Lister les écoles            | `GET /schools` | –                                                                                                                  |
+| Créer une école              | `POST /schools` | `{ name (obligatoire), address?, city?, postalCode?, country?, phoneNumber?, email?, website?, adminUserId? }`     |
+| Modifier une école           | `PATCH /schools/:id` | `{ name?, address?, city?, postalCode?, country?, phoneNumber?, email?, website? }` (champs absents = inchangés)  |
+| Désactiver / réactiver       | `PATCH /schools/:id/toggle-block` | vide (bascule `ACTIVE` <-> `BLOCKED`)                                                                              |
+| Changer l'administrateur     | `PATCH /schools/:schoolId/administrator` | `{ newAdminUserId }`                                                                                              |
 
-#### 1. Créer une école
-```
-POST /schools
-Content-Type: application/json
+⚠️ Limitations du backend actuel :
+- **Pas de `GET /schools/:id`** → le frontend passe le résumé de l'école via le Router `state` (ou le retrouve dans le `SchoolFacade`).
+- **`GET /schools` ne renvoie que** `[{ id, name }]` → la liste, les statistiques et le filtre par statut sont limités.
+- **Pas de suppression** (`DELETE /schools/:id` n'existe pas).
 
-Body:
+### Réponse (objet école complet, sans enveloppe)
+
+```json
 {
-  "name": "École primaire Jean Moulin",
-  "code": "ECO-2024-001",
-  "address": "12 rue de la République",
-  "city": "Paris",
-  "postalCode": "75001",
-  "country": "France",
-  "phone": "+33 1 23 45 67 89",
-  "email": "contact@ecole.fr",
-  "principalAdminId": "admin-123" // Optionnel
-}
-
-Response (201 Created):
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "name": "École primaire Jean Moulin",
-  "code": "ECO-2024-001",
-  "address": "12 rue de la République",
-  "city": "Paris",
-  "postalCode": "75001",
-  "country": "France",
-  "phone": "+33 1 23 45 67 89",
-  "email": "contact@ecole.fr",
-  "status": "PENDING",
-  "principalAdminId": "admin-123",
-  "createdAt": "2024-01-15T10:30:00Z",
-  "updatedAt": "2024-01-15T10:30:00Z"
+  "id": "uuid",
+  "name": "Institut Saint-Jean",
+  "address": null,
+  "city": "Yaoundé",
+  "postalCode": null,
+  "country": "Cameroun",
+  "phoneNumber": null,
+  "email": "contact@stjean.cm",
+  "website": null,
+  "status": "ACTIVE",
+  "adminUserId": null,
+  "createdAt": "2026-09-18T00:00:00.000Z",
+  "updatedAt": "2026-09-18T00:00:00.000Z",
+  "createdBy": "uuid"
 }
 ```
 
-#### 2. Récupérer une école par ID
-```
-GET /schools/:id
+### Statut
 
-Response (200 OK):
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "name": "École primaire Jean Moulin",
-  ...
-}
-```
+Valeurs possibles (MAJUSCULES) : `ACTIVE`, `INACTIVE`, `SUSPENDED`, `BLOCKED`.
 
-#### 3. Récupérer toutes les écoles
-```
-GET /schools
-
-Response (200 OK):
-[
-  {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "École primaire Jean Moulin",
-    ...
-  },
-  ...
-]
-```
-
-#### 4. Mettre à jour une école
-```
-PATCH /schools/:id
-Content-Type: application/json
-
-Body:
-{
-  "name": "Nouveau nom"
-}
-
-Response (200 OK):
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "name": "Nouveau nom",
-  ...
-}
-```
-
-#### 5. Supprimer une école
-```
-DELETE /schools/:id
-
-Response (204 No Content)
-```
+Le login admin est `SUPER_ADMIN`, donc `PATCH /schools/:id/toggle-block` ne fait que basculer `ACTIVE` <-> `BLOCKED`.
 
 ### Authentification
 
-Les requêtes sont envoyées avec `withCredentials: true`, ce qui signifie que ton backend doit :
-- Accepter les cookies
-- Configurer CORS pour autoriser les credentials
+Les requêtes sont envoyées avec `withCredentials: true` (cookies `access_token`). Le backend doit :
+- Accepter les cookies ou l'en-tête `Authorization: Bearer …`
+- Activer `CORS` avec `credentials: true`
 
 Exemple de configuration CORS (Node.js/Express) :
 ```javascript
 app.use(cors({
-  origin: 'http://localhost:4200', // URL de ton frontend Angular
+  origin: 'http://localhost:4200',
   credentials: true
 }));
 ```
@@ -127,97 +78,58 @@ app.use(cors({
 school/
 ├── application/          # Couche application (services, facade)
 │   ├── school.facade.ts
-│   └── school.service.ts
+│   ├── school.service.ts
+│   ├── school-membership.facade.ts
+│   └── school-membership.service.ts
 ├── domain/               # Couche domaine (modèles, ports)
 │   ├── models/
-│   │   └── school.model.ts
+│   │   ├── school.model.ts
+│   │   └── school-membership.model.ts
 │   └── ports/
-│       └── school.repository.ts
+│       ├── school.repository.ts
+│       └── school-membership.repository.ts
 ├── infrastructure/       # Couche infrastructure (adapters)
 │   ├── dto/
-│   │   └── school-response.dto.ts
 │   ├── mappers/
-│   │   └── school.mapper.ts
 │   └── repositories/
-│       └── http-school.repository.ts
+│       ├── http-school.repository.ts
+│       └── http-school-membership.repository.ts
 └── presentation/         # Couche présentation (UI)
     ├── components/
-    │   └── create-school-form/
+    │   ├── create-school-form/
+    │   └── replace-admin-form/
     └── pages/
-        └── create-school-page/
+        ├── schools-list-page/
+        ├── create-school-page/
+        ├── edit-school-page/
+        └── replace-admin-page/
 ```
 
 ## 🚀 Utilisation
 
-### 1. Configurer l'URL du backend
-
-Modifie le fichier `src/environments/environment.ts` avec l'URL de ton backend :
-
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: "http://localhost:3000" // Change selon ton backend
-};
-```
-
-Pour la production, modifie aussi `src/environments/environment.prod.ts` (s'il existe).
-
-### 2. Ajouter la route
-
-Dans `src/app/app.routes.ts`, ajoute la route :
-
-```typescript
-import { CreateSchoolPage } from './features/school/presentation/pages/create-school-page/create-school-page';
-
-export const routes: Routes = [
-  // ... autres routes
-  {
-    path: 'schools/create',
-    component: CreateSchoolPage,
-    canActivate: [authGuard(['SUPER_ADMIN'])] // Ajuste les rôles
-  }
-];
-```
-
-### 3. Lancer le frontend
-
-```bash
-npm start
-# ou
-ng serve
-```
-
-Le frontend sera accessible sur `http://localhost:4200`.
+1. Lance le backend (port `3000`).
+2. `npm start` puis ouvre `http://localhost:4200`.
+3. Connecte-toi en Super-Administrateur.
+4. Menu **Écoles** → liste des écoles, création, modification, désactivation.
 
 ## 🧪 Test de la connexion
 
-Pour tester si le frontend communique bien avec le backend :
-
-1. Lance ton backend
-2. Lance le frontend avec `npm start`
-3. Ouvre la console du navigateur (F12)
-4. Va sur la page `/schools/create`
-5. Remplis le formulaire
-6. Clique sur "Enregistrer l'école"
-7. Vérifie dans la console Network (onglet Réseau) que la requête POST est bien envoyée
+1. Connecte-toi (la connexion `POST /auth/web/login/email` pose le cookie).
+2. Va sur `/s/schools`.
+3. Ouvre la console du navigateur (F12 → Réseau) et vérifie :
+   - `GET /schools` (200, tableau `[{ id, name }]`)
+   - `PATCH /schools/:id/toggle-block` (200) lors d'une désactivation
+   - `POST /schools` (201) lors d'une création
+   - `PATCH /schools/:id` (200) lors d'une modification
 
 ## 🔧 Dépannage
 
-### CORS Error
-Si tu vois une erreur CORS, assure-toi que ton backend autorise les requêtes depuis `http://localhost:4200`.
-
-### 401 Unauthorized
-Le backend nécessite peut-être une authentification. Assure-toi d'être connecté en tant que Super-Admin.
-
-### 404 Not Found
-Vérifie que l'URL du backend est correcte et que les endpoints existent.
-
-### Network Error
-Vérifie que ton backend est bien lancé et accessible.
+- **401 Unauthorized** : connecte-toi en Super-Admin avant d'utiliser la page.
+- **403 Forbidden** : le rôle `SUPER_ADMIN` est requis pour les routes `/schools`.
+- **404 Not Found** : le backend actuel n'a pas de `GET /schools/:id` ; ouvre la page de modification depuis la liste.
 
 ## 📝 Notes
 
-- Le statut initial d'une école est `PENDING`
-- Les valeurs possibles pour `status` sont : `ACTIVE`, `INACTIVE`, `PENDING`
-- Le champ `principalAdminId` est optionnel
-- Tous les autres champs sont obligatoires
+- Le formulaire de création n'envoie que le **nom obligatoire** + les champs renseignés (les champs vides sont ignorés).
+- La modification est **partielle** : seuls les champs remplis sont envoyés au backend.
+- Les statistiques affichent uniquement le **total** car l'API ne renvoie pas le statut dans la liste.
