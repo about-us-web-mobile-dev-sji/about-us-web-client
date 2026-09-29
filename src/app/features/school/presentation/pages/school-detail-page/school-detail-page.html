@@ -51,10 +51,6 @@
           <h3 i18n="@@school-detail-general" class="section-title">Informations générales</h3>
           <dl class="detail-list">
             <div class="detail-row">
-              <dt i18n="@@school-detail-code">Code</dt>
-              <dd>{{ school()!.code }}</dd>
-            </div>
-            <div class="detail-row">
               <dt i18n="@@school-detail-city">Ville</dt>
               <dd>{{ school()!.city }}, {{ school()!.country }}</dd>
             </div>
@@ -64,16 +60,22 @@
             </div>
             <div class="detail-row">
               <dt i18n="@@school-detail-phone">Téléphone</dt>
-              <dd>{{ school()!.phone }}</dd>
+              <dd>{{ school()!.phoneNumber }}</dd>
             </div>
             <div class="detail-row">
               <dt i18n="@@school-detail-address">Adresse</dt>
               <dd>{{ school()!.address }}</dd>
             </div>
-            @if (school()!.principalAdminId) {
+            @if (school()!.website) {
+            <div class="detail-row">
+              <dt i18n="@@school-detail-website">Site web</dt>
+              <dd>{{ school()!.website }}</dd>
+            </div>
+            }
+            @if (school()!.adminUserId) {
             <div class="detail-row">
               <dt i18n="@@school-detail-admin">Administrateur principal</dt>
-              <dd>{{ school()!.principalAdminId }}</dd>
+              <dd>{{ school()!.adminUserId }}</dd>
             </div>
             }
           </dl>

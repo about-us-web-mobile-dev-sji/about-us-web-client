@@ -1,0 +1,30 @@
+<div class="page">
+  <p-toast position="top-right"></p-toast>
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Remplacer l'administrateur</h1>
+      <p class="page-subtitle">Transférer les droits d'administration de l'école.</p>
+    </div>
+    <button type="button" class="btn-back" (click)="goBackToList()">← Retour à la liste</button>
+  </header>
+
+  @if (isLoading()) {
+    <section class="card">
+      <p class="empty-state">Chargement de l'école…</p>
+    </section>
+  } @else {
+    <section class="card">
+      <div class="school-summary">
+        <h2 class="card-title">{{ schoolName }}</h2>
+        <p class="school-id">ID : {{ schoolId }}</p>
+      </div>
+
+      <app-replace-admin-form
+        [schoolId]="schoolId"
+        [isLoading]="isSubmitting()"
+        (submitReplace)="onReplace($event)"
+      ></app-replace-admin-form>
+    </section>
+  }
+</div>

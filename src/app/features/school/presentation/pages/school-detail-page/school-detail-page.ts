@@ -43,10 +43,6 @@ export class SchoolDetailPage {
 
     try {
       const school = await this.schoolFacade.getSchoolById(schoolId);
-      if (!school) {
-        this.errorMessage.set($localize`:@@school-detail-not-found:École introuvable.`);
-        return;
-      }
       this.school.set(school);
     } catch (error: any) {
       console.error('Erreur lors de la récupération de l\'école:', error);
@@ -79,7 +75,8 @@ export class SchoolDetailPage {
     const labels: Record<SchoolStatus, string> = {
       [SchoolStatus.ACTIVE]: $localize`:@@school-status-active:Active`,
       [SchoolStatus.INACTIVE]: $localize`:@@school-status-inactive:Inactive`,
-      [SchoolStatus.PENDING]: $localize`:@@school-status-pending:En attente`,
+      [SchoolStatus.SUSPENDED]: $localize`:@@school-status-suspended:Suspendue`,
+      [SchoolStatus.BLOCKED]: $localize`:@@school-status-blocked:Bloquée`,
     };
     return labels[status] || status;
   }
@@ -88,7 +85,8 @@ export class SchoolDetailPage {
     const severities: Record<SchoolStatus, 'success' | 'warn' | 'danger' | 'info'> = {
       [SchoolStatus.ACTIVE]: 'success',
       [SchoolStatus.INACTIVE]: 'danger',
-      [SchoolStatus.PENDING]: 'warn',
+      [SchoolStatus.SUSPENDED]: 'warn',
+      [SchoolStatus.BLOCKED]: 'danger',
     };
     return severities[status] || 'info';
   }

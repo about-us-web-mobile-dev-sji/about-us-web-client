@@ -1,0 +1,35 @@
+<div class="page">
+  <p-toast position="top-right"></p-toast>
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Modifier l'école</h1>
+      <p class="page-subtitle">Mettez à jour les informations de l'établissement.</p>
+    </div>
+    <button type="button" class="btn-back" (click)="goBackToList()">← Retour à la liste</button>
+  </header>
+
+  @if (isLoading()) {
+    <section class="card">
+      <p class="empty-state">Chargement de l'école…</p>
+    </section>
+  } @else if (school) {
+    <section class="card">
+      <h2 class="card-title">{{ school.name }}</h2>
+      <app-create-school-form
+        [school]="school"
+        [isLoading]="isSubmitting()"
+        [submitLabel]="'Enregistrer les modifications'"
+        [showReset]="false"
+        (submitSchool)="onUpdate($event)"
+      ></app-create-school-form>
+    </section>
+  } @else {
+    <section class="card">
+      <p class="empty-state">École introuvable.</p>
+      <div class="centered">
+        <button type="button" class="btn-back" (click)="goBackToList()">← Retour à la liste</button>
+      </div>
+    </section>
+  }
+</div>

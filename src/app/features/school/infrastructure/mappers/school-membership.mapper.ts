@@ -1,13 +1,23 @@
-import type { ReplaceAdministratorCommand, ReplaceAdministratorResult } from '../../domain/models/school-membership.model';
-import type { ReplaceAdministratorRequestDto, ReplaceAdministratorResponseDto } from '../dto/school-membership-response.dto';
+import type {
+  ReplaceAdministratorCommand,
+  ReplaceAdministratorResult,
+} from '../../domain/models/school-membership.model';
+import type {
+  ReplaceAdministratorRequestDto,
+  ReplaceAdministratorResponseDto,
+} from '../dto/school-membership-response.dto';
 
-export function mapReplaceAdministratorRequest(command: ReplaceAdministratorCommand): ReplaceAdministratorRequestDto {
+export function mapReplaceAdministratorRequest(
+  command: ReplaceAdministratorCommand,
+): ReplaceAdministratorRequestDto {
   return {
     newAdminUserId: command.newAdminUserId,
   };
 }
 
-export function mapReplaceAdministratorResponse(dto: ReplaceAdministratorResponseDto): ReplaceAdministratorResult {
+export function mapReplaceAdministratorResponse(
+  dto: ReplaceAdministratorResponseDto,
+): ReplaceAdministratorResult {
   return {
     schoolId: dto.schoolId,
     previousAdminUserId: dto.previousAdminUserId,

@@ -503,6 +503,10 @@
         <source>Adresse</source>
         <target>Address</target>
       </trans-unit>
+      <trans-unit id="school-detail-website" datatype="html">
+        <source>Site web</source>
+        <target>Website</target>
+      </trans-unit>
       <trans-unit id="school-detail-admin" datatype="html">
         <source>Administrateur principal</source>
         <target>Principal administrator</target>
@@ -527,9 +531,13 @@
         <source>Inactive</source>
         <target>Inactive</target>
       </trans-unit>
-      <trans-unit id="school-status-pending" datatype="html">
-        <source>En attente</source>
-        <target>Pending</target>
+      <trans-unit id="school-status-suspended" datatype="html">
+        <source>Suspendue</source>
+        <target>Suspended</target>
+      </trans-unit>
+      <trans-unit id="school-status-blocked" datatype="html">
+        <source>Bloquée</source>
+        <target>Blocked</target>
       </trans-unit>
 
       <!-- School spaces (OrganizationChart) -->

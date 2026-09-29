@@ -8,7 +8,7 @@
   @if (eventLogsFacade.isLoading()) {
     <p i18n="@@event-log-loading" class="empty-state">Chargement du détail...</p>
   } @else if (eventLogsFacade.error(); as error) {
-    <p i18n class="error" role="alert">{{ error }}</p>
+    <p class="error" role="alert">{{ error }}</p>
   } @else if (log) {
     <dl class="details">
       <div><dt i18n="@@event-log-id">Identifiant</dt><dd>{{ log.id }}</dd></div>
