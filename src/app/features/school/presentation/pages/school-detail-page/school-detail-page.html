@@ -1,0 +1,103 @@
+<div class="school-detail-page">
+  <div class="page-header">
+    <p-button
+      type="button"
+      i18n-label="@@school-detail-back"
+      label="Retour à la liste"
+      icon="pi pi-arrow-left"
+      (onClick)="goBack()"
+      class="back-button"
+    />
+    <h1 class="page-title">{{ school()?.name }}</h1>
+  </div>
+
+  <div class="page-content">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <p-progress-spinner strokeWidth="4" />
+        <p i18n="@@school-detail-loading" class="loading-text">Chargement des détails…</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-container">
+        <p class="error-text">{{ errorMessage() }}</p>
+        <p-button
+          type="button"
+          i18n-label="@@school-detail-retry"
+          label="Réessayer"
+          icon="pi pi-refresh"
+          severity="secondary"
+          (onClick)="loadSchoolDetails(school()?.id || '')"
+        />
+      </div>
+    } @else if (school()) {
+      <div class="school-detail-card">
+        <div class="detail-header">
+          <div class="school-avatar-large">
+            <span class="avatar-initials-large">
+              {{ getSchoolInitial(school()!.name) }}
+            </span>
+          </div>
+          <div class="school-info">
+            <h2 class="school-name-detail">{{ school()!.name }}</h2>
+            <p-tag
+              [value]="getStatusLabel(school()!.status)"
+              [severity]="getStatusSeverity(school()!.status)"
+              styleClass="status-tag-detail"
+            />
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3 i18n="@@school-detail-general" class="section-title">Informations générales</h3>
+          <dl class="detail-list">
+            <div class="detail-row">
+              <dt i18n="@@school-detail-code">Code</dt>
+              <dd>{{ school()!.code }}</dd>
+            </div>
+            <div class="detail-row">
+              <dt i18n="@@school-detail-city">Ville</dt>
+              <dd>{{ school()!.city }}, {{ school()!.country }}</dd>
+            </div>
+            <div class="detail-row">
+              <dt i18n="@@school-detail-email">Email</dt>
+              <dd>{{ school()!.email }}</dd>
+            </div>
+            <div class="detail-row">
+              <dt i18n="@@school-detail-phone">Téléphone</dt>
+              <dd>{{ school()!.phone }}</dd>
+            </div>
+            <div class="detail-row">
+              <dt i18n="@@school-detail-address">Adresse</dt>
+              <dd>{{ school()!.address }}</dd>
+            </div>
+            @if (school()!.principalAdminId) {
+            <div class="detail-row">
+              <dt i18n="@@school-detail-admin">Administrateur principal</dt>
+              <dd>{{ school()!.principalAdminId }}</dd>
+            </div>
+            }
+          </dl>
+        </div>
+
+        <div class="detail-section">
+          <h3 i18n="@@school-detail-stats" class="section-title">Statistiques</h3>
+          <dl class="detail-list">
+            <div class="detail-row">
+              <dt i18n="@@school-detail-created">Date de création</dt>
+              <dd>{{ school()!.createdAt | date:'short' }}</dd>
+            </div>
+            <div class="detail-row">
+              <dt i18n="@@school-detail-updated">Dernière mise à jour</dt>
+              <dd>{{ school()!.updatedAt | date:'short' }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <app-school-spaces-chart
+        [schoolId]="school()!.id"
+        [schoolName]="school()!.name"
+      />
+    }
+  </div>
+</div>

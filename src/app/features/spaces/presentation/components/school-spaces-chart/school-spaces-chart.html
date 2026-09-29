@@ -1,0 +1,67 @@
+<section class="school-spaces-chart">
+  <div class="section-header">
+    <h3 i18n="@@spaces-org-title" class="section-title">Organisation des espaces</h3>
+    <p-button
+      type="button"
+      i18n-label="@@spaces-refresh"
+      label="Actualiser"
+      icon="pi pi-refresh"
+      severity="secondary"
+      [loading]="isLoading()"
+      (onClick)="loadTree(schoolId())"
+    />
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <p-progress-spinner strokeWidth="4" />
+      <p i18n="@@spaces-loading" class="loading-text">Chargement de l'organigramme…</p>
+    </div>
+  } @else if (errorMessage()) {
+    <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
+  } @else if (orgChartNodes().length === 0) {
+    <div class="empty-state">
+      <p i18n="@@spaces-empty" class="empty-text">Aucun espace n'est configuré pour cette école.</p>
+      <p-button
+        type="button"
+        i18n-label="@@spaces-ensure-root"
+        label="Initialiser l'espace racine"
+        icon="pi pi-sitemap"
+        [loading]="isEnsuringRoot()"
+        (onClick)="ensureRoot()"
+      />
+    </div>
+  } @else {
+    <div class="chart-scroll">
+      <p-organization-chart
+        [value]="orgChartNodes()"
+        [collapsible]="true"
+        selectionMode="single"
+        [gap]="[24, 32]"
+      >
+        <ng-template #node let-node>
+          @if (node.data; as space) {
+            <div class="space-node-card">
+              <div class="space-node-title">{{ space.name }}</div>
+              @if (space.description) {
+                <p class="space-node-description">{{ space.description }}</p>
+              }
+              <div class="space-node-meta">
+                @if (isSchoolRoot(space)) {
+                  <p-tag i18n-value="@@spaces-root-tag" value="Racine" severity="info" />
+                }
+                <p-tag
+                  [value]="getStatusLabel(space.status)"
+                  [severity]="getStatusSeverity(space.status)"
+                />
+                @if (getMemberLabel(space); as memberLabel) {
+                  <span class="member-label">{{ memberLabel }}</span>
+                }
+              </div>
+            </div>
+          }
+        </ng-template>
+      </p-organization-chart>
+    </div>
+  }
+</section>

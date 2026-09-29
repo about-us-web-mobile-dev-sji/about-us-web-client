@@ -15,6 +15,7 @@ import { API_BASE_URL } from './core/config/api.config';
 import { environment } from '../environments/environment';
 import { USER_REPOSITORY_PROVIDER } from './features/users/infrastructure/repositories/http-user.repository';
 import { SCHOOL_REPOSITORY_PROVIDER } from './features/school/infrastructure/repositories/http-school.repository';
+import { SPACE_REPOSITORY_PROVIDER } from './features/spaces/infrastructure/repositories/http-space.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -30,6 +31,7 @@ export const appConfig: ApplicationConfig = {
     AUTH_REPOSITORY_PROVIDER,
     USER_REPOSITORY_PROVIDER,
     SCHOOL_REPOSITORY_PROVIDER,
+    SPACE_REPOSITORY_PROVIDER,
     { provide: API_BASE_URL, useValue: environment.apiUrl },
   ],
 };

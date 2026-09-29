@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonDirective } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 
 @Component({
   imports: [
     ReactiveFormsModule,
-    ButtonDirective,
+    ButtonModule,
     InputTextModule,
     MessageModule,
   ],

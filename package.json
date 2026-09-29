@@ -7,7 +7,11 @@
     "prestart": "npm run generate-env",
     "prebuild": "npm run generate-env",
     "start": "ng serve",
+    "start:fr": "ng serve --configuration=fr-CA",
+    "start:en": "ng serve --configuration=en-US",
     "build": "ng build",
+    "build:i18n": "ng build --configuration=production",
+    "extract-i18n": "ng extract-i18n --output-path src/locale",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

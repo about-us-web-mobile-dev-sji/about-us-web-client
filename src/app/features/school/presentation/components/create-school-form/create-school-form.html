@@ -222,21 +222,20 @@
 
   <!-- Actions -->
   <div class="form-actions">
-    <button
-      pButton
+    <p-button
       type="button"
       severity="secondary"
-      (click)="onReset()"
+      (onClick)="onReset()"
       [disabled]="isLoading"
+      label="Réinitialiser"
       class="reset-button"
-    >
-      Réinitialiser
-    </button>
-    <button pButton type="submit" [disabled]="isLoading" class="submit-button">
-      @if (isLoading) {
-        <svg data-p-icon="spinner" class="loading-spinner" aria-hidden="true"></svg>
-      }
-      <span>{{ isLoading ? 'Enregistrement…' : 'Enregistrer l\'école' }}</span>
-    </button>
+    />
+    <p-button
+      type="submit"
+      [disabled]="isLoading"
+      [label]="isLoading ? 'Enregistrement…' : 'Enregistrer l\'école'"
+      [icon]="isLoading ? 'pi pi-spin pi-spinner' : undefined"
+      class="submit-button"
+    />
   </div>
 </form>

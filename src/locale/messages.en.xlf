@@ -457,6 +457,122 @@
         <source>Ouvrir ou fermer le menu administrateur</source>
         <target>Open or close administrator menu</target>
       </trans-unit>
+
+      <!-- School detail page -->
+      <trans-unit id="school-detail-back" datatype="html">
+        <source>Retour à la liste</source>
+        <target>Back to list</target>
+      </trans-unit>
+      <trans-unit id="school-detail-loading" datatype="html">
+        <source>Chargement des détails…</source>
+        <target>Loading details…</target>
+      </trans-unit>
+      <trans-unit id="school-detail-retry" datatype="html">
+        <source>Réessayer</source>
+        <target>Retry</target>
+      </trans-unit>
+      <trans-unit id="school-detail-not-found" datatype="html">
+        <source>École introuvable.</source>
+        <target>School not found.</target>
+      </trans-unit>
+      <trans-unit id="school-detail-load-error" datatype="html">
+        <source>Impossible de charger les détails de l'école.</source>
+        <target>Unable to load school details.</target>
+      </trans-unit>
+      <trans-unit id="school-detail-general" datatype="html">
+        <source>Informations générales</source>
+        <target>General information</target>
+      </trans-unit>
+      <trans-unit id="school-detail-code" datatype="html">
+        <source>Code</source>
+        <target>Code</target>
+      </trans-unit>
+      <trans-unit id="school-detail-city" datatype="html">
+        <source>Ville</source>
+        <target>City</target>
+      </trans-unit>
+      <trans-unit id="school-detail-email" datatype="html">
+        <source>Email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="school-detail-phone" datatype="html">
+        <source>Téléphone</source>
+        <target>Phone</target>
+      </trans-unit>
+      <trans-unit id="school-detail-address" datatype="html">
+        <source>Adresse</source>
+        <target>Address</target>
+      </trans-unit>
+      <trans-unit id="school-detail-admin" datatype="html">
+        <source>Administrateur principal</source>
+        <target>Principal administrator</target>
+      </trans-unit>
+      <trans-unit id="school-detail-stats" datatype="html">
+        <source>Statistiques</source>
+        <target>Statistics</target>
+      </trans-unit>
+      <trans-unit id="school-detail-created" datatype="html">
+        <source>Date de création</source>
+        <target>Created at</target>
+      </trans-unit>
+      <trans-unit id="school-detail-updated" datatype="html">
+        <source>Dernière mise à jour</source>
+        <target>Last updated</target>
+      </trans-unit>
+      <trans-unit id="school-status-active" datatype="html">
+        <source>Active</source>
+        <target>Active</target>
+      </trans-unit>
+      <trans-unit id="school-status-inactive" datatype="html">
+        <source>Inactive</source>
+        <target>Inactive</target>
+      </trans-unit>
+      <trans-unit id="school-status-pending" datatype="html">
+        <source>En attente</source>
+        <target>Pending</target>
+      </trans-unit>
+
+      <!-- School spaces (OrganizationChart) -->
+      <trans-unit id="spaces-org-title" datatype="html">
+        <source>Organisation des espaces</source>
+        <target>Space organization</target>
+      </trans-unit>
+      <trans-unit id="spaces-refresh" datatype="html">
+        <source>Actualiser</source>
+        <target>Refresh</target>
+      </trans-unit>
+      <trans-unit id="spaces-loading" datatype="html">
+        <source>Chargement de l'organigramme…</source>
+        <target>Loading organization chart…</target>
+      </trans-unit>
+      <trans-unit id="spaces-empty" datatype="html">
+        <source>Aucun espace n'est configuré pour cette école.</source>
+        <target>No spaces are configured for this school.</target>
+      </trans-unit>
+      <trans-unit id="spaces-ensure-root" datatype="html">
+        <source>Initialiser l'espace racine</source>
+        <target>Initialize root space</target>
+      </trans-unit>
+      <trans-unit id="spaces-root-tag" datatype="html">
+        <source>Racine</source>
+        <target>Root</target>
+      </trans-unit>
+      <trans-unit id="spaces-load-error" datatype="html">
+        <source>Impossible de charger l'arborescence des espaces.</source>
+        <target>Unable to load the space tree.</target>
+      </trans-unit>
+      <trans-unit id="spaces-ensure-root-error" datatype="html">
+        <source>Impossible d'initialiser l'espace racine.</source>
+        <target>Unable to initialize the root space.</target>
+      </trans-unit>
+      <trans-unit id="spaces-status-archived" datatype="html">
+        <source>Archivé</source>
+        <target>Archived</target>
+      </trans-unit>
+      <trans-unit id="spaces-status-active" datatype="html">
+        <source>Actif</source>
+        <target>Active</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

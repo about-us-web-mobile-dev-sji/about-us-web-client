@@ -1,18 +1,16 @@
 import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonDirective } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
-import { Spinner } from '@primeicons/angular/spinner';
 import type { CreateSchoolCommand } from '../../../domain/models/school.model';
 
 @Component({
   imports: [
     ReactiveFormsModule,
-    ButtonDirective,
+    ButtonModule,
     InputTextModule,
     MessageModule,
-    Spinner,
   ],
   selector: 'app-create-school-form',
   styleUrl: './create-school-form.css',

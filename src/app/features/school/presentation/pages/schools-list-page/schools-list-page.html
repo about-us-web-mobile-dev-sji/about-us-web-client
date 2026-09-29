@@ -2,59 +2,53 @@
   <div class="page-header">
     <div class="header-content">
       <div class="header-text">
-        <h1 i18n class="page-title">Liste des écoles</h1>
-        <p i18n class="page-description">
+        <h1 i18n="@@schools-list-title" class="page-title">Liste des écoles</h1>
+        <p i18n="@@schools-list-description" class="page-description">
           Consultez et gérez toutes les écoles enregistrées sur la plateforme.
         </p>
       </div>
-      <button
-        pButton
+      <p-button
         type="button"
-        i18n
         label="Nouvelle école"
         icon="pi pi-plus"
-        (click)="navigateToCreate()"
+        (onClick)="navigateToCreate()"
         class="create-button"
-      ></button>
+      />
     </div>
   </div>
 
   <div class="page-content">
     @if (isLoading()) {
       <div class="loading-container">
-        <p-progressSpinner strokeWidth="4" />
-        <p i18n class="loading-text">Chargement des écoles…</p>
+        <p-progress-spinner strokeWidth="4" />
+        <p i18n="@@schools-list-loading" class="loading-text">Chargement des écoles…</p>
       </div>
     } @else if (errorMessage()) {
       <div class="error-container">
         <p i18n class="error-text">{{ errorMessage() }}</p>
-        <button
-          pButton
+        <p-button
           type="button"
-          i18n
           label="Réessayer"
           icon="pi pi-refresh"
           severity="secondary"
-          (click)="loadSchools()"
-        ></button>
+          (onClick)="loadSchools()"
+        />
       </div>
     } @else if (schools().length === 0) {
       <div class="empty-container">
         <div class="empty-icon">
           <svg data-p-icon="building" aria-hidden="true" style="font-size: 3rem; color: var(--text-color-secondary);"></svg>
         </div>
-        <h2 i18n class="empty-title">Aucune école enregistrée</h2>
-        <p i18n class="empty-description">
+        <h2 i18n="@@schools-list-empty-title" class="empty-title">Aucune école enregistrée</h2>
+        <p i18n="@@schools-list-empty-description" class="empty-description">
           Commencez par ajouter votre première école à la plateforme.
         </p>
-        <button
-          pButton
+        <p-button
           type="button"
-          i18n
           label="Créer une école"
           icon="pi pi-plus"
-          (click)="navigateToCreate()"
-        ></button>
+          (onClick)="navigateToCreate()"
+        />
       </div>
     } @else {
       <div class="schools-grid">
@@ -90,6 +84,14 @@
               </div>
               <div class="card-footer">
                 <span class="school-code">{{ school.code }}</span>
+                <p-button
+                  type="button"
+                  label="Voir les détails"
+                  icon="pi pi-eye"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="viewSchoolDetails(school.id)"
+                />
               </div>
             </div>
           </div>

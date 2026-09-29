@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { ButtonDirective } from 'primeng/button';
+import { Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SchoolFacade } from '../../../application/school.facade';
@@ -8,7 +8,7 @@ import type { School } from '../../../domain/models/school.model';
 import { SchoolStatus } from '../../../domain/models/school.model';
 
 @Component({
-  imports: [RouterLink, ButtonDirective, TagModule, ProgressSpinnerModule],
+  imports: [ButtonModule, TagModule, ProgressSpinnerModule],
   selector: 'app-schools-list-page',
   styleUrl: './schools-list-page.css',
   templateUrl: './schools-list-page.html',
@@ -71,5 +71,9 @@ export class SchoolsListPage implements OnInit {
 
   navigateToCreate(): void {
     this.router.navigate(['/s/schools/create']);
+  }
+
+  viewSchoolDetails(schoolId: string): void {
+    this.router.navigate(['/s/schools', schoolId]);
   }
 }

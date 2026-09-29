@@ -1,0 +1,176 @@
+.school-detail-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background: var(--surface-ground);
+}
+
+.page-header {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.back-button {
+  white-space: nowrap;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+  text-align: center;
+}
+
+.error-text {
+  color: var(--color-danger);
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.school-detail-card {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--surface-card);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detail-header {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.school-avatar-large {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.avatar-initials-large {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.school-info {
+  text-align: center;
+}
+
+.school-name-detail {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.status-tag-detail {
+  margin-top: 0.5rem;
+  justify-self: center;
+}
+
+.detail-section {
+  padding: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.detail-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 0.5rem;
+  align-items: start;
+  font-size: 0.875rem;
+}
+
+.detail-row dt {
+  color: var(--text-color-secondary);
+  font-weight: 500;
+}
+
+.detail-row dd {
+  margin: 0;
+  color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+  .school-detail-page {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .detail-header {
+    padding: 1rem;
+  }
+
+  .school-avatar-large {
+    width: 64px;
+    height: 64px;
+  }
+
+  .avatar-initials-large {
+    font-size: 1.25rem;
+  }
+
+  .detail-list {
+    gap: 0.5rem;
+  }
+
+  .detail-row {
+    grid-template-columns: 100px 1fr;
+    font-size: 0.75rem;
+  }
+}
