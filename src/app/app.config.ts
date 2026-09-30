@@ -1,7 +1,9 @@
 import { AppTheme } from './core/config/app-theme';
 import { providePrimeNG } from 'primeng/config';
 import { AuthStore } from './features/auth/application/auth.store';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { MessageService } from 'primeng/api';
+import { errorInterceptor } from './core/http/error-interceptor/error.interceptor';
 import {
   ApplicationConfig,
   inject,
@@ -20,7 +22,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([errorInterceptor])),
+    MessageService,
     providePrimeNG({
       theme: { preset: AppTheme, options: { darkModeSelector: false } },
       license:

@@ -5,13 +5,14 @@ import {
 } from '../../domain/models/password-change.model';
 import { AUTH_REPOSITORY } from '../../application/auth.tokens';
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import type { AuthRepository, LoginCommand } from '../../domain/ports/auth.repository';
 import { LoginResponse } from '../../domain/models/authenticated-user.model';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { mapLoginResponse } from '../mappers/auth.mapper';
 import { API_BASE_URL } from '../../../../core/config/api.config';
+import { SKIP_ERROR_TOAST } from '../../../../core/http/error-interceptor/skip-error-toast';
 
 @Injectable({ providedIn: 'root' })
 export class HttpAuthRepository implements AuthRepository {
@@ -22,6 +23,7 @@ export class HttpAuthRepository implements AuthRepository {
     const dto = await firstValueFrom(
       this.http.post<LoginResponseDto>(`${this.baseUrl}/auth/web/login/email`, command, {
         withCredentials: true,
+        context: new HttpContext().set(SKIP_ERROR_TOAST, true),
       }),
     );
     return mapLoginResponse(dto);
@@ -32,7 +34,7 @@ export class HttpAuthRepository implements AuthRepository {
         this.http.post<LoginResponseDto>(
           `${this.baseUrl}/auth/web/refresh`,
           {},
-          { withCredentials: true },
+          { withCredentials: true, context: new HttpContext().set(SKIP_ERROR_TOAST, true) },
         ),
       );
       return mapLoginResponse(dto);
@@ -56,7 +58,7 @@ export class HttpAuthRepository implements AuthRepository {
             currentPassword: command.currentPassword,
             newPassword: command.newPassword,
           },
-          { withCredentials: true },
+          { withCredentials: true, context: new HttpContext().set(SKIP_ERROR_TOAST, true) },
         ),
       );
     } catch (error) {

@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from '../../../../core/config/api.config';
+import { SKIP_ERROR_TOAST } from '../../../../core/http/error-interceptor/skip-error-toast';
 import { SCHOOL_REPOSITORY } from '../../domain/ports/school.repository';
 import type { SchoolRepository } from '../../domain/ports/school.repository';
 import type { School, CreateSchoolCommand } from '../../domain/models/school.model';
@@ -28,6 +29,7 @@ export class HttpSchoolRepository implements SchoolRepository {
       const dto = await firstValueFrom(
         this.http.get<SchoolResponseDto>(`${this.baseUrl}/schools/${id}`, {
           withCredentials: true,
+          context: new HttpContext().set(SKIP_ERROR_TOAST, true),
         }),
       );
       return mapSchoolResponse(dto);

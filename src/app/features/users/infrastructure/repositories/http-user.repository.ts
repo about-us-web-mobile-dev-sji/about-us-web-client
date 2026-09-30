@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from '../../../../core/config/api.config';
+import { SKIP_ERROR_TOAST } from '../../../../core/http/error-interceptor/skip-error-toast';
 import { USER_REPOSITORY, type UserRepository } from '../../domain/ports/user.repository';
 import type { ListUsersQuery, UpdateUserStatusCommand } from '../../domain/models/user.model';
 import type { ListUsersResponseDto, UpdateUserStatusResponseDto } from '../dto/user.dto';
@@ -27,6 +28,7 @@ export class HttpUserRepository implements UserRepository {
       this.http.get<ListUsersResponseDto>(`${this.baseUrl}/users`, {
         params,
         withCredentials: true,
+        context: new HttpContext().set(SKIP_ERROR_TOAST, true),
       }),
     );
     return mapListUsersResponse(dto);

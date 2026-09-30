@@ -1,16 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageModule } from 'primeng/message';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { NotificationService } from '../../../../../shared/components/notification/notification.service';
 import { ReplaceAdminForm } from '../../components/replace-admin-form/replace-admin-form';
 import { SchoolMembershipFacade } from '../../../application/school-membership.facade';
 import { SchoolFacade } from '../../../application/school.facade';
 import type { School } from '../../../domain/models/school.model';
 
 @Component({
-  imports: [ReplaceAdminForm, MessageModule, ToastModule],
-  providers: [MessageService],
+  imports: [ReplaceAdminForm, MessageModule],
   selector: 'app-replace-admin-page',
   styleUrl: './replace-admin-page.css',
   templateUrl: './replace-admin-page.html',
@@ -18,7 +16,7 @@ import type { School } from '../../../domain/models/school.model';
 export class ReplaceAdminPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly messageService = inject(MessageService);
+  private readonly notifications = inject(NotificationService);
   private readonly membershipFacade = inject(SchoolMembershipFacade);
   private readonly schoolFacade = inject(SchoolFacade);
 
@@ -37,13 +35,8 @@ export class ReplaceAdminPage {
     try {
       const school = await this.schoolFacade.getSchoolById(schoolId);
       this.school.set(school);
-    } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Impossible de charger les informations de l\'école.',
-        life: 5000,
-      });
+    } catch (error) {
+      console.error('Erreur lors du chargement de l\'école:', error);
     } finally {
       this.isSchoolLoading.set(false);
     }
@@ -60,37 +53,17 @@ export class ReplaceAdminPage {
         newAdminUserId,
       });
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Remplacement effectué',
-        detail: `L'administrateur a été remplacé avec succès. L'ancien administrateur a été rétrogradé.`,
-        life: 5000,
-      });
+      this.notifications.success(
+        'Remplacement effectué',
+        `L'administrateur a été remplacé avec succès. L'ancien administrateur a été rétrogradé.`,
+      );
 
       setTimeout(() => {
         this.router.navigate(['/s/schools']);
       }, 2000);
-    } catch (error: any) {
+    } catch (error) {
+      // Le toast d'erreur est affiché par errorInterceptor.
       console.error('Erreur lors du remplacement:', error);
-
-      let errorMessage = 'Une erreur est survenue lors du remplacement.';
-
-      if (error?.status === 400) {
-        errorMessage = 'Les données fournies sont invalides.';
-      } else if (error?.status === 404) {
-        errorMessage = 'L\'école ou l\'utilisateur spécifié n\'existe pas.';
-      } else if (error?.status === 409) {
-        errorMessage = 'L\'utilisateur spécifié est déjà administrateur de cette école.';
-      } else if (error?.status === 401 || error?.status === 403) {
-        errorMessage = 'Vous n\'avez pas les permissions nécessaires.';
-      }
-
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: errorMessage,
-        life: 5000,
-      });
     } finally {
       this.isLoading.set(false);
     }
