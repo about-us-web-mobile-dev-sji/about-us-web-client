@@ -11,6 +11,7 @@ import type {
   DeleteSpaceCommand,
   EnsureSchoolRootCommand,
   EnsureSchoolRootResult,
+  MoveSpaceCommand,
   RestoreSpaceCommand,
   Space,
   SpaceEffectiveManagers,
@@ -118,6 +119,16 @@ export class HttpSpaceRepository implements SpaceRepository {
       this.http.delete(`${this.baseUrl}/spaces/${command.spaceId}${recursive}`, {
         withCredentials: true,
       }),
+    );
+  }
+
+  async moveSpace(command: MoveSpaceCommand): Promise<void> {
+    await firstValueFrom(
+      this.http.post(
+        `${this.baseUrl}/spaces/${command.spaceId}/move`,
+        { newParentId: command.newParentId },
+        { withCredentials: true },
+      ),
     );
   }
 }

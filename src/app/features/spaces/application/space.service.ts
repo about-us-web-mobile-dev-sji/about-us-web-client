@@ -7,6 +7,7 @@ import type {
   DeleteSpaceCommand,
   EnsureSchoolRootCommand,
   EnsureSchoolRootResult,
+  MoveSpaceCommand,
   RestoreSpaceCommand,
   Space,
   SpaceEffectiveManagers,
@@ -51,5 +52,9 @@ export class SpaceService {
 
   deleteSpace(command: DeleteSpaceCommand): Promise<void> {
     return this.repository.deleteSpace(command);
+  }
+
+  moveSpace(command: MoveSpaceCommand): Promise<void> {
+    return this.repository.moveSpace(command);
   }
 }

@@ -10,6 +10,7 @@ import type {
   DeleteSpaceCommand,
   EnsureSchoolRootCommand,
   EnsureSchoolRootResult,
+  MoveSpaceCommand,
   RestoreSpaceCommand,
   Space,
   SpaceEffectiveManagers,
@@ -104,6 +105,15 @@ export class SpaceFacade {
       await this.service.deleteSpace(command);
     } catch (error) {
       console.error("Erreur lors de la suppression de l'espace:", error);
+      throw error;
+    }
+  }
+
+  async moveSpace(command: MoveSpaceCommand): Promise<void> {
+    try {
+      await this.service.moveSpace(command);
+    } catch (error) {
+      console.error("Erreur lors du déplacement de l'espace:", error);
       throw error;
     }
   }

@@ -94,6 +94,13 @@
   cursor: not-allowed;
 }
 
+.move-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-color-secondary, #64748b);
+}
+
 .create-panel {
   display: flex;
   flex-direction: column;

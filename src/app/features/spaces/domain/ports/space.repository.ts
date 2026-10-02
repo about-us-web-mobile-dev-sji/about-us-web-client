@@ -6,6 +6,7 @@ import type {
   DeleteSpaceCommand,
   EnsureSchoolRootCommand,
   EnsureSchoolRootResult,
+  MoveSpaceCommand,
   RestoreSpaceCommand,
   Space,
   SpaceEffectiveManagers,
@@ -22,6 +23,7 @@ export interface SpaceRepository {
   archiveSpace(command: ArchiveSpaceCommand): Promise<void>;
   restoreSpace(command: RestoreSpaceCommand): Promise<void>;
   deleteSpace(command: DeleteSpaceCommand): Promise<void>;
+  moveSpace(command: MoveSpaceCommand): Promise<void>;
 }
 
 export const SPACE_REPOSITORY = new InjectionToken<SpaceRepository>('SPACE_REPOSITORY');

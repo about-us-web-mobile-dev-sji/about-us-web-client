@@ -22,7 +22,7 @@
       <p-progress-spinner strokeWidth="4" />
       <p i18n="@@spaces-loading" class="loading-text">Chargement de l'organigramme…</p>
     </div>
-  } @else if (errorMessage() && !parentForCreate() && !spaceForAssignAdmin()) {
+  } @else if (errorMessage() && !parentForCreate() && !spaceForAssignAdmin() && !spaceForMove()) {
     <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
   } @else if (orgChartNodes().length === 0) {
     <div class="empty-state">
@@ -145,6 +145,18 @@
                     <i class="pi pi-times"></i>
                   </button>
                 }
+                @if (canMove(space)) {
+                  <button
+                    type="button"
+                    class="node-action-btn"
+                    title="Déplacer le sous-arbre"
+                    i18n-title="@@spaces-move-title"
+                    [disabled]="isMoving()"
+                    (click)="openMove(space)"
+                  >
+                    <i class="pi pi-arrows-alt"></i>
+                  </button>
+                }
                 @if (space.status === 'ACTIVE' && !space.deletedAt) {
                   <button
                     type="button"
@@ -186,6 +198,80 @@
           }
         </ng-template>
       </p-organization-chart>
+    </div>
+  }
+
+  @if (spaceForMove(); as moving) {
+    <div class="modal-backdrop" (click)="!isMoving() && cancelMove()">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="move-space-modal-title"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="modal-header">
+          <h2 id="move-space-modal-title" class="create-title">
+            <span i18n="@@spaces-move-modal-title">Déplacer</span>
+            « {{ moving.name }} »
+          </h2>
+          <button
+            type="button"
+            class="modal-close"
+            [disabled]="isMoving()"
+            (click)="cancelMove()"
+            aria-label="Fermer"
+          >
+            ×
+          </button>
+        </div>
+
+        <p i18n="@@spaces-move-hint" class="move-hint">
+          Choisissez un nouveau parent dans la même école. La racine, l'espace lui-même et ses
+          descendants sont exclus.
+        </p>
+
+        @if (errorMessage()) {
+          <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
+        }
+
+        <label class="field">
+          <span i18n="@@spaces-move-parent-label">Nouveau parent</span>
+          <p-select
+            [options]="moveParentOptions()"
+            optionLabel="label"
+            optionValue="id"
+            [ngModel]="newParentId()"
+            (ngModelChange)="newParentId.set($event)"
+            [filter]="true"
+            filterBy="label"
+            appendTo="body"
+            styleClass="w-full"
+            i18n-placeholder="@@spaces-move-parent-placeholder"
+            placeholder="Sélectionner un espace"
+          />
+        </label>
+
+        <div class="create-actions">
+          <p-button
+            type="button"
+            i18n-label="@@spaces-move-cancel"
+            label="Annuler"
+            severity="secondary"
+            [disabled]="isMoving()"
+            (onClick)="cancelMove()"
+          />
+          <p-button
+            type="button"
+            i18n-label="@@spaces-move-submit"
+            label="Déplacer"
+            icon="pi pi-arrows-alt"
+            [loading]="isMoving()"
+            [disabled]="!newParentId()"
+            (onClick)="submitMove()"
+          />
+        </div>
+      </div>
     </div>
   }
 

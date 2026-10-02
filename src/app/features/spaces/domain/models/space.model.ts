@@ -61,6 +61,11 @@ export interface DeleteSpaceCommand {
   recursive?: boolean;
 }
 
+export interface MoveSpaceCommand {
+  spaceId: string;
+  newParentId: string;
+}
+
 export interface EnsureSchoolRootResult {
   id: string;
   schoolId: string;

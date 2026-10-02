@@ -61,7 +61,24 @@ export class SchoolSpacesChart {
   spaceForAssignAdmin = signal<Space | null>(null);
   assignAdminUserId = signal<string | null>(null);
 
+  spaceForMove = signal<Space | null>(null);
+  newParentId = signal<string | null>(null);
+  isMoving = signal(false);
+
   orgChartNodes = computed(() => mapSpacesToOrgChartNodes(this.spaces()));
+
+  moveParentOptions = computed(() => {
+    const moving = this.spaceForMove();
+    if (!moving) {
+      return [] as { id: string; label: string }[];
+    }
+    return this.spaces()
+      .filter((candidate) => this.isValidMoveTarget(moving, candidate))
+      .map((candidate) => ({
+        id: candidate.id,
+        label: `${'— '.repeat(Math.min(candidate.depth, 4))}${candidate.name}`,
+      }));
+  });
 
   constructor() {
     effect(() => {
@@ -120,6 +137,7 @@ export class SchoolSpacesChart {
       return;
     }
     this.spaceForAssignAdmin.set(null);
+    this.spaceForMove.set(null);
     this.parentForCreate.set(space);
     this.newSpaceName.set('');
     this.newSpaceDescription.set('');
@@ -184,6 +202,7 @@ export class SchoolSpacesChart {
       return;
     }
     this.parentForCreate.set(null);
+    this.spaceForMove.set(null);
     this.spaceForAssignAdmin.set(space);
     this.assignAdminUserId.set(null);
     this.errorMessage.set(null);
@@ -294,12 +313,86 @@ export class SchoolSpacesChart {
     }
   }
 
+  openMove(space: Space): void {
+    if (!this.canMove(space)) {
+      return;
+    }
+    this.parentForCreate.set(null);
+    this.spaceForAssignAdmin.set(null);
+    this.spaceForMove.set(space);
+    this.newParentId.set(null);
+    this.errorMessage.set(null);
+  }
+
+  cancelMove(): void {
+    this.spaceForMove.set(null);
+    this.newParentId.set(null);
+  }
+
+  async submitMove(): Promise<void> {
+    const space = this.spaceForMove();
+    const newParentId = this.newParentId();
+    if (!space || !newParentId) {
+      return;
+    }
+
+    this.isMoving.set(true);
+    this.errorMessage.set(null);
+
+    try {
+      await this.spaceFacade.moveSpace({
+        spaceId: space.id,
+        newParentId,
+      });
+      this.cancelMove();
+      await this.loadTree(this.schoolId());
+    } catch {
+      this.errorMessage.set(
+        $localize`:@@spaces-move-error:Impossible de déplacer l'espace.`,
+      );
+    } finally {
+      this.isMoving.set(false);
+    }
+  }
+
   canAddChild(space: Space): boolean {
     return space.status === SpaceStatus.ACTIVE && !space.deletedAt;
   }
 
   canManageAdmin(space: Space): boolean {
     return space.status === SpaceStatus.ACTIVE && !space.deletedAt;
+  }
+
+  canMove(space: Space): boolean {
+    return (
+      !this.isSchoolRoot(space) &&
+      space.status === SpaceStatus.ACTIVE &&
+      !space.deletedAt
+    );
+  }
+
+  /** Nouveau parent: même école, pas soi-même, pas un descendant, actif. */
+  isValidMoveTarget(moving: Space, candidate: Space): boolean {
+    if (candidate.deletedAt || candidate.status !== SpaceStatus.ACTIVE) {
+      return false;
+    }
+    if (candidate.schoolId !== moving.schoolId) {
+      return false;
+    }
+    if (candidate.id === moving.id) {
+      return false;
+    }
+    if (candidate.id === moving.parentId) {
+      return false;
+    }
+    if (this.isDescendantPath(candidate.path, moving.path)) {
+      return false;
+    }
+    return true;
+  }
+
+  private isDescendantPath(candidatePath: string, ancestorPath: string): boolean {
+    return candidatePath === ancestorPath || candidatePath.startsWith(`${ancestorPath}/`);
   }
 
   hasDirectManager(space: Space): boolean {
