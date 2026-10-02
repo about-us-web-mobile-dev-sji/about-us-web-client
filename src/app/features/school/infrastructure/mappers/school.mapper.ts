@@ -1,87 +1,75 @@
-import type { CreateSchoolCommand, School, SchoolSummary } from '../../domain/models/school.model';
+import type {
+  CreateSchoolCommand,
+  School,
+  SchoolListItem,
+  SchoolSummary,
+} from '../../domain/models/school.model';
 import type {
   CreateSchoolRequestDto,
-  SchoolManagedDto,
-  SchoolResponseDto,
-  UpdateSchoolRequestDto,
+  SchoolDetailDto,
 } from '../dto/school-response.dto';
 
-export function mapSchoolSummary(dto: SchoolManagedDto): SchoolSummary {
+export function mapSchoolListItem(dto: SchoolDetailDto): SchoolListItem {
   return {
     id: dto.id,
     name: dto.name,
-    address: dto.address,
-    city: dto.city,
-    postalCode: dto.postalCode,
-    country: dto.country,
-    phoneNumber: dto.phoneNumber,
-    email: dto.email,
-    website: dto.website,
-    status: dto.status,
-    adminUserId: dto.adminUserId,
-    createdAt: dto.createdAt,
-    updatedAt: dto.updatedAt,
   };
 }
 
-export function mapSchoolResponse(dto: SchoolResponseDto): School {
+export function mapSchoolDetail(dto: SchoolDetailDto): School {
   return {
     id: dto.id,
     name: dto.name,
-    address: dto.address,
-    city: dto.city,
-    postalCode: dto.postalCode,
-    country: dto.country,
-    phoneNumber: dto.phoneNumber,
-    email: dto.email,
-    website: dto.website,
-    status: dto.status,
-    adminUserId: dto.adminUserId,
+    phoneNumber: dto.phoneNumber ?? null,
+    email: dto.email ?? null,
+    website: dto.website ?? null,
+    status: dto.status ?? null,
     createdAt: new Date(dto.createdAt),
     updatedAt: new Date(dto.updatedAt),
     createdBy: dto.createdBy ?? null,
   };
 }
 
-function withOptionalFields(
-  command: Partial<CreateSchoolCommand>,
-  dto: UpdateSchoolRequestDto,
-): void {
-  const optionalFields: (keyof UpdateSchoolRequestDto)[] = [
-    'address',
-    'city',
-    'postalCode',
-    'country',
-    'phoneNumber',
-    'email',
-    'website',
-  ];
-  for (const field of optionalFields) {
-    const value = (command as Record<string, string | undefined>)[field]?.trim();
-    if (value) {
-      dto[field] = value;
-    }
-  }
+export function mapSchoolToSummary(school: School): SchoolSummary {
+  return {
+    id: school.id,
+    name: school.name,
+    phoneNumber: school.phoneNumber,
+    email: school.email,
+    website: school.website,
+    status: school.status,
+    createdAt: school.createdAt.toISOString(),
+    updatedAt: school.updatedAt.toISOString(),
+    createdBy: school.createdBy,
+  };
+}
+
+export function mapListItemToSummary(item: SchoolListItem): SchoolSummary {
+  return {
+    id: item.id,
+    name: item.name,
+    phoneNumber: null,
+    email: null,
+    website: null,
+    status: null,
+    createdAt: null,
+    updatedAt: null,
+    createdBy: null,
+  };
+}
+
+/** Mappe une ligne de GET /schools (désormais complète) vers SchoolSummary. */
+export function mapSchoolDetailDtoToSummary(dto: SchoolDetailDto): SchoolSummary {
+  return mapSchoolToSummary(mapSchoolDetail(dto));
 }
 
 export function mapCreateSchoolRequest(command: CreateSchoolCommand): CreateSchoolRequestDto {
   const dto: CreateSchoolRequestDto = {
     name: command.name.trim(),
   };
-  withOptionalFields(command, dto);
-  if (command.adminUserId?.trim()) {
-    dto.adminUserId = command.adminUserId.trim();
-  }
-  return dto;
-}
-
-export function mapUpdateSchoolRequest(
-  command: Partial<CreateSchoolCommand>,
-): UpdateSchoolRequestDto {
-  const dto: UpdateSchoolRequestDto = {};
-  withOptionalFields(command, dto);
-  if (command.name?.trim()) {
-    dto.name = command.name.trim();
-  }
+  if (command.address?.trim()) dto.address = command.address.trim();
+  if (command.phoneNumber?.trim()) dto.phoneNumber = command.phoneNumber.trim();
+  if (command.email?.trim()) dto.email = command.email.trim();
+  if (command.website?.trim()) dto.website = command.website.trim();
   return dto;
 }

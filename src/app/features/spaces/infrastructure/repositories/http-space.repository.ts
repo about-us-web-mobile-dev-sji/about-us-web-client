@@ -4,9 +4,30 @@ import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from '../../../../core/config/api.config';
 import { SPACE_REPOSITORY } from '../../domain/ports/space.repository';
 import type { SpaceRepository } from '../../domain/ports/space.repository';
-import type { EnsureSchoolRootCommand, EnsureSchoolRootResult, Space } from '../../domain/models/space.model';
-import type { EnsureSchoolRootResponseDto, SpaceResponseDto } from '../dto/space-response.dto';
-import { mapEnsureSchoolRootResponse, mapSpaceResponse } from '../mappers/space.mapper';
+import type {
+  ArchiveSpaceCommand,
+  AssignManagerCommand,
+  CreateSpaceCommand,
+  DeleteSpaceCommand,
+  EnsureSchoolRootCommand,
+  EnsureSchoolRootResult,
+  RestoreSpaceCommand,
+  Space,
+  SpaceEffectiveManagers,
+  SpaceMembership,
+} from '../../domain/models/space.model';
+import type {
+  EnsureSchoolRootResponseDto,
+  SpaceEffectiveManagersResponseDto,
+  SpaceMembershipResponseDto,
+  SpaceResponseDto,
+} from '../dto/space-response.dto';
+import {
+  mapEffectiveManagers,
+  mapEnsureSchoolRootResponse,
+  mapMembership,
+  mapSpaceResponse,
+} from '../mappers/space.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class HttpSpaceRepository implements SpaceRepository {
@@ -29,6 +50,75 @@ export class HttpSpaceRepository implements SpaceRepository {
       }),
     );
     return mapEnsureSchoolRootResponse(dto);
+  }
+
+  async createSpace(command: CreateSpaceCommand): Promise<Space> {
+    const dto = await firstValueFrom(
+      this.http.post<SpaceResponseDto>(`${this.baseUrl}/spaces`, command, {
+        withCredentials: true,
+      }),
+    );
+    return mapSpaceResponse(dto);
+  }
+
+  async getEffectiveManagers(spaceId: string): Promise<SpaceEffectiveManagers> {
+    const dto = await firstValueFrom(
+      this.http.get<SpaceEffectiveManagersResponseDto>(
+        `${this.baseUrl}/spaces/${spaceId}/members/effective-managers`,
+        { withCredentials: true },
+      ),
+    );
+    return mapEffectiveManagers(dto);
+  }
+
+  async assignManager(command: AssignManagerCommand): Promise<SpaceMembership> {
+    const dto = await firstValueFrom(
+      this.http.put<SpaceMembershipResponseDto>(
+        `${this.baseUrl}/spaces/${command.spaceId}/members/manager`,
+        { userId: command.userId },
+        { withCredentials: true },
+      ),
+    );
+    return mapMembership(dto);
+  }
+
+  async removeManager(spaceId: string): Promise<SpaceMembership> {
+    const dto = await firstValueFrom(
+      this.http.delete<SpaceMembershipResponseDto>(
+        `${this.baseUrl}/spaces/${spaceId}/members/manager`,
+        { withCredentials: true },
+      ),
+    );
+    return mapMembership(dto);
+  }
+
+  async archiveSpace(command: ArchiveSpaceCommand): Promise<void> {
+    await firstValueFrom(
+      this.http.post(
+        `${this.baseUrl}/spaces/${command.spaceId}/archive`,
+        {},
+        { withCredentials: true },
+      ),
+    );
+  }
+
+  async restoreSpace(command: RestoreSpaceCommand): Promise<void> {
+    await firstValueFrom(
+      this.http.post(
+        `${this.baseUrl}/spaces/${command.spaceId}/restore`,
+        {},
+        { withCredentials: true },
+      ),
+    );
+  }
+
+  async deleteSpace(command: DeleteSpaceCommand): Promise<void> {
+    const recursive = command.recursive ? '?recursive=true' : '';
+    await firstValueFrom(
+      this.http.delete(`${this.baseUrl}/spaces/${command.spaceId}${recursive}`, {
+        withCredentials: true,
+      }),
+    );
   }
 }
 

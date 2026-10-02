@@ -1,5 +1,17 @@
-import type { EnsureSchoolRootResult, Space } from '../../domain/models/space.model';
-import type { EnsureSchoolRootResponseDto, SpaceResponseDto } from '../dto/space-response.dto';
+import type {
+  EnsureSchoolRootResult,
+  Space,
+  SpaceEffectiveManagers,
+  SpaceMembership,
+  SpaceMembershipRole,
+  SpaceMembershipStatus,
+} from '../../domain/models/space.model';
+import type {
+  EnsureSchoolRootResponseDto,
+  SpaceEffectiveManagersResponseDto,
+  SpaceMembershipResponseDto,
+  SpaceResponseDto,
+} from '../dto/space-response.dto';
 
 export function mapSpaceResponse(dto: SpaceResponseDto): Space {
   return {
@@ -30,5 +42,25 @@ export function mapEnsureSchoolRootResponse(dto: EnsureSchoolRootResponseDto): E
     depth: dto.depth,
     kind: dto.kind,
     isNew: dto.isNew,
+  };
+}
+
+export function mapMembership(dto: SpaceMembershipResponseDto): SpaceMembership {
+  return {
+    id: dto.id,
+    spaceId: dto.spaceId,
+    userId: dto.userId,
+    role: dto.role as SpaceMembershipRole,
+    status: dto.status as SpaceMembershipStatus,
+  };
+}
+
+export function mapEffectiveManagers(
+  dto: SpaceEffectiveManagersResponseDto,
+): SpaceEffectiveManagers {
+  return {
+    spaceId: dto.spaceId,
+    directManager: dto.directManager ? mapMembership(dto.directManager) : null,
+    inheritedManagers: (dto.inheritedManagers ?? []).map(mapMembership),
   };
 }

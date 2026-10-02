@@ -1,10 +1,7 @@
-import { DatePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { TagModule } from 'primeng/tag';
 import { SchoolFacade } from '../../../application/school.facade';
 import type { School } from '../../../domain/models/school.model';
 import { SchoolStatus } from '../../../domain/models/school.model';
@@ -12,29 +9,39 @@ import { SchoolSpacesChart } from '../../../../spaces/presentation/components/sc
 
 @Component({
   selector: 'app-school-detail-page',
-  imports: [ButtonModule, DatePipe, ProgressSpinnerModule, TagModule, SchoolSpacesChart],
+  imports: [ProgressSpinnerModule, ReactiveFormsModule, SchoolSpacesChart],
   styleUrl: './school-detail-page.css',
   templateUrl: './school-detail-page.html',
 })
-export class SchoolDetailPage {
+export class SchoolDetailPage implements OnInit {
   private readonly schoolFacade = inject(SchoolFacade);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly messageService = inject(MessageService);
+  private readonly fb = inject(FormBuilder);
+
+  private schoolId: string | null = null;
 
   school = signal<School | null>(null);
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
 
-  async ngOnInit(): Promise<void> {
-    const schoolId = this.route.snapshot.paramMap.get('schoolId');
+  readonly detailForm = this.fb.nonNullable.group({
+    name: [{ value: '', disabled: true }],
+    status: [{ value: '', disabled: true }],
+    createdBy: [{ value: '', disabled: true }],
+    createdAt: [{ value: '', disabled: true }],
+    updatedAt: [{ value: '', disabled: true }],
+  });
 
-    if (!schoolId) {
-      this.router.navigate(['/s/schools']);
+  ngOnInit(): void {
+    this.schoolId = this.route.snapshot.paramMap.get('schoolId');
+
+    if (!this.schoolId) {
+      void this.router.navigate(['/s/schools']);
       return;
     }
 
-    this.loadSchoolDetails(schoolId);
+    void this.loadSchoolDetails(this.schoolId);
   }
 
   async loadSchoolDetails(schoolId: string): Promise<void> {
@@ -44,8 +51,10 @@ export class SchoolDetailPage {
     try {
       const school = await this.schoolFacade.getSchoolById(schoolId);
       this.school.set(school);
-    } catch (error: any) {
-      console.error('Erreur lors de la récupération de l\'école:', error);
+      this.patchForm(school);
+    } catch (error: unknown) {
+      console.error("Erreur lors de la récupération de l'école:", error);
+      this.school.set(null);
       this.errorMessage.set(
         $localize`:@@school-detail-load-error:Impossible de charger les détails de l'école.`,
       );
@@ -54,21 +63,14 @@ export class SchoolDetailPage {
     }
   }
 
-  goBack(): void {
-    this.router.navigate(['/s/schools']);
+  retryLoad(): void {
+    if (this.schoolId) {
+      void this.loadSchoolDetails(this.schoolId);
+    }
   }
 
-  getSchoolInitial(name: string): string {
-    return (
-      name
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((part) => part.charAt(0))
-        .join('')
-        .toUpperCase() || 'E'
-    );
+  goBack(): void {
+    void this.router.navigate(['/s/schools']);
   }
 
   getStatusLabel(status: SchoolStatus): string {
@@ -81,13 +83,19 @@ export class SchoolDetailPage {
     return labels[status] || status;
   }
 
-  getStatusSeverity(status: SchoolStatus): 'success' | 'warn' | 'danger' | 'info' {
-    const severities: Record<SchoolStatus, 'success' | 'warn' | 'danger' | 'info'> = {
-      [SchoolStatus.ACTIVE]: 'success',
-      [SchoolStatus.INACTIVE]: 'danger',
-      [SchoolStatus.SUSPENDED]: 'warn',
-      [SchoolStatus.BLOCKED]: 'danger',
-    };
-    return severities[status] || 'info';
+  private patchForm(school: School): void {
+    this.detailForm.patchValue({
+      name: school.name,
+      status: school.status ? this.getStatusLabel(school.status) : '—',
+      createdBy: school.createdBy?.trim() || '—',
+      createdAt:
+        school.createdAt.getTime() > 0
+          ? school.createdAt.toLocaleString('fr-FR')
+          : '—',
+      updatedAt:
+        school.updatedAt.getTime() > 0
+          ? school.updatedAt.toLocaleString('fr-FR')
+          : '—',
+    });
   }
 }

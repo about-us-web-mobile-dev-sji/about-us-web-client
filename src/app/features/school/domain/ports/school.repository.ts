@@ -1,10 +1,9 @@
 import { InjectionToken } from '@angular/core';
-import type { CreateSchoolCommand, School, SchoolSummary } from '../models/school.model';
+import type { CreateSchoolCommand, School } from '../models/school.model';
 
 export interface SchoolRepository {
-  list(): Promise<SchoolSummary[]>;
+  list(): Promise<School[]>;
   create(command: CreateSchoolCommand): Promise<School>;
-  update(id: string, command: Partial<CreateSchoolCommand>): Promise<School>;
   toggleBlock(id: string): Promise<School>;
 }
 

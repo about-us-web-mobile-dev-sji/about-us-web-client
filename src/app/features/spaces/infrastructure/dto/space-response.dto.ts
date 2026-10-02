@@ -33,3 +33,21 @@ export interface EnsureSchoolRootResponseDto {
   kind: string;
   isNew: boolean;
 }
+
+export interface SpaceMembershipResponseDto {
+  id: string;
+  spaceId: string;
+  userId: string;
+  role: string;
+  status: string;
+}
+
+export interface SpaceEffectiveManagersResponseDto {
+  spaceId: string;
+  directManager?: SpaceMembershipResponseDto | null;
+  inheritedManagers: SpaceMembershipResponseDto[];
+}
+
+export interface AssignManagerRequestDto {
+  userId: string;
+}
