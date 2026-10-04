@@ -457,6 +457,268 @@
         <source>Ouvrir ou fermer le menu administrateur</source>
         <target>Open or close administrator menu</target>
       </trans-unit>
+
+      <!-- School detail page -->
+      <trans-unit id="school-detail-back" datatype="html">
+        <source>Retour à la liste</source>
+        <target>Back to list</target>
+      </trans-unit>
+      <trans-unit id="school-detail-loading" datatype="html">
+        <source>Chargement des détails…</source>
+        <target>Loading details…</target>
+      </trans-unit>
+      <trans-unit id="school-detail-retry" datatype="html">
+        <source>Réessayer</source>
+        <target>Retry</target>
+      </trans-unit>
+      <trans-unit id="school-detail-not-found" datatype="html">
+        <source>École introuvable.</source>
+        <target>School not found.</target>
+      </trans-unit>
+      <trans-unit id="school-detail-load-error" datatype="html">
+        <source>Impossible de charger les détails de l'école.</source>
+        <target>Unable to load school details.</target>
+      </trans-unit>
+      <trans-unit id="school-detail-general" datatype="html">
+        <source>Informations générales</source>
+        <target>General information</target>
+      </trans-unit>
+      <trans-unit id="school-detail-code" datatype="html">
+        <source>Code</source>
+        <target>Code</target>
+      </trans-unit>
+      <trans-unit id="school-detail-city" datatype="html">
+        <source>Ville</source>
+        <target>City</target>
+      </trans-unit>
+      <trans-unit id="school-detail-country" datatype="html">
+        <source>Pays</source>
+        <target>Country</target>
+      </trans-unit>
+      <trans-unit id="school-detail-email" datatype="html">
+        <source>Email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="school-detail-phone" datatype="html">
+        <source>Téléphone</source>
+        <target>Phone</target>
+      </trans-unit>
+      <trans-unit id="school-detail-address" datatype="html">
+        <source>Adresse</source>
+        <target>Address</target>
+      </trans-unit>
+      <trans-unit id="school-detail-postal" datatype="html">
+        <source>Code postal</source>
+        <target>Postal code</target>
+      </trans-unit>
+      <trans-unit id="school-detail-website" datatype="html">
+        <source>Site web</source>
+        <target>Website</target>
+      </trans-unit>
+      <trans-unit id="school-detail-admin" datatype="html">
+        <source>Administrateur principal</source>
+        <target>Principal administrator</target>
+      </trans-unit>
+      <trans-unit id="school-detail-stats" datatype="html">
+        <source>Statistiques</source>
+        <target>Statistics</target>
+      </trans-unit>
+      <trans-unit id="school-detail-status" datatype="html">
+        <source>Statut</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="school-detail-created" datatype="html">
+        <source>Date de création</source>
+        <target>Created at</target>
+      </trans-unit>
+      <trans-unit id="school-detail-updated" datatype="html">
+        <source>Dernière mise à jour</source>
+        <target>Last updated</target>
+      </trans-unit>
+      <trans-unit id="school-status-active" datatype="html">
+        <source>Active</source>
+        <target>Active</target>
+      </trans-unit>
+      <trans-unit id="school-status-inactive" datatype="html">
+        <source>Inactive</source>
+        <target>Inactive</target>
+      </trans-unit>
+      <trans-unit id="school-status-suspended" datatype="html">
+        <source>Suspendue</source>
+        <target>Suspended</target>
+      </trans-unit>
+      <trans-unit id="school-status-blocked" datatype="html">
+        <source>Bloquée</source>
+        <target>Blocked</target>
+      </trans-unit>
+
+      <!-- School spaces (OrganizationChart) -->
+      <trans-unit id="spaces-org-title" datatype="html">
+        <source>Organisation des espaces</source>
+        <target>Space organization</target>
+      </trans-unit>
+      <trans-unit id="spaces-refresh" datatype="html">
+        <source>Actualiser</source>
+        <target>Refresh</target>
+      </trans-unit>
+      <trans-unit id="spaces-loading" datatype="html">
+        <source>Chargement de l'organigramme…</source>
+        <target>Loading organization chart…</target>
+      </trans-unit>
+      <trans-unit id="spaces-empty" datatype="html">
+        <source>Aucun espace n'est configuré pour cette école.</source>
+        <target>No spaces are configured for this school.</target>
+      </trans-unit>
+      <trans-unit id="spaces-ensure-root" datatype="html">
+        <source>Initialiser l'espace racine</source>
+        <target>Initialize root space</target>
+      </trans-unit>
+      <trans-unit id="spaces-root-tag" datatype="html">
+        <source>Racine</source>
+        <target>Root</target>
+      </trans-unit>
+      <trans-unit id="spaces-load-error" datatype="html">
+        <source>Impossible de charger l'arborescence des espaces.</source>
+        <target>Unable to load the space tree.</target>
+      </trans-unit>
+      <trans-unit id="spaces-ensure-root-error" datatype="html">
+        <source>Impossible d'initialiser l'espace racine.</source>
+        <target>Unable to initialize the root space.</target>
+      </trans-unit>
+      <trans-unit id="spaces-status-archived" datatype="html">
+        <source>Archivé</source>
+        <target>Archived</target>
+      </trans-unit>
+      <trans-unit id="spaces-status-active" datatype="html">
+        <source>Actif</source>
+        <target>Active</target>
+      </trans-unit>
+      <trans-unit id="spaces-org-subtitle" datatype="html">
+        <source>Une école peut avoir plusieurs espaces hiérarchiques sous la racine.</source>
+        <target>A school can have multiple hierarchical spaces under the root.</target>
+      </trans-unit>
+      <trans-unit id="spaces-add-child" datatype="html">
+        <source>+ Sous-espace</source>
+        <target>+ Child space</target>
+      </trans-unit>
+      <trans-unit id="spaces-create-title" datatype="html">
+        <source>Nouveau sous-espace sous</source>
+        <target>New child space under</target>
+      </trans-unit>
+      <trans-unit id="spaces-create-name" datatype="html">
+        <source>Nom</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="spaces-create-description" datatype="html">
+        <source>Description (optionnel)</source>
+        <target>Description (optional)</target>
+      </trans-unit>
+      <trans-unit id="spaces-create-cancel" datatype="html">
+        <source>Annuler</source>
+        <target>Cancel</target>
+      </trans-unit>
+      <trans-unit id="spaces-create-submit" datatype="html">
+        <source>Créer l'espace</source>
+        <target>Create space</target>
+      </trans-unit>
+      <trans-unit id="spaces-create-error" datatype="html">
+        <source>Impossible de créer le sous-espace.</source>
+        <target>Unable to create the child space.</target>
+      </trans-unit>
+      <trans-unit id="spaces-archive-error" datatype="html">
+        <source>Impossible d'archiver l'espace.</source>
+        <target>Unable to archive the space.</target>
+      </trans-unit>
+      <trans-unit id="spaces-restore-error" datatype="html">
+        <source>Impossible de restaurer l'espace.</source>
+        <target>Unable to restore the space.</target>
+      </trans-unit>
+      <trans-unit id="spaces-delete-error" datatype="html">
+        <source>Impossible de supprimer l'espace.</source>
+        <target>Unable to delete the space.</target>
+      </trans-unit>
+      <trans-unit id="spaces-archive-title" datatype="html">
+        <source>Archiver l'espace</source>
+        <target>Archive space</target>
+      </trans-unit>
+      <trans-unit id="spaces-restore-title" datatype="html">
+        <source>Restaurer l'espace</source>
+        <target>Restore space</target>
+      </trans-unit>
+      <trans-unit id="spaces-delete-title" datatype="html">
+        <source>Supprimer l'espace</source>
+        <target>Delete space</target>
+      </trans-unit>
+      <trans-unit id="spaces-kind-root" datatype="html">
+        <source>Racine</source>
+        <target>Root</target>
+      </trans-unit>
+      <trans-unit id="spaces-kind-standard" datatype="html">
+        <source>Standard</source>
+        <target>Standard</target>
+      </trans-unit>
+      <trans-unit id="spaces-manager-inherited-prefix" datatype="html">
+        <source>Hérité :</source>
+        <target>Inherited:</target>
+      </trans-unit>
+      <trans-unit id="spaces-open-school" datatype="html">
+        <source>Voir l'école</source>
+        <target>View school</target>
+      </trans-unit>
+
+      <!-- Spaces list page -->
+      <trans-unit id="spaces-list-title" datatype="html">
+        <source>Espaces</source>
+        <target>Spaces</target>
+      </trans-unit>
+      <trans-unit id="spaces-list-description" datatype="html">
+        <source>Tous les espaces documentaires et leurs administrateurs (managers).</source>
+        <target>All documentary spaces and their administrators (managers).</target>
+      </trans-unit>
+      <trans-unit id="spaces-list-refresh" datatype="html">
+        <source>Actualiser</source>
+        <target>Refresh</target>
+      </trans-unit>
+      <trans-unit id="spaces-list-loading" datatype="html">
+        <source>Chargement des espaces…</source>
+        <target>Loading spaces…</target>
+      </trans-unit>
+      <trans-unit id="spaces-list-retry" datatype="html">
+        <source>Réessayer</source>
+        <target>Retry</target>
+      </trans-unit>
+      <trans-unit id="spaces-list-empty" datatype="html">
+        <source>Aucun espace n'est encore configuré.</source>
+        <target>No spaces are configured yet.</target>
+      </trans-unit>
+      <trans-unit id="spaces-col-name" datatype="html">
+        <source>Espace</source>
+        <target>Space</target>
+      </trans-unit>
+      <trans-unit id="spaces-col-school" datatype="html">
+        <source>École</source>
+        <target>School</target>
+      </trans-unit>
+      <trans-unit id="spaces-col-kind" datatype="html">
+        <source>Type</source>
+        <target>Type</target>
+      </trans-unit>
+      <trans-unit id="spaces-col-status" datatype="html">
+        <source>Statut</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="spaces-col-manager" datatype="html">
+        <source>Administrateur</source>
+        <target>Administrator</target>
+      </trans-unit>
+      <trans-unit id="spaces-col-designation" datatype="html">
+        <source>Dénomination</source>
+        <target>Designation</target>
+      </trans-unit>
+      <trans-unit id="spaces-col-actions" datatype="html">
+        <source>Action</source>
+        <target>Action</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

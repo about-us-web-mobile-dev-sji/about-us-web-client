@@ -1,0 +1,66 @@
+<div class="school-detail-page">
+  <div class="page-header">
+    <button type="button" class="btn-back" (click)="goBack()">← Retour à la liste</button>
+  </div>
+
+  <div class="page-content">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <p-progress-spinner strokeWidth="4" />
+        <p i18n="@@school-detail-loading" class="loading-text">Chargement des détails…</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-container">
+        <p class="error-text">{{ errorMessage() }}</p>
+        <button type="button" class="btn-back" (click)="retryLoad()">Réessayer</button>
+      </div>
+    } @else if (school(); as current) {
+      <section class="detail-card">
+        <header class="detail-card-header">
+          <div>
+            <p class="entity-kicker" i18n="@@school-detail-kicker">Établissement</p>
+            <h1 class="detail-title" i18n="@@school-detail-form-title">Détails de l'école</h1>
+          </div>
+          <span
+            class="status-pill"
+            [class.status-pill--active]="current.status === 'ACTIVE'"
+            [class.status-pill--blocked]="current.status === 'BLOCKED'"
+          >
+            {{ current.status ? getStatusLabel(current.status) : '—' }}
+          </span>
+        </header>
+
+        <form class="detail-form" [formGroup]="detailForm" aria-label="Détails de l'école">
+          <div class="form-grid">
+            <label class="form-field form-field--full">
+              <span i18n="@@school-detail-name">Nom</span>
+              <input type="text" formControlName="name" readonly />
+            </label>
+
+            <label class="form-field">
+              <span i18n="@@school-detail-status">Statut</span>
+              <input type="text" formControlName="status" readonly />
+            </label>
+
+            <label class="form-field">
+              <span i18n="@@school-detail-created-by">Créée par</span>
+              <input type="text" formControlName="createdBy" readonly />
+            </label>
+
+            <label class="form-field">
+              <span i18n="@@school-detail-created">Création</span>
+              <input type="text" formControlName="createdAt" readonly />
+            </label>
+
+            <label class="form-field">
+              <span i18n="@@school-detail-updated">Mise à jour</span>
+              <input type="text" formControlName="updatedAt" readonly />
+            </label>
+          </div>
+        </form>
+      </section>
+
+      <app-school-spaces-chart [schoolId]="current.id" [schoolName]="current.name" />
+    }
+  </div>
+</div>

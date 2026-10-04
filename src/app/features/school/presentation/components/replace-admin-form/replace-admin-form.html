@@ -34,11 +34,12 @@
   </div>
 
   <div class="form-actions">
-    <button pButton type="submit" [disabled]="isLoading" class="submit-button">
-      @if (isLoading) {
-        <svg data-p-icon="spinner" class="loading-spinner" aria-hidden="true"></svg>
-      }
-      <span>{{ isLoading ? 'Remplacement en cours…' : 'Remplacer l\'administrateur' }}</span>
-    </button>
+    <p-button
+      type="submit"
+      [disabled]="isLoading"
+      [label]="isLoading ? 'Remplacement en cours…' : 'Remplacer l\'administrateur'"
+      [icon]="isLoading ? 'pi pi-spin pi-spinner' : undefined"
+      class="submit-button"
+    />
   </div>
 </form>

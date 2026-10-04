@@ -1,0 +1,366 @@
+<section class="school-spaces-chart">
+  <div class="section-header">
+    <div>
+      <h3 i18n="@@spaces-org-title" class="section-title">Organisation des espaces</h3>
+      <p i18n="@@spaces-org-subtitle" class="section-subtitle">
+        Créez des sous-espaces sous n'importe quel nœud et assignez éventuellement un administrateur.
+      </p>
+    </div>
+    <p-button
+      type="button"
+      i18n-label="@@spaces-refresh"
+      label="Actualiser"
+      icon="pi pi-refresh"
+      severity="secondary"
+      [loading]="isLoading()"
+      (onClick)="loadTree(schoolId())"
+    />
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <p-progress-spinner strokeWidth="4" />
+      <p i18n="@@spaces-loading" class="loading-text">Chargement de l'organigramme…</p>
+    </div>
+  } @else if (errorMessage() && !parentForCreate() && !spaceForAssignAdmin() && !spaceForMove()) {
+    <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
+  } @else if (orgChartNodes().length === 0) {
+    <div class="empty-state">
+      <p i18n="@@spaces-empty" class="empty-text">Aucun espace n'est configuré pour cette école.</p>
+      <p-button
+        type="button"
+        i18n-label="@@spaces-ensure-root"
+        label="Initialiser l'espace racine"
+        icon="pi pi-sitemap"
+        [loading]="isEnsuringRoot()"
+        (onClick)="ensureRoot()"
+      />
+    </div>
+  } @else {
+    @if (spaceForAssignAdmin(); as space) {
+      <div class="create-panel">
+        <h4 class="create-title">
+          <span i18n="@@spaces-assign-admin-title">Administrateur pour</span>
+          « {{ space.name }} »
+        </h4>
+        @if (errorMessage()) {
+          <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
+        }
+        <label class="field">
+          <span i18n="@@spaces-assign-admin-label">Choisir un administrateur</span>
+          <p-select
+            [options]="userOptions()"
+            optionLabel="label"
+            optionValue="id"
+            [ngModel]="assignAdminUserId()"
+            (ngModelChange)="assignAdminUserId.set($event)"
+            [showClear]="true"
+            i18n-placeholder="@@spaces-admin-placeholder"
+            placeholder="Aucun administrateur"
+            [filter]="true"
+            filterBy="label"
+            appendTo="body"
+            styleClass="w-full"
+          />
+        </label>
+        <div class="create-actions">
+          <p-button
+            type="button"
+            i18n-label="@@spaces-assign-admin-cancel"
+            label="Annuler"
+            severity="secondary"
+            [disabled]="isAssigningManager()"
+            (onClick)="cancelAssignAdmin()"
+          />
+          <p-button
+            type="button"
+            i18n-label="@@spaces-assign-admin-submit"
+            label="Assigner"
+            icon="pi pi-user-plus"
+            [loading]="isAssigningManager()"
+            [disabled]="!assignAdminUserId()"
+            (onClick)="submitAssignAdmin()"
+          />
+        </div>
+      </div>
+    }
+
+    <div class="chart-scroll">
+      <p-organization-chart
+        [value]="orgChartNodes()"
+        [collapsible]="true"
+        selectionMode="single"
+        [gap]="[24, 32]"
+      >
+        <ng-template #node let-node>
+          @if (node.data; as space) {
+            <div class="space-person-node">
+              <div class="space-person-main">
+                <div
+                  class="space-avatar"
+                  [class.space-avatar--root]="isSchoolRoot(space)"
+                  [class.space-avatar--admin]="hasDirectManager(space)"
+                  [attr.aria-hidden]="true"
+                >
+                  {{ getSpaceInitials(space) }}
+                </div>
+                <div class="space-person-text">
+                  <div class="space-person-name">{{ space.name }}</div>
+                  <div class="space-person-role">{{ getAdminSubtitle(space) }}</div>
+                </div>
+              </div>
+
+              <div class="space-node-actions" (click)="$event.stopPropagation()">
+                @if (canAddChild(space)) {
+                  <button
+                    type="button"
+                    class="node-action-btn"
+                    title="Ajouter un sous-espace"
+                    i18n-title="@@spaces-add-child-title"
+                    (click)="openCreateChild(space)"
+                  >
+                    <i class="pi pi-plus"></i>
+                  </button>
+                }
+                @if (canManageAdmin(space) && !hasDirectManager(space)) {
+                  <button
+                    type="button"
+                    class="node-action-btn node-action-btn--admin"
+                    title="Assigner un administrateur"
+                    i18n-title="@@spaces-add-admin-title"
+                    (click)="openAssignAdmin(space)"
+                  >
+                    <i class="pi pi-user-plus"></i>
+                  </button>
+                }
+                @if (canManageAdmin(space) && hasDirectManager(space)) {
+                  <button
+                    type="button"
+                    class="node-action-btn node-action-btn--danger"
+                    title="Retirer l'administrateur"
+                    i18n-title="@@spaces-remove-admin-title"
+                    [disabled]="isAssigningManager()"
+                    (click)="removeAdmin(space)"
+                  >
+                    <i class="pi pi-times"></i>
+                  </button>
+                }
+                @if (canMove(space)) {
+                  <button
+                    type="button"
+                    class="node-action-btn"
+                    title="Déplacer le sous-arbre"
+                    i18n-title="@@spaces-move-title"
+                    [disabled]="isMoving()"
+                    (click)="openMove(space)"
+                  >
+                    <i class="pi pi-arrows-alt"></i>
+                  </button>
+                }
+                @if (space.status === 'ACTIVE' && !space.deletedAt) {
+                  <button
+                    type="button"
+                    class="node-action-btn"
+                    title="Archiver l'espace"
+                    i18n-title="@@spaces-archive-title"
+                    [disabled]="isMutatingSpace()"
+                    (click)="archiveSpace(space)"
+                  >
+                    <i class="pi pi-inbox"></i>
+                  </button>
+                }
+                @if (space.status === 'ARCHIVED') {
+                  <button
+                    type="button"
+                    class="node-action-btn"
+                    title="Restaurer l'espace"
+                    i18n-title="@@spaces-restore-title"
+                    [disabled]="isMutatingSpace()"
+                    (click)="restoreSpace(space)"
+                  >
+                    <i class="pi pi-replay"></i>
+                  </button>
+                }
+                @if (!isSchoolRoot(space) && !space.deletedAt) {
+                  <button
+                    type="button"
+                    class="node-action-btn node-action-btn--danger"
+                    title="Supprimer l'espace"
+                    i18n-title="@@spaces-delete-title"
+                    [disabled]="isMutatingSpace()"
+                    (click)="deleteSpace(space)"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </ng-template>
+      </p-organization-chart>
+    </div>
+  }
+
+  @if (spaceForMove(); as moving) {
+    <div class="modal-backdrop" (click)="!isMoving() && cancelMove()">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="move-space-modal-title"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="modal-header">
+          <h2 id="move-space-modal-title" class="create-title">
+            <span i18n="@@spaces-move-modal-title">Déplacer</span>
+            « {{ moving.name }} »
+          </h2>
+          <button
+            type="button"
+            class="modal-close"
+            [disabled]="isMoving()"
+            (click)="cancelMove()"
+            aria-label="Fermer"
+          >
+            ×
+          </button>
+        </div>
+
+        <p i18n="@@spaces-move-hint" class="move-hint">
+          Choisissez un nouveau parent dans la même école. La racine, l'espace lui-même et ses
+          descendants sont exclus.
+        </p>
+
+        @if (errorMessage()) {
+          <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
+        }
+
+        <label class="field">
+          <span i18n="@@spaces-move-parent-label">Nouveau parent</span>
+          <p-select
+            [options]="moveParentOptions()"
+            optionLabel="label"
+            optionValue="id"
+            [ngModel]="newParentId()"
+            (ngModelChange)="newParentId.set($event)"
+            [filter]="true"
+            filterBy="label"
+            appendTo="body"
+            styleClass="w-full"
+            i18n-placeholder="@@spaces-move-parent-placeholder"
+            placeholder="Sélectionner un espace"
+          />
+        </label>
+
+        <div class="create-actions">
+          <p-button
+            type="button"
+            i18n-label="@@spaces-move-cancel"
+            label="Annuler"
+            severity="secondary"
+            [disabled]="isMoving()"
+            (onClick)="cancelMove()"
+          />
+          <p-button
+            type="button"
+            i18n-label="@@spaces-move-submit"
+            label="Déplacer"
+            icon="pi pi-arrows-alt"
+            [loading]="isMoving()"
+            [disabled]="!newParentId()"
+            (onClick)="submitMove()"
+          />
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (parentForCreate(); as parent) {
+    <div class="modal-backdrop" (click)="!isCreating() && cancelCreate()">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-space-modal-title"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="modal-header">
+          <h2 id="create-space-modal-title" class="create-title">
+            <span i18n="@@spaces-create-title">Nouveau sous-espace sous</span>
+            « {{ parent.name }} »
+          </h2>
+          <button
+            type="button"
+            class="modal-close"
+            [disabled]="isCreating()"
+            (click)="cancelCreate()"
+            aria-label="Fermer"
+          >
+            ×
+          </button>
+        </div>
+
+        @if (errorMessage()) {
+          <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
+        }
+
+        <label class="field">
+          <span i18n="@@spaces-create-name">Nom</span>
+          <input
+            pInputText
+            type="text"
+            [ngModel]="newSpaceName()"
+            (ngModelChange)="newSpaceName.set($event)"
+            maxlength="120"
+          />
+        </label>
+        <label class="field">
+          <span i18n="@@spaces-create-description">Description (optionnel)</span>
+          <textarea
+            rows="2"
+            [ngModel]="newSpaceDescription()"
+            (ngModelChange)="newSpaceDescription.set($event)"
+            maxlength="500"
+          ></textarea>
+        </label>
+        <label class="field">
+          <span i18n="@@spaces-create-admin">Administrateur (optionnel)</span>
+          <p-select
+            [options]="userOptions()"
+            optionLabel="label"
+            optionValue="id"
+            [ngModel]="newSpaceAdminUserId()"
+            (ngModelChange)="newSpaceAdminUserId.set($event)"
+            [showClear]="true"
+            i18n-placeholder="@@spaces-admin-placeholder"
+            placeholder="Aucun administrateur"
+            [filter]="true"
+            filterBy="label"
+            appendTo="body"
+            styleClass="w-full"
+          />
+        </label>
+
+        <div class="create-actions">
+          <p-button
+            type="button"
+            i18n-label="@@spaces-create-cancel"
+            label="Annuler"
+            severity="secondary"
+            [disabled]="isCreating()"
+            (onClick)="cancelCreate()"
+          />
+          <p-button
+            type="button"
+            i18n-label="@@spaces-create-submit"
+            label="Créer l'espace"
+            icon="pi pi-plus"
+            [loading]="isCreating()"
+            [disabled]="!newSpaceName().trim()"
+            (onClick)="submitCreate()"
+          />
+        </div>
+      </div>
+    </div>
+  }
+</section>

@@ -10,6 +10,7 @@ import { HomePage } from './features/dashboard/presentation/pages/home-page/home
 import { EventLogsPage } from './features/event-logs/presentation/pages/event-logs-page/event-logs-page';
 import { EventLogDetailPage } from './features/event-logs/presentation/pages/event-log-detail-page/event-log-detail-page';
 import { SchoolsListPage } from './features/school/presentation/pages/schools-list-page/schools-list-page';
+import { SchoolDetailPage } from './features/school/presentation/pages/school-detail-page/school-detail-page';
 import { EditSchoolPage } from './features/school/presentation/pages/edit-school-page/edit-school-page';
 import { ReplaceAdminPage } from './features/school/presentation/pages/replace-admin-page/school-page';
 
@@ -27,6 +28,7 @@ export const routes: Routes = [
       { path: 'users', component: UsersPage },
       { path: 'schools', component: SchoolsListPage },
       { path: 'schools/:schoolId/edit', component: EditSchoolPage },
+      { path: 'schools/:schoolId', component: SchoolDetailPage },
       { path: 'schools/:schoolId/replace-admin', component: ReplaceAdminPage },
       { path: 'events', component: EventLogsPage },
       { path: 'events/log/:id', component: EventLogDetailPage },

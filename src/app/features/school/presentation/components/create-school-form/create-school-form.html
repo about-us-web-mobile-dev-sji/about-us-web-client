@@ -8,171 +8,35 @@
   <div class="form-section">
     <h2 class="section-title">Informations de l'école</h2>
 
-    <!-- Nom de l'école -->
     <div class="form-field">
-      <label for="name">Nom de l'école *</label>
+      <label for="name">Nom *</label>
       <input
         pInputText
         id="name"
         type="text"
         formControlName="name"
         [readonly]="isLoading"
-        [invalid]="nameControl.invalid && nameControl.touched"
-        [attr.aria-invalid]="nameControl.invalid && nameControl.touched"
-        [attr.aria-describedby]="nameControl.invalid && nameControl.touched ? 'name-error' : null"
         placeholder="École primaire Jean Moulin"
       />
       @if (nameControl.invalid && nameControl.touched) {
-        <p-message id="name-error" severity="error" variant="simple" size="small">
+        <p-message severity="error" variant="simple" size="small">
           {{
             nameControl.hasError('required')
-              ? "Le nom de l'école est obligatoire."
+              ? 'Le nom est obligatoire.'
               : 'Le nom doit contenir au moins 3 caractères.'
           }}
         </p-message>
       }
     </div>
-
-    <!-- Email -->
-    <div class="form-field">
-      <label for="email">Email de l'école</label>
-      <input
-        pInputText
-        id="email"
-        type="email"
-        formControlName="email"
-        [readonly]="isLoading"
-        [invalid]="emailControl.invalid && emailControl.touched"
-        [attr.aria-invalid]="emailControl.invalid && emailControl.touched"
-        [attr.aria-describedby]="
-          emailControl.invalid && emailControl.touched ? 'email-error' : null
-        "
-        placeholder="contact@ecole.fr"
-      />
-      @if (emailControl.invalid && emailControl.touched) {
-        <p-message id="email-error" severity="error" variant="simple" size="small">
-          Renseigne une adresse email valide.
-        </p-message>
-      }
-    </div>
-
-    <!-- Téléphone -->
-    <div class="form-field">
-      <label for="phoneNumber">Téléphone</label>
-      <input
-        pInputText
-        id="phoneNumber"
-        type="tel"
-        formControlName="phoneNumber"
-        [readonly]="isLoading"
-        [invalid]="phoneNumberControl.invalid && phoneNumberControl.touched"
-        [attr.aria-invalid]="phoneNumberControl.invalid && phoneNumberControl.touched"
-        [attr.aria-describedby]="
-          phoneNumberControl.invalid && phoneNumberControl.touched ? 'phoneNumber-error' : null
-        "
-        placeholder="+237 6 00 00 00 00"
-      />
-      @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
-        <p-message id="phoneNumber-error" severity="error" variant="simple" size="small">
-          Renseigne un numéro de téléphone valide.
-        </p-message>
-      }
-    </div>
-
-    <!-- Site web -->
-    <div class="form-field">
-      <label for="website">Site web</label>
-      <input
-        pInputText
-        id="website"
-        type="url"
-        formControlName="website"
-        [readonly]="isLoading"
-        placeholder="https://www.ecole.fr"
-      />
-    </div>
   </div>
 
-  <div class="form-section">
-    <h2 class="section-title">Adresse</h2>
-
-    <!-- Adresse -->
-    <div class="form-field">
-      <label for="address">Adresse</label>
-      <input
-        pInputText
-        id="address"
-        type="text"
-        formControlName="address"
-        [readonly]="isLoading"
-        placeholder="12 rue de la République"
-      />
-    </div>
-
-    <!-- Ville et Code postal -->
-    <div class="form-row">
-      <div class="form-field">
-        <label for="city">Ville</label>
-        <input
-          pInputText
-          id="city"
-          type="text"
-          formControlName="city"
-          [readonly]="isLoading"
-          placeholder="Yaoundé"
-        />
-      </div>
-
-      <div class="form-field">
-        <label for="postalCode">Code postal</label>
-        <input
-          pInputText
-          id="postalCode"
-          type="text"
-          formControlName="postalCode"
-          [readonly]="isLoading"
-          placeholder="BP 123"
-        />
-      </div>
-    </div>
-
-    <!-- Pays -->
-    <div class="form-field">
-      <label for="country">Pays</label>
-      <input
-        pInputText
-        id="country"
-        type="text"
-        formControlName="country"
-        [readonly]="isLoading"
-        placeholder="Cameroun"
-      />
-    </div>
-  </div>
-
-  <p-message severity="info" variant="simple" size="small" class="form-note">
-    Seul le nom est obligatoire. Les autres champs sont optionnels et peuvent être ajoutés plus
-    tard.
-  </p-message>
-
-  <!-- Actions -->
   <div class="form-actions">
     @if (showReset) {
-      <button
-        pButton
-        type="button"
-        severity="secondary"
-        (click)="onReset()"
-        [disabled]="isLoading"
-        class="reset-button"
-      >
+      <button pButton type="button" severity="secondary" (click)="onReset()" [disabled]="isLoading">
         Réinitialiser
       </button>
     }
-    <button pButton type="submit" [disabled]="isLoading" class="submit-button">
-      @if (isLoading) {
-        <svg data-p-icon="spinner" class="loading-spinner" aria-hidden="true"></svg>
-      }
+    <button pButton type="submit" [disabled]="isLoading">
       <span>{{ isLoading ? 'Enregistrement…' : submitLabel }}</span>
     </button>
   </div>
