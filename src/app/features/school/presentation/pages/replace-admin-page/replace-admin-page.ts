@@ -7,9 +7,10 @@ import { ReplaceAdminForm } from '../../components/replace-admin-form/replace-ad
 import { SchoolMembershipFacade } from '../../../application/school-membership.facade';
 import { SchoolFacade } from '../../../application/school.facade';
 import type { School } from '../../../domain/models/school.model';
+import { ProgressSpinner, ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
-  imports: [ReplaceAdminForm, MessageModule, ToastModule],
+  imports: [ReplaceAdminForm, MessageModule, ToastModule,ProgressSpinnerModule],
   providers: [MessageService],
   selector: 'app-replace-admin-page',
   styleUrl: './replace-admin-page.css',
