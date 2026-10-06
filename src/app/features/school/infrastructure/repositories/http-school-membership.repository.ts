@@ -7,9 +7,23 @@ import type { SchoolMembershipRepository } from '../../domain/ports/school-membe
 import type {
   ReplaceAdministratorCommand,
   ReplaceAdministratorResult,
+  AcceptedInvitation,
+  InvitableRole,
+  InviteMemberCommand,
+  SentInvitation,
 } from '../../domain/models/school-membership.model';
-import type { ReplaceAdministratorResponseDto } from '../dto/school-membership-response.dto';
+import type {
+  AcceptInvitationResponseDto,
+  InvitationResponseDto,
+  ReplaceAdministratorResponseDto,
+  SchoolRoleResponseDto,
+} from '../dto/school-membership-response.dto';
+import { toAppError } from '../../../../core/http/to-app-error';
 import {
+  mapAcceptedInvitation,
+  mapInvitableRoles,
+  mapInviteMemberRequest,
+  mapSentInvitation,
   mapReplaceAdministratorRequest,
   mapReplaceAdministratorResponse,
 } from '../mappers/school-membership.mapper';
@@ -32,6 +46,47 @@ export class HttpSchoolMembershipRepository implements SchoolMembershipRepositor
       ),
     );
     return mapReplaceAdministratorResponse(responseDto);
+  }
+
+  async acceptInvitation(schoolId: string, token: string): Promise<AcceptedInvitation> {
+    try {
+      const dto = await firstValueFrom(
+        this.http.post<AcceptInvitationResponseDto>(
+          `${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/accept`,
+          { token },
+        ),
+      );
+      return mapAcceptedInvitation(dto);
+    } catch (error) {
+      throw toAppError(error);
+    }
+  }
+
+  async listInvitableRoles(schoolId: string): Promise<InvitableRole[]> {
+    try {
+      const dtos = await firstValueFrom(
+        this.http.get<SchoolRoleResponseDto[]>(
+          `${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/roles`,
+        ),
+      );
+      return mapInvitableRoles(dtos);
+    } catch (error) {
+      throw toAppError(error);
+    }
+  }
+
+  async inviteMember(schoolId: string, command: InviteMemberCommand): Promise<SentInvitation> {
+    try {
+      const dto = await firstValueFrom(
+        this.http.post<InvitationResponseDto>(
+          `${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/invitations`,
+          mapInviteMemberRequest(command),
+        ),
+      );
+      return mapSentInvitation(dto);
+    } catch (error) {
+      throw toAppError(error);
+    }
   }
 }
 

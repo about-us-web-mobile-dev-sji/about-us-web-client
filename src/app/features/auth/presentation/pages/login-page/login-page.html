@@ -9,7 +9,11 @@
     [isLoading]="auth.isLoading()"
     (submitCredentials)="handleSubmit($event)"
   ></app-login-form>
-  @if (auth.error()) {
-    <p i18n="@@login-error" role="alert">{{ auth.error() }}</p>
+  <div class="login-alternative">
+    <span class="login-separator" i18n="@@auth.login.or">ou</span>
+    <app-google-sign-in-button [returnUrl]="returnUrl" />
+  </div>
+  @if (auth.errorCode() ?? redirectErrorCode; as code) {
+    <p role="alert">{{ errorMessage(code) }}</p>
   }
 </div>

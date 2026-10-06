@@ -1,17 +1,19 @@
-import {
-  ChangePasswordCommand,
-  PasswordChangeError,
-  PasswordChangeFailure,
-} from '../../domain/models/password-change.model';
-import { AUTH_REPOSITORY } from '../../application/auth.tokens';
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom, type Observable } from 'rxjs';
+import type { ChangePasswordCommand } from '../../domain/models/password-change.model';
 import type { AuthRepository, LoginCommand } from '../../domain/ports/auth.repository';
-import { LoginResponse } from '../../domain/models/authenticated-user.model';
-import { LoginResponseDto } from '../dto/login-response.dto';
-import { mapLoginResponse } from '../mappers/auth.mapper';
+import type { LoginResponse } from '../../domain/models/authenticated-user.model';
+import { AUTH_REPOSITORY } from '../../application/auth.tokens';
+import type { LoginResponseDto } from '../dto/login-response.dto';
+import type { SessionResponseDto } from '../dto/session-response.dto';
+import type { ActiveSession } from '../../domain/models/active-session.model';
+import { mapActiveSession, mapLoginResponse } from '../mappers/auth.mapper';
 import { API_BASE_URL } from '../../../../core/config/api.config';
+import { toAppError } from '../../../../core/http/to-app-error';
+
+/** Web endpoints whose 401 means "no session" rather than "session expired". */
+export const AUTH_WEB_PATH = '/auth/web/';
 
 @Injectable({ providedIn: 'root' })
 export class HttpAuthRepository implements AuthRepository {
@@ -19,58 +21,65 @@ export class HttpAuthRepository implements AuthRepository {
   private readonly baseUrl = inject(API_BASE_URL);
 
   async login(command: LoginCommand): Promise<LoginResponse> {
-    const dto = await firstValueFrom(
-      this.http.post<LoginResponseDto>(`${this.baseUrl}/auth/web/login/email`, command, {
-        withCredentials: true,
-      }),
+    const dto = await this.send(
+      this.http.post<LoginResponseDto>(`${this.baseUrl}${AUTH_WEB_PATH}login/email`, command),
     );
     return mapLoginResponse(dto);
   }
+
   async restoreSession(): Promise<LoginResponse | null> {
     try {
-      const dto = await firstValueFrom(
-        this.http.post<LoginResponseDto>(
-          `${this.baseUrl}/auth/web/refresh`,
-          {},
-          { withCredentials: true },
-        ),
+      const dto = await this.send(
+        this.http.post<LoginResponseDto>(`${this.baseUrl}${AUTH_WEB_PATH}refresh`, {}),
       );
       return mapLoginResponse(dto);
     } catch (error) {
-      if (error instanceof HttpErrorResponse && error.status === 401) return null;
+      if (toAppError(error).status === 401) return null;
       throw error;
     }
   }
 
   async logout(): Promise<void> {
-    await firstValueFrom(
-      this.http.post<void>(`${this.baseUrl}/auth/web/logout`, {}, { withCredentials: true }),
+    await this.send(this.http.post<void>(`${this.baseUrl}${AUTH_WEB_PATH}logout`, {}));
+  }
+
+  async changePassword(command: ChangePasswordCommand): Promise<void> {
+    await this.send(
+      this.http.patch<void>(`${this.baseUrl}/auth/password`, {
+        currentPassword: command.currentPassword,
+        newPassword: command.newPassword,
+      }),
     );
   }
-  async changePassword(command: ChangePasswordCommand): Promise<void> {
+
+  async listSessions(): Promise<ActiveSession[]> {
+    const dtos = await this.send(
+      this.http.get<SessionResponseDto[]>(`${this.baseUrl}/auth/sessions`),
+    );
+    return dtos.map(mapActiveSession);
+  }
+
+  async revokeSession(sessionId: string): Promise<void> {
+    await this.send(
+      this.http.delete<void>(`${this.baseUrl}/auth/sessions/${encodeURIComponent(sessionId)}`),
+    );
+  }
+
+  async revokeAllSessions(): Promise<void> {
+    await this.send(this.http.delete<void>(`${this.baseUrl}/auth/sessions`));
+  }
+
+  /** UC-25: full-page navigation to the backend, which redirects to Google. */
+  googleSignInUrl(returnUrl: string | null): string {
+    const url = `${this.baseUrl}${AUTH_WEB_PATH}login/google`;
+    return returnUrl ? `${url}?returnUrl=${encodeURIComponent(returnUrl)}` : url;
+  }
+
+  private async send<T>(request: Observable<T>): Promise<T> {
     try {
-      await firstValueFrom(
-        this.http.patch<void>(
-          `${this.baseUrl}/auth/password`,
-          {
-            currentPassword: command.currentPassword,
-            newPassword: command.newPassword,
-          },
-          { withCredentials: true },
-        ),
-      );
+      return await firstValueFrom(request);
     } catch (error) {
-      const reasons: Record<number, PasswordChangeFailure> = {
-        400: 'invalid',
-        401: 'unauthorized',
-        403: 'forbidden',
-        409: 'conflict',
-      };
-      throw new PasswordChangeError(
-        error instanceof HttpErrorResponse
-          ? (reasons[error.status] ?? 'unavailable')
-          : 'unavailable',
-      );
+      throw toAppError(error);
     }
   }
 }

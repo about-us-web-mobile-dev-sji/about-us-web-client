@@ -1,9 +1,8 @@
 import { AdminLayout } from './core/layout/admin-layout/admin-layout';
 import { AdminSettingsPage } from './features/settings/presentation/pages/admin-settings-page/admin-settings-page';
 import { Routes } from '@angular/router';
-import { LoginPage } from './features/auth/presentation/pages/login-page/login-page';
-import { ForbiddenPage } from './features/auth/presentation/pages/forbidden-page/forbidden-page';
-import { authGuard } from './features/auth/presentation/guards/auth.guard';
+import { LoginPage, ForbiddenPage, AuthCallbackPage, authGuard } from './features/auth';
+import { AcceptInvitationPage } from './features/school/presentation/pages/accept-invitation-page/accept-invitation-page';
 import { SuperAdminDashboard } from './features/dashboard/presentation/pages/super-admin-dashboard/super-admin-dashboard';
 import { UsersPage } from './features/users/presentation/pages/users-page/users-page';
 import { HomePage } from './features/dashboard/presentation/pages/home-page/home-page';
@@ -16,6 +15,8 @@ import { ReplaceAdminPage } from './features/school/presentation/pages/replace-a
 
 export const routes: Routes = [
   { path: 'login', component: LoginPage },
+  { path: 'auth/callback', component: AuthCallbackPage },
+  { path: 'invitations/accept', component: AcceptInvitationPage, canActivate: [authGuard()] },
   { path: 'home', component: HomePage, canActivate: [authGuard()] },
   {
     path: 's',

@@ -60,3 +60,7 @@ a[pSidebarMenuButton].active-link svg {
   overflow: auto;
   padding: clamp(1rem, 3vw, 2.5rem);
 }
+
+.admin-logout {
+  margin-left: auto;
+}

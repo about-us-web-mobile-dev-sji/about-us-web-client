@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthFacade } from '../../application/auth.facade';
 import type { AuthenticatedUser } from '../../domain/models/authenticated-user.model';
+import { loginRedirect } from '../../application/auth-navigation';
 
 type GlobalRole = AuthenticatedUser['globalRole'];
 
@@ -12,9 +13,7 @@ export function authGuard(allowedRoles: readonly GlobalRole[] = []): CanActivate
     await auth.initialize();
 
     const user = auth.user();
-    if (!user) {
-      return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
-    }
+    if (!user) return loginRedirect(router, state.url);
     if (allowedRoles.length > 0 && !allowedRoles.includes(user.globalRole)) {
       return router.createUrlTree(['/forbidden']);
     }

@@ -1,4 +1,5 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { credentialsInterceptor } from '../../../core/http/credentials.interceptor';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
@@ -20,7 +21,7 @@ describe('Change password flow', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter(routes),
-        provideHttpClient(),
+        provideHttpClient(withInterceptors([credentialsInterceptor])),
         provideHttpClientTesting(),
         AUTH_REPOSITORY_PROVIDER,
         { provide: API_BASE_URL, useValue: '/api' },
@@ -42,7 +43,11 @@ describe('Change password flow', () => {
     });
     await initialization;
   });
-  afterEach(() => http.verify());
+  afterEach(() => {
+    // The settings page also lists the devices (sessions panel): not under test here.
+    http.match('/api/auth/sessions').forEach((request) => request.flush([]));
+    http.verify();
+  });
 
   it('hides the password fields until editing and clears them on cancellation', async () => {
     const harness = await RouterTestingHarness.create();
@@ -89,21 +94,23 @@ describe('Change password flow', () => {
     http.expectNone('/api/auth/web/logout');
   });
 
-  for (const [status, message] of [
-    [400, 'ne respecte pas'],
-    [401, 'incorrect ou ta session'],
-    [403, 'Modification refusée'],
-    [409, 'entre-temps'],
-    [500, 'pour le moment'],
+  for (const [status, code, message] of [
+    [400, 'INVALID_PASSWORD', 'ne respecte pas'],
+    [401, 'INVALID_CREDENTIALS', 'actuel est incorrect'],
+    [403, 'PASSWORD_CHANGE_FORBIDDEN', 'ne peux pas modifier'],
+    [409, 'PASSWORD_CHANGE_CONFLICT', 'entre-temps'],
+    [500, 'INTERNAL_SERVER_ERROR', 'Réessaie plus tard'],
   ] as const) {
-    it(`displays HTTP ${status} without clearing the current session`, async () => {
+    it(`displays ${code} (HTTP ${status}) without clearing the current session`, async () => {
       const harness = await RouterTestingHarness.create();
       await harness.navigateByUrl('/s/settings');
       const page = harness.routeDebugElement!.query(By.directive(AdminSettingsPage))
         .componentInstance as AdminSettingsPage;
       const change = page.changePassword(command);
       await Promise.resolve();
-      http.expectOne('/api/auth/password').flush({}, { status, statusText: 'Error' });
+      http
+        .expectOne('/api/auth/password')
+        .flush({ code, message: code, details: null }, { status, statusText: 'Error' });
       await change;
       expect(page.passwordError()).toContain(message);
       expect(auth.sessionId()).toBe('session');

@@ -45,10 +45,16 @@ export class SchoolsListPage implements OnInit {
 
   readonly createForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
+    /** Optional: the backend invites this address as the school administrator (UC-16). */
+    adminEmail: ['', [Validators.email, Validators.maxLength(320)]],
   });
 
   get nameControl() {
     return this.createForm.controls.name;
+  }
+
+  get adminEmailControl() {
+    return this.createForm.controls.adminEmail;
   }
 
   ngOnInit(): void {
@@ -86,7 +92,11 @@ export class SchoolsListPage implements OnInit {
     }
 
     const value = this.createForm.getRawValue();
-    const command: CreateSchoolCommand = { name: value.name.trim() };
+    const adminEmail = value.adminEmail.trim().toLowerCase();
+    const command: CreateSchoolCommand = {
+      name: value.name.trim(),
+      ...(adminEmail && { email: adminEmail }),
+    };
 
     this.isCreating.set(true);
     try {
@@ -94,7 +104,9 @@ export class SchoolsListPage implements OnInit {
       this.showToast(
         'success',
         'Établissement créé !',
-        `"${createdSchool.name}" a été enregistré.`,
+        adminEmail
+          ? `"${createdSchool.name}" a été enregistré. Une invitation a été envoyée à ${adminEmail}.`
+          : `"${createdSchool.name}" a été enregistré.`,
       );
       this.closeCreateDialog();
       await this.facade.loadSchools();

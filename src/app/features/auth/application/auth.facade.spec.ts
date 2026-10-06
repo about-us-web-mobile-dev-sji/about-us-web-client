@@ -1,4 +1,5 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { credentialsInterceptor } from '../../../core/http/credentials.interceptor';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '../../../core/config/api.config';
@@ -13,7 +14,7 @@ describe('AuthFacade login flow', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(),
+        provideHttpClient(withInterceptors([credentialsInterceptor])),
         provideHttpClientTesting(),
         AUTH_REPOSITORY_PROVIDER,
         { provide: API_BASE_URL, useValue: '/api' },
@@ -100,7 +101,7 @@ describe('AuthFacade login flow', () => {
       expect(facade.isInitialized()).toBe(true);
       expect(facade.isAuthenticated()).toBe(false);
       expect(facade.isLoading()).toBe(false);
-      expect(facade.error() === null).toBe(status === 401);
+      expect(facade.errorCode() === null).toBe(status === 401);
     });
   }
 
@@ -124,7 +125,7 @@ describe('AuthFacade login flow', () => {
     http.expectOne('/api/auth/web/logout').flush({}, { status: 500, statusText: 'Error' });
     await rejection;
     expect(facade.sessionId()).toBe('active');
-    expect(facade.error()).toBeTruthy();
+    expect(facade.errorCode()).toBeTruthy();
     expect(facade.isLoading()).toBe(false);
   });
 });

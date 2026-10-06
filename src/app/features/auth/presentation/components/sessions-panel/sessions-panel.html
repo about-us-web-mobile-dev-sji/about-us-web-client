@@ -1,0 +1,58 @@
+<section class="sessions" aria-labelledby="sessions-title">
+  <header class="sessions-header">
+    <h2 id="sessions-title" i18n="@@auth.sessions.title">Appareils connectés</h2>
+    <button
+      pButton
+      type="button"
+      severity="danger"
+      outlined
+      size="small"
+      [disabled]="auth.isLoading() || isLoadingList()"
+      (click)="logoutEverywhere()"
+      i18n="@@auth.sessions.logoutEverywhere"
+    >
+      Se déconnecter de tous les appareils
+    </button>
+  </header>
+
+  @if (error(); as message) {
+    <p role="alert" class="sessions-error">{{ message }}</p>
+  }
+
+  @if (isLoadingList()) {
+    <p i18n="@@auth.sessions.loading">Chargement des appareils…</p>
+  } @else {
+    <ul class="sessions-list">
+      @for (session of sessions(); track session.id) {
+        <li class="session">
+          <div>
+            <p class="session-device">
+              {{ deviceLabel(session) }}
+              @if (session.current) {
+                <span class="session-current" i18n="@@auth.sessions.current">Cet appareil</span>
+              }
+            </p>
+            <p class="session-meta" i18n="@@auth.sessions.meta">
+              Connecté le {{ session.createdAt | date: 'short' }} · dernière activité
+              {{ session.lastActivityAt | date: 'short' }}
+            </p>
+          </div>
+          <button
+            pButton
+            type="button"
+            severity="secondary"
+            text
+            size="small"
+            [disabled]="auth.isLoading()"
+            (click)="revoke(session)"
+            i18n="@@auth.sessions.revoke"
+          >
+            Déconnecter
+          </button>
+        </li>
+      } @empty {
+        <li i18n="@@auth.sessions.empty">Aucune session active.</li>
+      }
+    </ul>
+  }
+</section>

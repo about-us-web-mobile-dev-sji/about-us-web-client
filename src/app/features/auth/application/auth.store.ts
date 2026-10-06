@@ -1,9 +1,11 @@
-import { ChangePasswordCommand, PasswordChangeError } from '../domain/models/password-change.model';
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import type { ChangePasswordCommand } from '../domain/models/password-change.model';
 import type { LoginResponse } from '../domain/models/authenticated-user.model';
-import type { AuthState } from './auth-state.model';
+import type { ActiveSession } from '../domain/models/active-session.model';
 import type { LoginCommand } from '../domain/ports/auth.repository';
+import { AppError, CLIENT_ERROR_CODES, errorCodeOf } from '../../../core/errors/app-error';
+import type { AuthState } from './auth-state.model';
 import { AUTH_SERVICE } from './auth.tokens';
 import { AuthOperationQueue } from './auth-operation-queue';
 
@@ -11,9 +13,10 @@ const initialState: AuthState = {
   session: null,
   isLoading: false,
   isInitialized: false,
-  error: null,
+  errorCode: null,
 };
 
+/** Internal state of the auth feature. Other features go through AuthFacade. */
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
@@ -22,7 +25,6 @@ export const AuthStore = signalStore(
     sessionId: computed(() => session()?.sessionId ?? null),
     isAuthenticated: computed(() => session() !== null),
     isSuperAdmin: computed(() => session()?.user.globalRole === 'SUPER_ADMIN'),
-    userFirstName: computed(() => session()?.user.firstName ?? ''),
     userName: computed(() => {
       const user = session()?.user;
       return (
@@ -36,72 +38,113 @@ export const AuthStore = signalStore(
     }),
   })),
   withMethods((store, authService = inject(AUTH_SERVICE)) => {
-    let initialization: Promise<void> | undefined;
     const operations = new AuthOperationQueue();
+    let initialization: Promise<void> | undefined;
+    let refreshing: Promise<boolean> | undefined;
+
+    /** Runs a session mutation in order, tracking loading state and the error code. */
+    function run<T>(operation: () => Promise<T>): Promise<T> {
+      return operations.enqueue(async () => {
+        patchState(store, { isLoading: true, errorCode: null });
+        try {
+          return await operation();
+        } catch (error) {
+          patchState(store, { errorCode: errorCodeOf(error) });
+          throw error;
+        } finally {
+          patchState(store, { isLoading: false, isInitialized: true });
+        }
+      });
+    }
 
     return {
+      /** Restores the session once at startup; never rejects. */
       initialize(): Promise<void> {
-        if (initialization) return initialization;
         if (store.isInitialized()) return Promise.resolve();
-        initialization = operations.enqueue(async () => {
-          if (store.isInitialized()) return;
-          patchState(store, { isLoading: true, error: null });
-          try {
-            const session = await authService.restoreSession();
-            patchState(store, { session });
-          } catch {
-            patchState(store, {
-              session: null,
-              error: 'Impossible de restaurer la session. Réessaie de te connecter.',
-            });
-          } finally {
-            patchState(store, { isLoading: false, isInitialized: true });
-          }
+        initialization ??= run(async () => {
+          // A login queued before startup already established the session.
+          if (store.session()) return;
+          patchState(store, { session: await authService.restoreSession() });
+        }).catch(() => {
+          patchState(store, {
+            session: null,
+            errorCode: CLIENT_ERROR_CODES.sessionRestoreFailed,
+          });
         });
         return initialization;
       },
+
       login(command: LoginCommand): Promise<LoginResponse> {
-        return operations.enqueue(async () => {
-          patchState(store, { isLoading: true, error: null });
-          try {
-            const session = await authService.login(command);
-            patchState(store, { session });
-            return session;
-          } catch (error) {
-            patchState(store, {
-              error: 'Connexion impossible. Vérifie tes identifiants et réessaie.',
-            });
-            throw error;
-          } finally {
-            patchState(store, { isLoading: false, isInitialized: true });
-          }
+        return run(async () => {
+          const session = await authService.login(command);
+          patchState(store, { session });
+          return session;
         });
       },
+
+      /**
+       * Renews the access token after a 401 on an API call. Concurrent callers
+       * share one request, so the refresh token is rotated only once.
+       * Resolves false when the session cannot be renewed.
+       */
+      refreshSession(): Promise<boolean> {
+        refreshing ??= operations
+          .enqueue(() => authService.restoreSession())
+          .then(
+            (session) => {
+              patchState(store, { session });
+              return session !== null;
+            },
+            () => false,
+          )
+          .finally(() => (refreshing = undefined));
+        return refreshing;
+      },
+
+      /** Drops a session the backend no longer accepts. */
+      expireSession(): void {
+        if (!store.session()) return;
+        patchState(store, { session: null, errorCode: CLIENT_ERROR_CODES.sessionExpired });
+      },
+
       changePassword(command: ChangePasswordCommand): Promise<void> {
-        return operations.enqueue(async () => {
-          if (!store.isSuperAdmin()) throw new PasswordChangeError('forbidden');
-          patchState(store, { isLoading: true, error: null });
-          try {
-            await authService.changePassword(command);
-            // The backend has already revoked every session and cleared the cookies.
-            patchState(store, { session: null, isInitialized: true });
-          } finally {
-            patchState(store, { isLoading: false });
-          }
+        return run(async () => {
+          if (!store.isSuperAdmin()) throw new AppError('PASSWORD_CHANGE_FORBIDDEN', 403);
+          await authService.changePassword(command);
+          // The backend has revoked every session and cleared the cookies.
+          patchState(store, { session: null });
         });
       },
+
+      /** UC-21. Read only: the list is page state, not session state. */
+      listSessions(): Promise<ActiveSession[]> {
+        return authService.listSessions();
+      },
+
+      /** UC-21. Revoking the session of this browser signs it out. */
+      revokeSession(session: ActiveSession): Promise<void> {
+        return run(async () => {
+          await authService.revokeSession(session.id);
+          if (session.current) patchState(store, { session: null });
+        });
+      },
+
+      /** UC-22. The backend revokes every session and clears the cookies. */
+      logoutEverywhere(): Promise<void> {
+        return run(async () => {
+          await authService.revokeAllSessions();
+          patchState(store, { session: null });
+        });
+      },
+
+      googleSignInUrl(returnUrl: string | null): string {
+        return authService.googleSignInUrl(returnUrl);
+      },
+
       logout(): Promise<void> {
-        return operations.enqueue(async () => {
-          patchState(store, { isLoading: true, error: null });
-          try {
-            await authService.logout();
-            patchState(store, { session: null, isInitialized: true });
-          } catch (error) {
-            patchState(store, { error: 'Déconnexion impossible. Réessaie.' });
-            throw error;
-          } finally {
-            patchState(store, { isLoading: false });
-          }
+        return run(async () => {
+          await authService.logout();
+          patchState(store, { session: null });
         });
       },
     };

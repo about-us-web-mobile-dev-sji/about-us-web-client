@@ -183,6 +183,25 @@
             }
           </div>
 
+          <div class="form-field">
+            <label for="create-form-admin-email">E-mail de l’administrateur</label>
+            <input
+              id="create-form-admin-email"
+              type="email"
+              formControlName="adminEmail"
+              autocomplete="off"
+              placeholder="directeur@gmail.com"
+              aria-describedby="create-form-admin-email-hint"
+            />
+            <p id="create-form-admin-email-hint" class="field-hint">
+              Facultatif. Cette personne recevra une invitation pour administrer l’école en se
+              connectant avec Google.
+            </p>
+            @if (adminEmailControl.invalid && adminEmailControl.touched) {
+              <p class="field-error">Renseigne une adresse e-mail valide.</p>
+            }
+          </div>
+
           <div class="modal-actions">
             <button
               type="button"

@@ -1,18 +1,24 @@
 import { ButtonDirective } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Router } from '@angular/router';
-import { ChangePasswordForm } from '../../../../auth/presentation/components/change-password-form/change-password-form';
-import {
-  ChangePasswordCommand,
-  PasswordChangeError,
-  PasswordChangeFailure,
-} from '../../../../auth/domain/models/password-change.model';
 import { Component, inject, signal, viewChild } from '@angular/core';
-import { AuthFacade } from '../../../../auth/application/auth.facade';
+import {
+  AuthFacade,
+  ChangePasswordForm,
+  SessionsPanel,
+  type ChangePasswordCommand,
+} from '../../../../auth';
+import { errorCodeOf } from '../../../../../core/errors/app-error';
+import { errorMessage } from '../../../../../core/i18n/error-messages';
+
+/** Wording specific to this form, on top of the shared error messages. */
+const PASSWORD_ERROR_OVERRIDES = {
+  INVALID_CREDENTIALS: $localize`:@@settings.password.INVALID_CREDENTIALS:Le mot de passe actuel est incorrect.`,
+};
 
 @Component({
   selector: 'app-admin-settings-page',
-  imports: [ChangePasswordForm, ButtonDirective, InputTextModule],
+  imports: [ChangePasswordForm, SessionsPanel, ButtonDirective, InputTextModule],
   template: `
     <h1>Paramètres</h1>
     <p>Informations du compte administrateur connecté.</p>
@@ -67,6 +73,7 @@ import { AuthFacade } from '../../../../auth/application/auth.facade';
         </div>
       </section>
     }
+    <app-sessions-panel />
   `,
   styles: `
     .password-edit-button {
@@ -126,19 +133,7 @@ export class AdminSettingsPage {
     try {
       await this.auth.changePassword(command);
     } catch (error) {
-      const messages: Record<PasswordChangeFailure, string> = {
-        invalid:
-          'Le nouveau mot de passe ne respecte pas les règles ou reprend le mot de passe actuel.',
-        unauthorized:
-          'Le mot de passe actuel est incorrect ou ta session a expiré. Vérifie-le ou reconnecte-toi.',
-        forbidden:
-          'Modification refusée. Un compte super administrateur actif et une origine autorisée sont nécessaires.',
-        conflict: 'Le mot de passe a été modifié entre-temps. Reconnecte-toi avant de réessayer.',
-        unavailable: 'Impossible de modifier le mot de passe pour le moment. Réessaie plus tard.',
-      };
-      this.passwordError.set(
-        messages[error instanceof PasswordChangeError ? error.reason : 'unavailable'],
-      );
+      this.passwordError.set(errorMessage(errorCodeOf(error), PASSWORD_ERROR_OVERRIDES));
       return;
     } finally {
       this.passwordForm()?.reset();

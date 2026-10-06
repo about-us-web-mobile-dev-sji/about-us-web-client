@@ -1,0 +1,58 @@
+.sessions {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 0.75rem;
+  max-width: 40rem;
+}
+.sessions-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+h2 {
+  font-weight: 600;
+}
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.session {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--p-content-border-color);
+}
+.session:last-child {
+  border-bottom: none;
+}
+.session-device {
+  font-weight: 500;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.session-current {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: var(--p-primary-100);
+  color: var(--p-primary-700);
+}
+.session-meta {
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+.sessions-error {
+  color: var(--p-red-700);
+  margin-bottom: 0.75rem;
+}

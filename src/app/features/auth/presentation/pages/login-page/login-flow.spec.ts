@@ -1,4 +1,5 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { credentialsInterceptor } from '../../../../../core/http/credentials.interceptor';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
@@ -16,7 +17,7 @@ describe('Login with the real store and router', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter(routes),
-        provideHttpClient(),
+        provideHttpClient(withInterceptors([credentialsInterceptor])),
         provideHttpClientTesting(),
         AUTH_REPOSITORY_PROVIDER,
         { provide: API_BASE_URL, useValue: '/api' },

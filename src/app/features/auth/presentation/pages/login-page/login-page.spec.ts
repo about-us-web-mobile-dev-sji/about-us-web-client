@@ -11,9 +11,10 @@ describe('LoginPage', () => {
 
   const auth = {
     isLoading: signal(false),
-    error: signal(null),
+    errorCode: signal(null),
     isSuperAdmin: signal(false),
     login: vi.fn(),
+    googleSignInUrl: () => '/api/auth/web/login/google',
   };
   let returnUrl: string | null = null;
 

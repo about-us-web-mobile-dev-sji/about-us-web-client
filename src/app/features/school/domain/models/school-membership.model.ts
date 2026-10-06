@@ -32,3 +32,25 @@ export interface ReplaceAdministratorResult {
   membershipRevoked: boolean;
   newMembershipCreated: boolean;
 }
+
+export interface AcceptedInvitation {
+  schoolId: string;
+  schoolName: string;
+}
+
+/** A role an invitee can receive (the administrator role is never offered). */
+export interface InvitableRole {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
+export interface InviteMemberCommand {
+  email: string;
+  roleId: string;
+}
+
+export interface SentInvitation {
+  email: string;
+  expiresAt: Date;
+}

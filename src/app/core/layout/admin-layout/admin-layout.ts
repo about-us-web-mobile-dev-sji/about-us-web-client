@@ -5,7 +5,7 @@ import { ButtonDirective } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { Sidebar } from '@primeicons/angular/sidebar';
 import { PIcon } from '@primeicons/angular/p-icon';
-import { AuthFacade } from '../../../features/auth/application/auth.facade';
+import { AuthFacade, LogoutButton } from '../../../features/auth';
 
 @Component({
   selector: 'app-admin-layout',
@@ -18,6 +18,7 @@ import { AuthFacade } from '../../../features/auth/application/auth.facade';
     AvatarModule,
     Sidebar,
     PIcon,
+    LogoutButton,
   ],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css',

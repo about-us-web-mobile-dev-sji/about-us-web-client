@@ -5,11 +5,12 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SchoolFacade } from '../../../application/school.facade';
 import type { School } from '../../../domain/models/school.model';
 import { SchoolStatus } from '../../../domain/models/school.model';
+import { InviteMemberPanel } from '../../components/invite-member-panel/invite-member-panel';
 import { SchoolSpacesChart } from '../../../../spaces/presentation/components/school-spaces-chart/school-spaces-chart';
 
 @Component({
   selector: 'app-school-detail-page',
-  imports: [ProgressSpinnerModule, ReactiveFormsModule, SchoolSpacesChart],
+  imports: [ProgressSpinnerModule, ReactiveFormsModule, SchoolSpacesChart, InviteMemberPanel],
   styleUrl: './school-detail-page.css',
   templateUrl: './school-detail-page.html',
 })
