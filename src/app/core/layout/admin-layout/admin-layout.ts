@@ -5,7 +5,7 @@ import { ButtonDirective } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { Sidebar } from '@primeicons/angular/sidebar';
 import { PIcon } from '@primeicons/angular/p-icon';
-import { AuthFacade } from '../../../features/auth/application/auth.facade';
+import { AuthFacade, LogoutButton } from '../../../features/auth';
 
 @Component({
   selector: 'app-admin-layout',
@@ -18,6 +18,7 @@ import { AuthFacade } from '../../../features/auth/application/auth.facade';
     AvatarModule,
     Sidebar,
     PIcon,
+    LogoutButton,
   ],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css',
@@ -25,15 +26,15 @@ import { AuthFacade } from '../../../features/auth/application/auth.facade';
 export class AdminLayout {
   readonly auth = inject(AuthFacade);
   readonly navGroups = [
-    { label: 'Navigation', 
+    {
+      label: 'Navigation',
       items: [
         { icon: 'home', label: 'Accueil', route: '/s/home' },
         { icon: 'users', label: 'Utilisateurs', route: '/s/users' },
         { icon: 'building', label: 'Écoles', route: '/s/schools' },
         { icon: 'history', label: 'Évènements', route: '/s/events' },
-
-        
-      ] },
+      ],
+    },
     {
       label: 'Administration',
       items: [{ icon: 'cog', label: 'Paramètres', route: '/s/settings' }],

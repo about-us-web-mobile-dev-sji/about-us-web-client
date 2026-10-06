@@ -1,25 +1,30 @@
-import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Output,
+  Input,
+  inject,
+  OnChanges,
+  type SimpleChanges,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonDirective } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { Spinner } from '@primeicons/angular/spinner';
-import type { CreateSchoolCommand } from '../../../domain/models/school.model';
+import type { CreateSchoolCommand, SchoolSummary } from '../../../domain/models/school.model';
 
 @Component({
-  imports: [
-    ReactiveFormsModule,
-    ButtonDirective,
-    InputTextModule,
-    MessageModule,
-    Spinner,
-  ],
+  imports: [ReactiveFormsModule, ButtonDirective, InputTextModule, MessageModule, Spinner],
   selector: 'app-create-school-form',
   styleUrl: './create-school-form.css',
   templateUrl: './create-school-form.html',
 })
-export class CreateSchoolForm {
+export class CreateSchoolForm implements OnChanges {
   @Input() isLoading = false;
+  @Input() school?: SchoolSummary | null;
+  @Input() submitLabel = "Enregistrer l'école";
+  @Input() showReset = true;
 
   private readonly fb = inject(FormBuilder);
 
@@ -27,50 +32,18 @@ export class CreateSchoolForm {
 
   readonly schoolForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
-    code: ['', [Validators.required, Validators.pattern(/^[A-Z0-9_-]+$/)]],
-    address: ['', [Validators.required]],
-    city: ['', [Validators.required]],
-    postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
-    country: ['', [Validators.required]],
-    phone: ['', [Validators.required, Validators.pattern(/^(\+|00)?[0-9\s.-]+$/)]],
-    email: ['', [Validators.required, Validators.email]],
-    principalAdminId: [''],
   });
 
   get nameControl() {
     return this.schoolForm.controls.name;
   }
 
-  get codeControl() {
-    return this.schoolForm.controls.code;
-  }
-
-  get addressControl() {
-    return this.schoolForm.controls.address;
-  }
-
-  get cityControl() {
-    return this.schoolForm.controls.city;
-  }
-
-  get postalCodeControl() {
-    return this.schoolForm.controls.postalCode;
-  }
-
-  get countryControl() {
-    return this.schoolForm.controls.country;
-  }
-
-  get phoneControl() {
-    return this.schoolForm.controls.phone;
-  }
-
-  get emailControl() {
-    return this.schoolForm.controls.email;
-  }
-
-  get principalAdminIdControl() {
-    return this.schoolForm.controls.principalAdminId;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['school']) {
+      this.schoolForm.patchValue({
+        name: this.school?.name ?? '',
+      });
+    }
   }
 
   onSubmit(): void {
@@ -80,13 +53,8 @@ export class CreateSchoolForm {
       return;
     }
 
-    const formValue = this.schoolForm.getRawValue();
-    const command: CreateSchoolCommand = {
-      ...formValue,
-      principalAdminId: formValue.principalAdminId || undefined,
-    };
-
-    this.submitSchool.emit(command);
+    const name = this.schoolForm.getRawValue().name.trim();
+    this.submitSchool.emit({ name });
   }
 
   onReset(): void {

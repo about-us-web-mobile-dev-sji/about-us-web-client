@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { App } from './app';
 import { appConfig } from './app.config';
-import { AuthStore } from './features/auth/application/auth.store';
 import { AuthFacade } from './features/auth/application/auth.facade';
 
 describe('App routing configuration', () => {
@@ -12,8 +11,15 @@ describe('App routing configuration', () => {
       imports: [App],
       providers: [
         ...appConfig.providers,
-        { provide: AuthStore, useValue: { initialize: async () => undefined } },
-        { provide: AuthFacade, useValue: { isLoading: signal(false), error: signal(null) } },
+        {
+          provide: AuthFacade,
+          useValue: {
+            initialize: async () => undefined,
+            isLoading: signal(false),
+            errorCode: signal(null),
+            googleSignInUrl: () => '/api/auth/web/login/google',
+          },
+        },
       ],
     }).compileComponents();
   });

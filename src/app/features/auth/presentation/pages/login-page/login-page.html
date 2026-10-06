@@ -1,15 +1,19 @@
-<div  class="login-page">
+<div class="login-page">
   @if (passwordChanged) {
-    <p  role="status">
+    <p i18n="@@password-changed" role="status">
       Mot de passe modifié. Toutes les sessions ont été fermées. Connecte-toi avec ton nouveau mot
       de passe.
     </p>
   }
-  <app-login-form 
+  <app-login-form
     [isLoading]="auth.isLoading()"
     (submitCredentials)="handleSubmit($event)"
   ></app-login-form>
-  @if (auth.error()) {
-    <p role="alert">{{ auth.error() }}</p>
+  <div class="login-alternative">
+    <span class="login-separator" i18n="@@auth.login.or">ou</span>
+    <app-google-sign-in-button [returnUrl]="returnUrl" />
+  </div>
+  @if (auth.errorCode() ?? redirectErrorCode; as code) {
+    <p role="alert">{{ errorMessage(code) }}</p>
   }
 </div>

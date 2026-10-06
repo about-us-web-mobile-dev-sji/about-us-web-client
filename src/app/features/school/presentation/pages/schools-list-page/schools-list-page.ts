@@ -1,75 +1,189 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { ButtonDirective } from 'primeng/button';
+import { DatePipe } from '@angular/common';
+import { Component, OnInit, inject, model, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { Drawer } from 'primeng/drawer';
+import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToastModule } from 'primeng/toast';
 import { SchoolFacade } from '../../../application/school.facade';
-import type { School } from '../../../domain/models/school.model';
-import { SchoolStatus } from '../../../domain/models/school.model';
+import {
+  SchoolStatus,
+  type CreateSchoolCommand,
+  type SchoolSummary,
+} from '../../../domain/models/school.model';
 
 @Component({
-  imports: [RouterLink, ButtonDirective, TagModule, ProgressSpinnerModule],
+  imports: [
+    ButtonModule,
+    DatePipe,
+    Drawer,
+    ReactiveFormsModule,
+    TableModule,
+    TagModule,
+    ToastModule,
+  ],
+  providers: [MessageService],
   selector: 'app-schools-list-page',
   styleUrl: './schools-list-page.css',
   templateUrl: './schools-list-page.html',
 })
 export class SchoolsListPage implements OnInit {
-  private readonly schoolFacade = inject(SchoolFacade);
+  private readonly fb = inject(FormBuilder);
+  private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
+  protected readonly facade = inject(SchoolFacade);
 
-  schools = signal<School[]>([]);
-  isLoading = signal(true);
-  errorMessage = signal<string | null>(null);
+  protected readonly SchoolStatus = SchoolStatus;
 
-  async ngOnInit(): Promise<void> {
-    await this.loadSchools();
+  readonly showCreateDialog = signal(false);
+  readonly isCreating = signal(false);
+  readonly optionsOpen = model(false);
+  readonly selectedSchool = signal<SchoolSummary | null>(null);
+
+  readonly createForm = this.fb.nonNullable.group({
+    name: ['', [Validators.required, Validators.minLength(3)]],
+    /** Optional: the backend invites this address as the school administrator (UC-16). */
+    adminEmail: ['', [Validators.email, Validators.maxLength(320)]],
+  });
+
+  get nameControl() {
+    return this.createForm.controls.name;
   }
 
-  async loadSchools(): Promise<void> {
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
+  get adminEmailControl() {
+    return this.createForm.controls.adminEmail;
+  }
 
+  ngOnInit(): void {
+    void this.facade.loadSchools();
+  }
+
+  openCreateDialog(): void {
+    this.createForm.reset();
+    this.showCreateDialog.set(true);
+  }
+
+  closeCreateDialog(): void {
+    this.showCreateDialog.set(false);
+  }
+
+  openOptions(school: SchoolSummary): void {
+    this.selectedSchool.set(school);
+    this.optionsOpen.set(true);
+  }
+
+  closeOptions(): void {
+    this.optionsOpen.set(false);
+    this.selectedSchool.set(null);
+  }
+
+  onOptionsHide(): void {
+    this.selectedSchool.set(null);
+  }
+
+  async onCreateSubmit(): Promise<void> {
+    if (this.isCreating()) return;
+    if (this.createForm.invalid) {
+      this.createForm.markAllAsTouched();
+      return;
+    }
+
+    const value = this.createForm.getRawValue();
+    const adminEmail = value.adminEmail.trim().toLowerCase();
+    const command: CreateSchoolCommand = {
+      name: value.name.trim(),
+      ...(adminEmail && { email: adminEmail }),
+    };
+
+    this.isCreating.set(true);
     try {
-      const schools = await this.schoolFacade.getAllSchools();
-      this.schools.set(schools);
+      const createdSchool = await this.facade.createSchool(command);
+      this.showToast(
+        'success',
+        'Établissement créé !',
+        adminEmail
+          ? `"${createdSchool.name}" a été enregistré. Une invitation a été envoyée à ${adminEmail}.`
+          : `"${createdSchool.name}" a été enregistré.`,
+      );
+      this.closeCreateDialog();
+      await this.facade.loadSchools();
     } catch (error: any) {
-      console.error('Erreur lors de la récupération des écoles:', error);
-      this.errorMessage.set('Impossible de charger la liste des écoles.');
+      console.error("Erreur lors de la création de l'école:", error);
+      let detail = "Erreur lors de la création de l'école.";
+      if (error?.status === 400) {
+        detail = 'Les données fournies sont invalides.';
+      } else if (error?.status === 409) {
+        detail = 'Une école avec ce nom existe déjà.';
+      }
+      this.showToast('error', 'Erreur', detail);
     } finally {
-      this.isLoading.set(false);
+      this.isCreating.set(false);
     }
   }
 
-  getSchoolInitial(name: string): string {
-    return name
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part.charAt(0))
-      .join('')
-      .toUpperCase() || 'E';
+  viewSchoolDetails(schoolId: string): void {
+    this.closeOptions();
+    void this.router.navigate(['/s/schools', schoolId]);
   }
 
-  getStatusLabel(status: SchoolStatus): string {
-    const labels: Record<SchoolStatus, string> = {
-      [SchoolStatus.ACTIVE]: 'Active',
-      [SchoolStatus.INACTIVE]: 'Inactive',
-      [SchoolStatus.PENDING]: 'En attente',
-    };
-    return labels[status] || status;
+  editSchool(schoolId: string): void {
+    this.closeOptions();
+    void this.router.navigate(['/s/schools', schoolId, 'edit']);
   }
 
-  getStatusSeverity(status: SchoolStatus): 'success' | 'warn' | 'danger' | 'info' {
-    const severities: Record<SchoolStatus, 'success' | 'warn' | 'danger' | 'info'> = {
-      [SchoolStatus.ACTIVE]: 'success',
-      [SchoolStatus.INACTIVE]: 'danger',
-      [SchoolStatus.PENDING]: 'warn',
-    };
-    return severities[status] || 'info';
+  replaceAdmin(schoolId: string): void {
+    this.closeOptions();
+    void this.router.navigate(['/s/schools', schoolId, 'replace-admin']);
   }
 
-  navigateToCreate(): void {
-    this.router.navigate(['/s/schools/create']);
+  async toggleStatus(school: SchoolSummary): Promise<void> {
+    this.closeOptions();
+    try {
+      const updated = await this.facade.toggleBlock(school);
+      const nowBlocked = updated.status === SchoolStatus.BLOCKED;
+      this.showToast(
+        nowBlocked ? 'warn' : 'success',
+        nowBlocked ? 'École bloquée' : 'École débloquée',
+        `Le statut de "${updated.name}" a été mis à jour.`,
+      );
+    } catch {
+      this.showToast('error', 'Erreur', 'Échec de la mise à jour du statut.');
+    }
+  }
+
+  protected statusLabel(status: SchoolStatus | null): string {
+    if (!status) return '—';
+    switch (status) {
+      case SchoolStatus.BLOCKED:
+        return 'Bloquée';
+      case SchoolStatus.ACTIVE:
+        return 'Active';
+      case SchoolStatus.SUSPENDED:
+        return 'Suspendue';
+      case SchoolStatus.INACTIVE:
+        return 'Inactive';
+    }
+  }
+
+  protected statusSeverity(
+    status: SchoolStatus | null,
+  ): 'success' | 'warn' | 'danger' | 'secondary' {
+    switch (status) {
+      case SchoolStatus.ACTIVE:
+        return 'success';
+      case SchoolStatus.BLOCKED:
+        return 'danger';
+      case SchoolStatus.SUSPENDED:
+        return 'warn';
+      default:
+        return 'secondary';
+    }
+  }
+
+  private showToast(severity: string, summary: string, detail: string): void {
+    this.messageService.add({ severity, summary, detail, life: 3500 });
   }
 }

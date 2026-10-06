@@ -4,5 +4,6 @@ export interface AuthState {
   session: LoginResponse | null;
   isLoading: boolean;
   isInitialized: boolean;
-  error: string | null;
+  /** Translation key of the last auth failure (see core/i18n/error-messages). */
+  errorCode: string | null;
 }

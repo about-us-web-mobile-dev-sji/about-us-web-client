@@ -11,12 +11,21 @@ const session: LoginResponse = {
   sessionId: 'session',
 };
 
-function createStore(repository: Omit<AuthRepository, 'changePassword'>) {
+type SessionRepositoryPart = Pick<AuthRepository, 'login' | 'restoreSession' | 'logout'>;
+
+function createStore(repository: SessionRepositoryPart) {
   TestBed.configureTestingModule({
     providers: [
       {
         provide: AUTH_REPOSITORY,
-        useValue: { ...repository, changePassword: async () => undefined },
+        useValue: {
+          ...repository,
+          changePassword: async () => undefined,
+          listSessions: async () => [],
+          revokeSession: async () => undefined,
+          revokeAllSessions: async () => undefined,
+          googleSignInUrl: () => '',
+        } satisfies AuthRepository,
       },
     ],
   });
@@ -33,7 +42,7 @@ describe('AuthStore with a non-HTTP repository', () => {
     await store.initialize();
     expect(store.isInitialized()).toBe(true);
     expect(store.isAuthenticated()).toBe(false);
-    expect(store.error()).toBeNull();
+    expect(store.errorCode()).toBeNull();
   });
 
   it('serializes restoration, login and logout in request order', async () => {
@@ -91,10 +100,10 @@ describe('AuthStore with a non-HTTP repository', () => {
       logout: async () => undefined,
     });
     await expect(store.login(command)).rejects.toThrow('Unavailable');
-    expect(store.error()).toBeTruthy();
+    expect(store.errorCode()).toBeTruthy();
     await store.login(command);
     expect(store.session()).toEqual(session);
-    expect(store.error()).toBeNull();
+    expect(store.errorCode()).toBeNull();
     expect(store.isLoading()).toBe(false);
   });
 });

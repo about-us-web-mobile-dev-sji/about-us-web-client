@@ -23,7 +23,6 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "localize": ["en-US"],
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -37,11 +36,12 @@
           },
           "configurations": {
             "production": {
+              "localize": true,
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1.2MB",
+                  "maximumError": "1.6MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -61,6 +61,18 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "en-US": {
+              "localize": ["en-US"],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "fr-CA": {
+              "localize": ["fr-CA"],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -73,6 +85,12 @@
             },
             "development": {
               "buildTarget": "about-us:build:development"
+            },
+            "en-US": {
+              "buildTarget": "about-us:build:en-US"
+            },
+            "fr-CA": {
+              "buildTarget": "about-us:build:fr-CA"
             }
           },
           "defaultConfiguration": "development"
