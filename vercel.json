@@ -4,12 +4,13 @@
   "outputDirectory": "dist/about-us/browser",
   "redirects": [
     {
-      "source": "/:path((?!fr-CA(?:/|$)|en-US(?:/|$)).*)",
+      "source": "/:path((?!fr-CA(?:/|$)|en-US(?:/|$)|api(?:/|$)).*)",
       "destination": "/fr-CA/:path",
       "permanent": false
     }
   ],
   "rewrites": [
+    { "source": "/api/:path*", "destination": "https://about-us-app.onrender.com/:path*" },
     { "source": "/en-US/:path*", "destination": "/en-US/index.html" },
     { "source": "/fr-CA/:path*", "destination": "/fr-CA/index.html" }
   ]
