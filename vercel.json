@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/about-us/browser",
+  "redirects": [
+    {
+      "source": "/:path((?!fr-CA(?:/|$)|en-US(?:/|$)).*)",
+      "destination": "/fr-CA/:path",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    { "source": "/en-US/:path*", "destination": "/en-US/index.html" },
+    { "source": "/fr-CA/:path*", "destination": "/fr-CA/index.html" }
+  ]
+}
