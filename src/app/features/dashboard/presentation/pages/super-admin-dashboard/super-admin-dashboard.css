@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
+.super-admin-dashboard {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 700;
+  text-align: center;
+}

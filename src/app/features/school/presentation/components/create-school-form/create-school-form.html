@@ -1,0 +1,43 @@
+<form
+  [formGroup]="schoolForm"
+  (ngSubmit)="onSubmit()"
+  class="create-school-form"
+  novalidate
+  [attr.aria-busy]="isLoading"
+>
+  <div class="form-section">
+    <h2 class="section-title">Informations de l'école</h2>
+
+    <div class="form-field">
+      <label for="name">Nom *</label>
+      <input
+        pInputText
+        id="name"
+        type="text"
+        formControlName="name"
+        [readonly]="isLoading"
+        placeholder="École primaire Jean Moulin"
+      />
+      @if (nameControl.invalid && nameControl.touched) {
+        <p-message severity="error" variant="simple" size="small">
+          {{
+            nameControl.hasError('required')
+              ? 'Le nom est obligatoire.'
+              : 'Le nom doit contenir au moins 3 caractères.'
+          }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="form-actions">
+    @if (showReset) {
+      <button pButton type="button" severity="secondary" (click)="onReset()" [disabled]="isLoading">
+        Réinitialiser
+      </button>
+    }
+    <button pButton type="submit" [disabled]="isLoading">
+      <span>{{ isLoading ? 'Enregistrement…' : submitLabel }}</span>
+    </button>
+  </div>
+</form>

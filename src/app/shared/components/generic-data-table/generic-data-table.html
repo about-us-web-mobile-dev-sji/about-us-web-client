@@ -1,0 +1,141 @@
+<div class="data-table">
+
+  <!-- Toolbar -->
+  <div class="table-toolbar">
+
+    @if (searchable()) {
+      <p-iconfield>
+        <p-inputicon class="pi pi-search" />
+
+        <input
+          pInputText
+          type="search"
+          [placeholder]="searchPlaceholder()"
+          (input)="searchChange.emit($any($event.target).value)"
+        />
+      </p-iconfield>
+    }
+
+    <div class="table-filters">
+
+      @for (filter of filters(); track filter.field) {
+
+        @if (filter.type === 'select') {
+          <p-select
+            [options]="filter.options"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="filter.label"
+            [showClear]="true"
+            (onChange)="filterChange.emit({
+              field: filter.field,
+              value: $event.value
+            })"
+          />
+        }
+
+      }
+
+    </div>
+  </div>
+
+
+  <!-- Table -->
+
+  <p-table
+    [value]="data()"
+    [loading]="loading()"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+
+    <ng-template #header>
+      <tr>
+
+        @for (column of columns(); track column.header) {
+          <th [style.width]="column.width">
+            {{ column.header }}
+          </th>
+        }
+
+        @if (actions().length > 0) {
+          <th></th>
+        }
+
+      </tr>
+    </ng-template>
+
+
+    <ng-template #body let-row>
+      <tr>
+
+        @for (column of columns(); track column.header) {
+
+          <td>
+
+            @switch (column.type) {
+
+            
+
+              @case ('boolean') {
+                {{ getValue(row, column) ? 'Oui' : 'Non' }}
+              }
+
+              @default {
+
+                @if (column.formatter) {
+                  {{ column.formatter(getValue(row, column), row) }}
+                } @else {
+                  {{ getValue(row, column) }}
+                }
+
+              }
+
+            }
+
+          </td>
+        }
+
+
+        @if (actions().length > 0) {
+
+          <td class="table-actions">
+
+            @for (tableAction of actions(); track tableAction.id) {
+
+              @if (!tableAction.visible || tableAction.visible(row)) {
+
+                <p-button
+                  [label]="tableAction.label"
+                  [icon]="tableAction.icon"
+                  [severity]="tableAction.severity ?? 'secondary'"
+                  [disabled]="
+                    loading() ||
+                    (tableAction.disabled?.(row) ?? false)
+                  "
+                  (onClick)="executeAction(tableAction, row)"
+                />
+
+              }
+
+            }
+
+          </td>
+
+        }
+
+      </tr>
+    </ng-template>
+
+
+    <ng-template #emptymessage>
+      <tr>
+        <td
+          [attr.colspan]="columns().length + (actions().length ? 1 : 0)"
+        >
+          Aucun résultat.
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>

@@ -1,0 +1,85 @@
+<main class="users-page">
+  <p-menu #menu [model]="menuItems" [popup]="true" [appendTo]="'body'" />
+  <header class="page-header">
+    <div>
+      <p>Gestion des utilisateurs</p>
+      <h1>Utilisateurs</h1>
+    </div>
+    <p-button label="Actualiser" icon="pi pi-refresh" [loading]="facade.users.loading()"
+      (onClick)="facade.users.refresh()" />
+
+  </header>
+  <body >
+    <input pInputText type="search" placeholder="Rechercher par nom ou email" #searchInput
+    (input)="search(searchInput.value)" />
+
+  <p-select [options]="statusOptions" placeholder="Tous les statuts" [showClear]="true"
+    (onChange)="filterStatus($event.value)" />
+
+  <!-- <p-select [options]="schoolOptions()" optionLabel="name" optionValue="id" placeholder="Toutes les écoles"
+    [showClear]="true" (onChange)="filterSchool($event.value)" /> -->
+
+
+
+  @if (facade.users.error()) {
+
+  <p class="error">
+    Impossible de charger les utilisateurs.
+  </p>
+
+  }
+
+  <p-table [value]="facade.users.data()" [loading]="facade.users.loading()" [tableStyle]="{'min-width': '50rem'}">
+    <ng-template #header>
+      <tr>
+        <th>Utilisateur</th>
+        <th>Email</th>
+        <th>Statut</th>
+        <th class="w-5"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-user>
+      <tr>
+        <td>
+          {{ user.firstName }}
+          {{ user.lastName }}
+        </td>
+        <td>
+          {{ user.email }}
+        </td>
+        <td>
+          {{ user.status.toLowerCase() }}
+        </td>
+        <td>
+          <p-button icon="pi pi-ellipsis-v" severity="secondary" [text]="true" [rounded]="true" ariaLabel="Actions"
+            (onClick)="openMenu($event, user)" />
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="4">
+          Aucun utilisateur trouvé.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <!-- Pagination -->
+  <p-paginator [first]="
+      (facade.users.page() - 1)
+      * facade.users.pageSize()
+    " [rows]="
+      facade.users.pageSize()
+    " [totalRecords]="
+      facade.users.total()
+    " [rowsPerPageOptions]="[
+      10,
+      20,
+      50
+    ]" (onPageChange)="changePage($event)" />
+
+
+  </body>
+
+  
+</main>
