@@ -30,15 +30,23 @@ function generate(envObj, targetPath, production = false) {
   console.log('Wrote', targetPath);
 }
 
-/** Fails the production build early rather than shipping a bundle that calls a fake API. */
+/**
+ * Fails the production build early rather than shipping a bundle that calls a fake API.
+ * Accepts an absolute URL (https://api.host) or a root-relative path (/api, served by the
+ * same site through a proxy). A path without the leading "/" would resolve against the
+ * locale base href (/fr-CA/api) and is refused.
+ */
 function assertApiUrl(value) {
+  if (typeof value === 'string' && /^\/[A-Za-z0-9._~\/-]*$/.test(value) && !value.startsWith('//'))
+    return;
   let url;
   try {
     url = new URL(value);
   } catch {
     throw new Error(
-      'API_URL is missing or invalid for the production build. Set it in the hosting ' +
-        'environment variables (e.g. Vercel > Settings > Environment Variables).',
+      `API_URL "${value ?? ''}" is missing or invalid for the production build. Use an absolute ` +
+        'URL (https://api.host) or a path starting with "/" (e.g. /api), set in the hosting ' +
+        'environment variables (Vercel > Settings > Environment Variables).',
     );
   }
   if (url.hostname.endsWith('example.com'))
@@ -50,7 +58,7 @@ const APP_KEYS = ['API_URL', 'AUTH_TOKEN_NAME'];
 
 function fromProcessEnv() {
   return Object.fromEntries(
-    APP_KEYS.filter((key) => process.env[key]).map((key) => [key, process.env[key].trim()]),
+    APP_KEYS.filter((key) => process.env[key]).map((key) => [key, process.env[key].trim().replace(/\/+$/, '')]),
   );
 }
 
