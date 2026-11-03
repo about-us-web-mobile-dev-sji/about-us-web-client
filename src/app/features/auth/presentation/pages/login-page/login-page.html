@@ -1,19 +1,30 @@
-<div class="login-page">
-  @if (passwordChanged) {
-    <p i18n="@@password-changed" role="status">
-      Mot de passe modifié. Toutes les sessions ont été fermées. Connecte-toi avec ton nouveau mot
-      de passe.
-    </p>
-  }
-  <app-login-form
-    [isLoading]="auth.isLoading()"
-    (submitCredentials)="handleSubmit($event)"
-  ></app-login-form>
-  <div class="login-alternative">
-    <span class="login-separator" i18n="@@auth.login.or">ou</span>
+<main class="au-login">
+  <section class="au-login-card" aria-labelledby="login-title">
+    <header class="au-login-head">
+      <span class="au-login-logo"><img src="favicon.png" alt="" width="24" height="24" /></span>
+      <span class="au-login-brand">About Us</span>
+    </header>
+
+    <div>
+      <h1 id="login-title" class="au-login-title">Connexion</h1>
+      <p class="au-login-sub">Accédez à l’espace d’administration de la plateforme.</p>
+    </div>
+
+    @if (passwordChanged) {
+      <p-message severity="success" role="status" size="small">
+        <span i18n="@@password-changed">Mot de passe modifié. Toutes les sessions ont été fermées : connectez-vous avec le nouveau mot de passe.</span>
+      </p-message>
+    }
+    @if (auth.errorCode() ?? redirectErrorCode; as code) {
+      <p-message severity="error" role="alert" size="small">{{ errorMessage(code) }}</p-message>
+    }
+
+    <app-login-form [isLoading]="auth.isLoading()" (submitCredentials)="handleSubmit($event)" />
+
+    <div class="au-login-or" role="separator" aria-label="ou">
+      <span i18n="@@auth.login.or">ou</span>
+    </div>
     <app-google-sign-in-button [returnUrl]="returnUrl" />
-  </div>
-  @if (auth.errorCode() ?? redirectErrorCode; as code) {
-    <p role="alert">{{ errorMessage(code) }}</p>
-  }
-</div>
+  </section>
+  <p class="au-login-foot">© About Us · Espace administrateur</p>
+</main>

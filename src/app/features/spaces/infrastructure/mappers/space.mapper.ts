@@ -49,9 +49,11 @@ export function mapMembership(dto: SpaceMembershipResponseDto): SpaceMembership 
   return {
     id: dto.id,
     spaceId: dto.spaceId,
-    userId: dto.userId,
+    userId: dto.user.id,
+    user: dto.user,
     role: dto.role as SpaceMembershipRole,
     status: dto.status as SpaceMembershipStatus,
+    grantedAt: dto.grantedAt ? new Date(dto.grantedAt) : null,
   };
 }
 

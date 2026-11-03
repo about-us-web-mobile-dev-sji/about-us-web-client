@@ -1,4 +1,5 @@
 import type { SchoolStatus } from '../../domain/models/school.model';
+import type { UserSummary } from '../../../../shared/users/user-summary';
 
 /** Réponse de GET /schools, POST /schools et PATCH /schools/:id/toggle-block. */
 export interface SchoolDetailDto {
@@ -7,10 +8,11 @@ export interface SchoolDetailDto {
   phoneNumber: string | null;
   email: string | null;
   website: string | null;
+  logo: string | null;
   status: SchoolStatus;
   createdAt: string;
   updatedAt: string;
-  createdBy: string;
+  createdBy: UserSummary | null;
 }
 
 /** @deprecated Alias — la liste renvoie désormais le détail complet. */
@@ -23,4 +25,14 @@ export interface CreateSchoolRequestDto {
   phoneNumber?: string;
   email?: string;
   website?: string;
+  logo?: string;
+}
+
+/** Corps de PATCH /schools/:id (champs absents = inchangés, null = vidé). */
+export interface UpdateSchoolRequestDto {
+  name?: string;
+  phoneNumber?: string | null;
+  email?: string | null;
+  website?: string | null;
+  logo?: string | null;
 }

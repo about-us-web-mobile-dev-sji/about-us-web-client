@@ -4,9 +4,13 @@ import type {
   ReplaceAdministratorCommand,
   ReplaceAdministratorResult,
   AcceptedInvitation,
-  InvitableRole,
   InviteMemberCommand,
   SentInvitation,
+  InvitationListQuery,
+  InvitationPage,
+  SchoolInvitation,
+  MemberListQuery,
+  MemberPage,
 } from '../domain/models/school-membership.model';
 
 @Injectable({ providedIn: 'root' })
@@ -30,12 +34,25 @@ export class SchoolMembershipFacade {
     return this.service.acceptInvitation(schoolId, token);
   }
 
-  listInvitableRoles(schoolId: string): Promise<InvitableRole[]> {
-    return this.service.listInvitableRoles(schoolId);
-  }
 
   /** UC-16: sends the invitation e-mail (link + Google sign-in). */
   inviteMember(schoolId: string, command: InviteMemberCommand): Promise<SentInvitation> {
     return this.service.inviteMember(schoolId, command);
+  }
+
+  listMembers(schoolId: string, query: MemberListQuery): Promise<MemberPage> {
+    return this.service.listMembers(schoolId, query);
+  }
+
+  listInvitations(schoolId: string, query: InvitationListQuery): Promise<InvitationPage> {
+    return this.service.listInvitations(schoolId, query);
+  }
+
+  resendInvitation(schoolId: string, invitationId: string): Promise<SchoolInvitation> {
+    return this.service.resendInvitation(schoolId, invitationId);
+  }
+
+  cancelInvitation(schoolId: string, invitationId: string): Promise<SchoolInvitation> {
+    return this.service.cancelInvitation(schoolId, invitationId);
   }
 }

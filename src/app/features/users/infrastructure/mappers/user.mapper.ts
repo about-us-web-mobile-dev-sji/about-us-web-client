@@ -9,6 +9,8 @@ export function mapUserResponse(dto: UserResponseDto): User {
     email: dto.email,
     status: dto.status,
     globalRole: dto.globalRole,
+    fullName: dto.fullName ?? ([dto.firstName, dto.lastName].filter(Boolean).join(' ').trim() || null),
+    avatarUrl: dto.avatarUrl ?? null,
   };
 }
 

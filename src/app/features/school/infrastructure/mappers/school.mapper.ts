@@ -1,11 +1,13 @@
 import type {
   CreateSchoolCommand,
+  UpdateSchoolCommand,
   School,
   SchoolListItem,
   SchoolSummary,
 } from '../../domain/models/school.model';
 import type {
   CreateSchoolRequestDto,
+  UpdateSchoolRequestDto,
   SchoolDetailDto,
 } from '../dto/school-response.dto';
 
@@ -23,6 +25,7 @@ export function mapSchoolDetail(dto: SchoolDetailDto): School {
     phoneNumber: dto.phoneNumber ?? null,
     email: dto.email ?? null,
     website: dto.website ?? null,
+    logo: dto.logo ?? null,
     status: dto.status ?? null,
     createdAt: new Date(dto.createdAt),
     updatedAt: new Date(dto.updatedAt),
@@ -37,6 +40,7 @@ export function mapSchoolToSummary(school: School): SchoolSummary {
     phoneNumber: school.phoneNumber,
     email: school.email,
     website: school.website,
+    logo: school.logo,
     status: school.status,
     createdAt: school.createdAt.toISOString(),
     updatedAt: school.updatedAt.toISOString(),
@@ -51,6 +55,7 @@ export function mapListItemToSummary(item: SchoolListItem): SchoolSummary {
     phoneNumber: null,
     email: null,
     website: null,
+    logo: null,
     status: null,
     createdAt: null,
     updatedAt: null,
@@ -71,5 +76,18 @@ export function mapCreateSchoolRequest(command: CreateSchoolCommand): CreateScho
   if (command.phoneNumber?.trim()) dto.phoneNumber = command.phoneNumber.trim();
   if (command.email?.trim()) dto.email = command.email.trim();
   if (command.website?.trim()) dto.website = command.website.trim();
+  if (command.logo?.trim()) dto.logo = command.logo.trim();
+  return dto;
+}
+
+/** Ne transmet que les champs fournis ; une chaîne vide devient null (champ vidé). */
+export function mapUpdateSchoolRequest(command: UpdateSchoolCommand): UpdateSchoolRequestDto {
+  const dto: UpdateSchoolRequestDto = {};
+  if (command.name !== undefined) dto.name = command.name.trim();
+  for (const key of ['phoneNumber', 'email', 'website', 'logo'] as const) {
+    if (command[key] === undefined) continue;
+    const value = command[key]?.trim() ?? '';
+    dto[key] = value === '' ? null : key === 'email' ? value.toLowerCase() : value;
+  }
   return dto;
 }

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
+  host: { class: 'flex flex-1' },
   selector: 'app-super-admin-dashboard',
   templateUrl: './super-admin-dashboard.html',
-  styleUrl: './super-admin-dashboard.css',
   standalone: true,
 })
 export class SuperAdminDashboard {}

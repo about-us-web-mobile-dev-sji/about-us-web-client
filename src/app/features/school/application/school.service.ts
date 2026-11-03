@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { SCHOOL_REPOSITORY } from '../domain/ports/school.repository';
-import type { CreateSchoolCommand, School } from '../domain/models/school.model';
+import type { CreateSchoolCommand, School, UpdateSchoolCommand } from '../domain/models/school.model';
 
 @Injectable({ providedIn: 'root' })
 export class SchoolService {
@@ -16,5 +16,9 @@ export class SchoolService {
 
   toggleBlock(id: string): Promise<School> {
     return this.repository.toggleBlock(id);
+  }
+
+  updateSchool(id: string, command: UpdateSchoolCommand): Promise<School> {
+    return this.repository.update(id, command);
   }
 }

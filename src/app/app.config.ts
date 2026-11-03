@@ -1,5 +1,7 @@
+import { ThemeService } from './core/theme/theme.service';
 import { AppTheme } from './core/config/app-theme';
 import { providePrimeNG } from 'primeng/config';
+import { MessageService } from 'primeng/api';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
@@ -7,7 +9,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import {
   AUTH_REPOSITORY_PROVIDER,
@@ -25,7 +27,10 @@ import { SPACE_REPOSITORY_PROVIDER } from './features/spaces/infrastructure/repo
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
+    // Un seul MessageService pour toute l'application : les notifications passent par NotifyService.
+    MessageService,
+    // Les onglets d'une école lisent :schoolId hérité de la route parente.
+    provideRouter(routes, withRouterConfig({ paramsInheritanceStrategy: 'always' })),
     // Order matters: credentials are added before a 401 can trigger a refresh and replay.
     provideHttpClient(withInterceptors([credentialsInterceptor, sessionRefreshInterceptor])),
     providePrimeNG({
@@ -33,6 +38,8 @@ export const appConfig: ApplicationConfig = {
       license:
         'eyJpZCI6Ijc3Y2JjMjBmLTIyMDItNDhiMS1iOWJlLTQ1ZWI3OWY0YjBjZSIsInByb2R1Y3QiOiJwcmltZXVpIiwidGllciI6ImNvbW11bml0eSIsInR5cGUiOiJkZXYiLCJpYXQiOjE3ODkxMjY4MzMsImV4cCI6MTgyMDY2MjgzM30.gIRng8rFBBEAWRskUbdJ4jn9kd5HtosuOBxol5mPKPei-Cw_ugUdX75I8apTsFrAJ_y2dJ3F5GyEBa8hzL-rCw',
     }),
+    // Appliqué avant le premier rendu : pas de flash clair quand le mode sombre est choisi.
+    provideAppInitializer(() => void inject(ThemeService)),
     provideAppInitializer(() => inject(AuthFacade).initialize()),
     AUTH_REPOSITORY_PROVIDER,
     USER_REPOSITORY_PROVIDER,

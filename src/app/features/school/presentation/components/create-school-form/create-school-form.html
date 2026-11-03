@@ -1,15 +1,15 @@
 <form
   [formGroup]="schoolForm"
   (ngSubmit)="onSubmit()"
-  class="create-school-form"
+  class="grid gap-5"
   novalidate
   [attr.aria-busy]="isLoading"
 >
-  <div class="form-section">
-    <h2 class="section-title">Informations de l'école</h2>
+  <div class="grid gap-4">
+    <h2 class="m-0 text-base font-semibold">Informations de l'école</h2>
 
-    <div class="form-field">
-      <label for="name">Nom *</label>
+    <div class="flex flex-col gap-1.5">
+      <label for="name" class="text-sm font-medium">Nom *</label>
       <input
         pInputText
         id="name"
@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <div class="form-actions">
+  <div class="flex justify-end gap-2">
     @if (showReset) {
       <button pButton type="button" severity="secondary" (click)="onReset()" [disabled]="isLoading">
         Réinitialiser

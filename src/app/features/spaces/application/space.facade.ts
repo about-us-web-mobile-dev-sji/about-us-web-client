@@ -3,6 +3,7 @@ import { SpaceService } from './space.service';
 import { SchoolFacade } from '../../school/application/school.facade';
 import { UsersService } from '../../users/application/users.service';
 import { UserStatus, type User } from '../../users/domain/models/user.model';
+import { userLabel } from '../../../shared/users/user-summary';
 import type {
   ArchiveSpaceCommand,
   AssignManagerCommand,
@@ -16,6 +17,7 @@ import type {
   SpaceEffectiveManagers,
   SpaceListItem,
   SpaceMembership,
+  SpaceMembersPage,
 } from '../domain/models/space.model';
 
 @Injectable({ providedIn: 'root' })
@@ -80,6 +82,18 @@ export class SpaceFacade {
       console.error("Erreur lors du retrait de l'administrateur:", error);
       throw error;
     }
+  }
+
+  listMembers(spaceId: string, page: number, limit: number): Promise<SpaceMembersPage> {
+    return this.service.listMembers(spaceId, page, limit);
+  }
+
+  addMember(spaceId: string, userId: string): Promise<SpaceMembership> {
+    return this.service.addMember(spaceId, userId);
+  }
+
+  removeMember(spaceId: string, userId: string): Promise<SpaceMembership> {
+    return this.service.removeMember(spaceId, userId);
   }
 
   async archiveSpace(command: ArchiveSpaceCommand): Promise<void> {
@@ -157,8 +171,6 @@ export class SpaceFacade {
       const schools = this.schoolFacade.schools();
       const schoolNameById = new Map(schools.map((school) => [school.id, school.name]));
 
-      const usersById = await this.loadUserLabelMap();
-
       const trees = await Promise.all(
         schools.map(async (school) => {
           try {
@@ -176,12 +188,12 @@ export class SpaceFacade {
       const flatSpaces = trees.flat();
       const withManagers = await Promise.all(
         flatSpaces.map(async ({ space }) => {
-          let directManagerUserId: string | null = null;
-          let inheritedManagerUserIds: string[] = [];
+          let directManager: SpaceMembership | null = null;
+          let inheritedManagers: SpaceMembership[] = [];
           try {
             const managers = await this.service.getEffectiveManagers(space.id);
-            directManagerUserId = managers.directManager?.userId ?? null;
-            inheritedManagerUserIds = managers.inheritedManagers.map((manager) => manager.userId);
+            directManager = managers.directManager;
+            inheritedManagers = managers.inheritedManagers;
           } catch (error) {
             console.error(`Impossible de charger les managers de l'espace ${space.id}`, error);
           }
@@ -189,12 +201,10 @@ export class SpaceFacade {
           return {
             ...space,
             schoolName: schoolNameById.get(space.schoolId) ?? 'École inconnue',
-            directManagerUserId,
-            directManagerLabel: this.resolveUserLabel(directManagerUserId, usersById),
-            inheritedManagerUserIds,
-            inheritedManagerLabels: inheritedManagerUserIds.map(
-              (id) => this.resolveUserLabel(id, usersById) ?? id,
-            ),
+            directManagerUserId: directManager?.userId ?? null,
+            directManagerLabel: directManager ? userLabel(directManager.user) : null,
+            inheritedManagerUserIds: inheritedManagers.map((manager) => manager.userId),
+            inheritedManagerLabels: inheritedManagers.map((manager) => userLabel(manager.user)),
           } satisfies SpaceListItem;
         }),
       );
@@ -214,29 +224,5 @@ export class SpaceFacade {
     } finally {
       this.isLoading.set(false);
     }
-  }
-
-  private async loadUserLabelMap(): Promise<Map<string, string>> {
-    const map = new Map<string, string>();
-    try {
-      const result = await this.usersService.listUsers({
-        page: 1,
-        limit: 100,
-        status: UserStatus.ACTIVE,
-      });
-      for (const user of result.items) {
-        map.set(user.id, this.formatUserLabel(user));
-      }
-    } catch (error) {
-      console.error('Impossible de résoudre les noms des administrateurs:', error);
-    }
-    return map;
-  }
-
-  private resolveUserLabel(userId: string | null, usersById: Map<string, string>): string | null {
-    if (!userId) {
-      return null;
-    }
-    return usersById.get(userId) ?? (userId.length > 12 ? `${userId.slice(0, 8)}…` : userId);
   }
 }

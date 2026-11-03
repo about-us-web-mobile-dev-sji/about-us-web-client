@@ -1,222 +1,98 @@
-<div class="page">
-  <header class="page-header">
+<div class="au-page">
+
+  <header class="au-page-head">
     <div>
-      <p class="page-kicker" i18n="@@schools-list-kicker">Établissements</p>
-      <h1 i18n="@@schools-list-title" class="page-title">Liste des écoles</h1>
-      <p i18n="@@schools-list-description" class="page-subtitle">
+      <h1 i18n="@@schools-list-title" class="au-page-title">Écoles</h1>
+      <p i18n="@@schools-list-description" class="m-0 mt-1 text-sm text-muted-color">
         Consultez et gérez toutes les écoles enregistrées sur la plateforme.
       </p>
     </div>
-    <button
-      type="button"
-      class="btn-add"
-      (click)="openCreateDialog()"
-      [disabled]="facade.isLoading()"
-    >
-      + Ajouter une école
-    </button>
+    <div class="au-page-actions">
+      <p-button label="Ajouter une école" icon="pi pi-plus" [disabled]="facade.isLoading()" (onClick)="openCreateDialog()" />
+    </div>
   </header>
 
-  <p-toast position="top-right"></p-toast>
-
-  <section class="table-card" aria-label="Écoles">
-    @if (facade.isLoading()) {
-      <p i18n="@@schools-list-loading" class="empty-state">Chargement des écoles…</p>
-    } @else {
-      <p-table
-        [value]="facade.schools()"
-        [tableStyle]="{ 'min-width': '52rem' }"
-        styleClass="schools-table"
-      >
-        <ng-template #header>
-          <tr>
-            <th i18n="@@schools-col-name">École</th>
-            <th i18n="@@schools-col-status">Statut</th>
-            <th i18n="@@schools-col-updated">Mise à jour</th>
-            <th class="col-actions"></th>
-          </tr>
-        </ng-template>
-
-        <ng-template #body let-school>
-          <tr>
-            <td>
-              <div class="school-name-cell">
-                <span class="school-avatar" aria-hidden="true">
-                  {{ school.name.charAt(0).toUpperCase() }}
-                </span>
-                <div>
-                  <strong>{{ school.name }}</strong>
-                  @if (school.website) {
-                    <span class="school-website">{{ school.website }}</span>
-                  }
-                </div>
-              </div>
-            </td>
-            <td>
-              <p-tag
-                [value]="statusLabel(school.status)"
-                [severity]="statusSeverity(school.status)"
-              />
-            </td>
-            <td>
-              {{ school.updatedAt ? (school.updatedAt | date: 'dd/MM/yyyy') : '—' }}
-            </td>
-            <td class="col-actions">
-              <p-button
-                type="button"
-                icon="pi pi-ellipsis-v"
-                severity="secondary"
-                [text]="true"
-                [rounded]="true"
-                ariaLabel="Options"
-                (onClick)="openOptions(school)"
-              />
-            </td>
-          </tr>
-        </ng-template>
-
-        <ng-template #emptymessage>
-          <tr>
-            <td colspan="4">
-              <p i18n="@@schools-list-empty" class="empty-state">
-                Aucune école enregistrée pour le moment.
-              </p>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    }
-  </section>
-
-  <p-drawer
-    [(visible)]="optionsOpen"
-    position="bottom"
-    [dismissible]="true"
-    [modal]="true"
-    [blockScroll]="true"
-    styleClass="school-options-sheet"
-    [style]="{ height: 'auto', maxHeight: 'none' }"
-    (onHide)="onOptionsHide()"
-  >
-    @if (selectedSchool(); as school) {
-      <div class="sheet-header">
-        <p class="sheet-kicker" i18n="@@schools-options-kicker">Options</p>
-        <h2 class="sheet-title">{{ school.name }}</h2>
-      </div>
-
-      <div class="sheet-actions">
-        <button type="button" class="sheet-action" (click)="viewSchoolDetails(school.id)">
-          <i class="pi pi-eye"></i>
-          <span i18n="@@schools-option-details">Voir les détails</span>
-        </button>
-        <button type="button" class="sheet-action" (click)="editSchool(school.id)">
-          <i class="pi pi-pencil"></i>
-          <span i18n="@@schools-option-edit">Modifier</span>
-        </button>
-        <button type="button" class="sheet-action" (click)="replaceAdmin(school.id)">
-          <i class="pi pi-user-edit"></i>
-          <span i18n="@@schools-option-replace-admin">Remplacer l'administrateur</span>
-        </button>
-        <button
-          type="button"
-          class="sheet-action"
-          [class.sheet-action--warn]="school.status !== SchoolStatus.BLOCKED"
-          [class.sheet-action--ok]="school.status === SchoolStatus.BLOCKED"
-          [disabled]="facade.isUpdating(school.id)"
-          (click)="toggleStatus(school)"
-        >
-          <i
-            class="pi"
-            [class.pi-lock]="school.status !== SchoolStatus.BLOCKED"
-            [class.pi-lock-open]="school.status === SchoolStatus.BLOCKED"
-          ></i>
-          <span>
-            {{ school.status === SchoolStatus.BLOCKED ? 'Débloquer' : 'Bloquer' }}
-          </span>
-        </button>
-      </div>
-    }
-  </p-drawer>
-
-  @if (showCreateDialog()) {
-    <div class="modal-backdrop" (click)="!isCreating() && closeCreateDialog()">
-      <div
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        (click)="$event.stopPropagation()"
-      >
-        <div class="modal-header">
-          <div>
-            <p class="entity-kicker">Nouvelle entrée</p>
-            <h2 id="modal-title">Créer un établissement</h2>
-          </div>
-          <button
-            type="button"
-            class="modal-close"
-            [disabled]="isCreating()"
-            (click)="closeCreateDialog()"
-            aria-label="Fermer"
-          >
-            ×
-          </button>
-        </div>
-
-        <form [formGroup]="createForm" (ngSubmit)="onCreateSubmit()" novalidate>
-          <div class="form-field">
-            <label for="create-form-name">Nom *</label>
-            <input
-              id="create-form-name"
-              type="text"
-              formControlName="name"
-              placeholder="École primaire Jean Moulin"
-            />
-            @if (nameControl.invalid && nameControl.touched) {
-              <p class="field-error">
-                {{
-                  nameControl.hasError('required')
-                    ? 'Le nom est obligatoire.'
-                    : 'Le nom doit contenir au moins 3 caractères.'
-                }}
-              </p>
-            }
-          </div>
-
-          <div class="form-field">
-            <label for="create-form-admin-email">E-mail de l’administrateur</label>
-            <input
-              id="create-form-admin-email"
-              type="email"
-              formControlName="adminEmail"
-              autocomplete="off"
-              placeholder="directeur@gmail.com"
-              aria-describedby="create-form-admin-email-hint"
-            />
-            <p id="create-form-admin-email-hint" class="field-hint">
-              Facultatif. Cette personne recevra une invitation pour administrer l’école en se
-              connectant avec Google.
-            </p>
-            @if (adminEmailControl.invalid && adminEmailControl.touched) {
-              <p class="field-error">Renseigne une adresse e-mail valide.</p>
-            }
-          </div>
-
-          <div class="modal-actions">
-            <button
-              type="button"
-              class="btn-cancel"
-              [disabled]="isCreating()"
-              (click)="closeCreateDialog()"
-            >
-              Annuler
-            </button>
-            <button type="submit" class="btn-submit" [disabled]="isCreating()">
-              {{ isCreating() ? 'Ajout…' : 'Ajouter' }}
-            </button>
-          </div>
-        </form>
-      </div>
+  @if (facade.isLoading() && facade.schools().length === 0) {
+    <div class="grid justify-items-center gap-3 py-12 text-muted-color">
+      <p-progress-spinner strokeWidth="4" class="h-10! w-10!" />
+      <p i18n="@@schools-list-loading" class="m-0">Chargement des écoles…</p>
     </div>
+  } @else if (facade.schools().length === 0) {
+    <p-card>
+      <div class="grid justify-items-center gap-4 py-8 text-center">
+        <span class="au-school-logo is-initial" aria-hidden="true"><i class="pi pi-building"></i></span>
+        <p i18n="@@schools-list-empty" class="m-0 text-muted-color">Aucune école enregistrée pour le moment.</p>
+        <p-button label="Ajouter une école" icon="pi pi-plus" (onClick)="openCreateDialog()" />
+      </div>
+    </p-card>
+  } @else {
+    <ul class="au-school-grid" aria-label="Écoles">
+      @for (school of facade.schools(); track school.id) {
+        <li>
+          <a class="au-school-card" [routerLink]="['/s/schools', school.id]" [attr.aria-label]="'Ouvrir ' + school.name">
+            <div class="au-school-card-top">
+              @if (school.logo && !brokenLogos().has(school.id)) {
+                <span class="au-school-logo"><img [src]="school.logo" alt="" (error)="markLogoBroken(school.id)" /></span>
+              } @else {
+                <span class="au-school-logo is-initial" aria-hidden="true">{{ school.name.charAt(0).toUpperCase() }}</span>
+              }
+              <p-tag [value]="statusLabel(school.status)" [severity]="statusSeverity(school.status)" />
+            </div>
+            <div class="min-w-0">
+              <h2 class="au-school-name">{{ school.name }}</h2>
+              <p class="au-school-site">{{ school.website || school.email || 'Aucun site renseigné' }}</p>
+            </div>
+          </a>
+        </li>
+      }
+    </ul>
   }
+
+  <p-dialog
+    header="Créer un établissement"
+    [visible]="showCreateDialog()"
+    (visibleChange)="!$event && closeCreateDialog()"
+    [modal]="true"
+    [closable]="!isCreating()"
+    [draggable]="false"
+    [style]="{ width: '30rem', maxWidth: 'calc(100vw - 2rem)' }"
+  >
+    <form id="create-school" [formGroup]="createForm" (ngSubmit)="onCreateSubmit()" novalidate class="grid gap-5">
+      <div class="flex flex-col gap-1.5">
+        <label for="create-form-name" class="text-sm font-medium">Nom *</label>
+        <input pInputText id="create-form-name" type="text" formControlName="name" placeholder="École primaire Jean Moulin" />
+        @if (nameControl.invalid && nameControl.touched) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ nameControl.hasError('required') ? 'Le nom est obligatoire.' : 'Le nom doit contenir au moins 3 caractères.' }}
+          </p-message>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="create-form-admin-email" class="text-sm font-medium">E-mail de l’administrateur</label>
+        <input
+          pInputText
+          id="create-form-admin-email"
+          type="email"
+          formControlName="adminEmail"
+          autocomplete="off"
+          placeholder="directeur@gmail.com"
+          aria-describedby="create-form-admin-email-hint"
+        />
+        <small id="create-form-admin-email-hint" class="text-xs text-muted-color">
+          Facultatif. Cette personne recevra une invitation pour administrer l’école en se connectant avec Google.
+        </small>
+        @if (adminEmailControl.invalid && adminEmailControl.touched) {
+          <p-message severity="error" size="small" variant="simple">Renseigne une adresse e-mail valide.</p-message>
+        }
+      </div>
+    </form>
+
+
+    <ng-template #footer>
+      <p-button label="Annuler" severity="secondary" [text]="true" [disabled]="isCreating()" (onClick)="closeCreateDialog()" />
+      <!-- Le pied du dialogue est hors du <form>, et p-button ne transmet pas l'attribut form : on soumet explicitement. -->
+      <p-button [label]="isCreating() ? 'Ajout…' : 'Ajouter'" [loading]="isCreating()" (onClick)="onCreateSubmit()" />
+    </ng-template>
+  </p-dialog>
 </div>

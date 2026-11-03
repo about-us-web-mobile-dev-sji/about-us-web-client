@@ -1,17 +1,18 @@
 <form
   [formGroup]="credentialForm"
   (ngSubmit)="onSubmit()"
-  class="login-form"
+  class="flex flex-col gap-5"
   novalidate
   [attr.aria-busy]="isLoading"
 >
-  <div class="form-field">
-    <label for="email">Adresse email</label>
+  <div class="flex flex-col gap-1.5">
+    <label for="email" class="text-sm font-medium">Adresse e-mail</label>
     <input
       pInputText
       id="email"
       type="email"
       formControlName="email"
+      placeholder="admin@exemple.com"
       autocomplete="username"
       [readonly]="isLoading"
       [invalid]="emailControl.invalid && emailControl.touched"
@@ -22,19 +23,20 @@
       <p-message id="email-error" severity="error" variant="simple" size="small">
         {{
           emailControl.hasError('required')
-            ? 'Renseigne ton adresse email.'
-            : 'Renseigne une adresse email valide.'
+            ? 'Renseignez votre adresse e-mail.'
+            : 'Renseignez une adresse e-mail valide.'
         }}
       </p-message>
     }
   </div>
 
-  <div class="form-field">
-    <label for="password">Mot de passe</label>
-    <div class="password-field">
+  <div class="flex flex-col gap-1.5">
+    <label for="password" class="text-sm font-medium">Mot de passe</label>
+    <div class="relative">
       <input
         pInputPassword
         id="password"
+        class="w-full pe-12"
         formControlName="password"
         [(mask)]="mask"
         autocomplete="current-password"
@@ -46,8 +48,11 @@
         "
       />
       <button
+        pButton
         type="button"
-        class="password-toggle"
+        severity="secondary"
+        [text]="true"
+        class="password-toggle absolute end-1 top-1/2 size-10! -translate-y-1/2 p-0!"
         (click)="mask = !mask"
         [attr.aria-label]="mask ? 'Afficher le mot de passe' : 'Masquer le mot de passe'"
         [attr.aria-pressed]="!mask"
@@ -64,17 +69,12 @@
       <p-message id="password-error" severity="error" variant="simple" size="small">
         {{
           passwordControl.hasError('required')
-            ? 'Renseigne ton mot de passe.'
+            ? 'Renseignez votre mot de passe.'
             : 'Le mot de passe doit contenir au moins 6 caractères.'
         }}
       </p-message>
     }
   </div>
 
-  <button pButton type="submit" [disabled]="isLoading" class="submit-button">
-    @if (isLoading) {
-      <svg data-p-icon="spinner" class="loading-spinner" aria-hidden="true"></svg>
-    }
-    <span>{{ isLoading ? 'Connexion…' : 'Se connecter' }}</span>
-  </button>
+  <p-button type="submit" [disabled]="isLoading" [loading]="isLoading" [label]="isLoading ? 'Connexion…' : 'Se connecter'" styleClass="w-full" />
 </form>

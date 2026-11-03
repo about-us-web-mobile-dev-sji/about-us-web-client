@@ -1,0 +1,36 @@
+<app-modal
+  [(visible)]="visible"
+  title="Inviter un membre"
+  [busy]="isSending()"
+>
+  <form id="invite-form" [formGroup]="form" (ngSubmit)="invite()" novalidate class="grid gap-1.5">
+    <label for="invite-email" class="text-sm font-medium" i18n="@@invite.email">Adresse e-mail</label>
+    <input
+      pInputText
+      id="invite-email"
+      type="email"
+      class="w-full"
+      formControlName="email"
+      autocomplete="off"
+      placeholder="prenom.nom@exemple.com"
+      [invalid]="form.controls.email.invalid && form.controls.email.touched"
+      [attr.aria-describedby]="form.controls.email.invalid && form.controls.email.touched ? 'invite-email-error' : 'invite-email-help'"
+    />
+    @if (form.controls.email.invalid && form.controls.email.touched) {
+      <p-message id="invite-email-error" severity="error" size="small" variant="simple" i18n="@@invite.emailInvalid">
+        Renseignez une adresse e-mail valide.
+      </p-message>
+    } @else {
+      <small id="invite-email-help" class="text-xs leading-5 text-muted-color">
+        Elle recevra un lien valable 7 jours et rejoindra l'école en se connectant avec Google.
+      </small>
+    }
+  </form>
+
+  <ng-container modalFooter>
+    <p-button label="Annuler" severity="secondary" [outlined]="true" [disabled]="isSending()" (onClick)="visible.set(false)" />
+    <button pButton type="submit" form="invite-form" [loading]="isSending()">
+      <span pButtonLabel>Envoyer l'invitation</span>
+    </button>
+  </ng-container>
+</app-modal>

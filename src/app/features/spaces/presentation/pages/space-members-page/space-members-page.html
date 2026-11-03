@@ -1,0 +1,68 @@
+<p-confirmdialog />
+<p-menu #menu [model]="menuItems" [popup]="true" appendTo="body" />
+<app-add-space-member-dialog [(visible)]="addOpen" [schoolId]="schoolId" [spaceId]="spaceId" [excludedUserIds]="memberIds()" (added)="load()" />
+<div class="au-page">
+  <header class="au-page-head">
+    <div>
+      <h1 class="au-page-title">Membres</h1>
+      <p class="m-0 mt-1 text-sm text-muted-color">{{ total() }} {{ total() > 1 ? 'personnes ont' : 'personne a' }} accès à cet espace.</p>
+    </div>
+    <div class="au-page-actions">
+      <p-button label="Ajouter un membre" icon="pi pi-user-plus" (onClick)="addOpen.set(true)" />
+    </div>
+  </header>
+
+  @if (loadError()) {
+    <p-message severity="error" icon="pi pi-exclamation-circle">
+      <div class="flex flex-wrap items-center gap-3">
+        <span>Impossible de charger les membres de l'espace.</span>
+        <p-button label="Réessayer" severity="secondary" [outlined]="true" size="small" (onClick)="load()" />
+      </div>
+    </p-message>
+  }
+
+  <p-card class="au-flush" aria-label="Membres de l'espace">
+    <p-table [value]="members()" [loading]="isLoading()" [tableStyle]="{ 'min-width': '40rem' }">
+      <ng-template #header>
+        <tr>
+          <th>Membre</th>
+          <th>Rôle</th>
+          <th>Ajouté le</th>
+          <th class="au-col-actions"><span class="sr-only">Actions</span></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-member>
+        <tr>
+          <td><app-user-chip [user]="member.user" [showEmail]="true" /></td>
+          <td><p-tag [value]="isManager(member) ? 'Responsable' : 'Membre'" [severity]="isManager(member) ? 'info' : 'secondary'" /></td>
+          <td class="au-num text-muted-color">{{ formatDate(member.grantedAt) }}</td>
+          <td class="au-col-actions">
+            <p-button
+              icon="pi pi-ellipsis-v"
+              severity="secondary"
+              [text]="true"
+              [rounded]="true"
+              [loading]="busyId() === member.userId"
+              [ariaLabel]="'Actions pour ' + (member.user.fullName || member.user.email || 'ce membre')"
+              (onClick)="openActions($event, member)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="4">
+            <div class="au-empty">
+              <span class="au-empty-icon" aria-hidden="true"><i class="pi pi-users"></i></span>
+              <h2 class="au-empty-title">Aucun membre dans cet espace</h2>
+              <p class="au-empty-text">Ajoutez des membres de l'école pour leur donner accès à cet espace.</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    @if (total() > limit()) {
+      <p-paginator [first]="(page() - 1) * limit()" [rows]="limit()" [totalRecords]="total()" [rowsPerPageOptions]="[20, 50, 100]" (onPageChange)="changePage($event)" />
+    }
+  </p-card>
+</div>

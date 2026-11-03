@@ -15,6 +15,8 @@ export interface User {
   readonly email: string;
   readonly status: UserStatus;
   readonly globalRole: GlobalRole;
+  readonly fullName: string | null;
+  readonly avatarUrl: string | null;
 }
 
 export interface ListUsersResult {

@@ -10,7 +10,6 @@ import { DatePipe } from '@angular/common';
 @Component({
   imports: [GenericDataTable, ButtonModule,SelectModule,IconFieldModule,InputIconModule,InputTextModule,TableModule,DatePipe],
   selector: 'app-generic-data-table',
-  styleUrl: './generic-data-table.css',
   templateUrl: './generic-data-table.html',
 })
 export class GenericDataTable<T extends object> {

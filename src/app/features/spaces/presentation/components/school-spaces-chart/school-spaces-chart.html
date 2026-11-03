@@ -1,32 +1,27 @@
-<section class="school-spaces-chart">
-  <div class="section-header">
+<p-menu #nodeMenu [model]="nodeMenuItems" [popup]="true" appendTo="body" />
+<section class="grid gap-5">
+  <div class="flex flex-wrap items-start justify-between gap-4">
     <div>
-      <h3 i18n="@@spaces-org-title" class="section-title">Organisation des espaces</h3>
-      <p i18n="@@spaces-org-subtitle" class="section-subtitle">
+      <h3 i18n="@@spaces-org-title" class="m-0 text-xl font-semibold">Organisation des espaces</h3>
+      <p i18n="@@spaces-org-subtitle" class="m-0 mt-0.5 text-sm text-muted-color">
         Créez des sous-espaces sous n'importe quel nœud et assignez éventuellement un administrateur.
       </p>
     </div>
-    <p-button
-      type="button"
-      i18n-label="@@spaces-refresh"
-      label="Actualiser"
-      icon="pi pi-refresh"
-      severity="secondary"
-      [loading]="isLoading()"
-      (onClick)="loadTree(schoolId())"
-    />
   </div>
 
+  <!-- L'organigramme dans une carte, ses commandes dans une barre verticale à côté (façon outil de canevas). -->
+  <div class="au-chart-layout">
+  <p-card #chartCard class="au-flush au-chart-card" [style.height.px]="cardHeight()">
   @if (isLoading()) {
-    <div class="loading-container">
+    <div class="grid justify-items-center gap-3 py-8 text-muted-color">
       <p-progress-spinner strokeWidth="4" />
-      <p i18n="@@spaces-loading" class="loading-text">Chargement de l'organigramme…</p>
+      <p i18n="@@spaces-loading" class="m-0">Chargement de l'organigramme…</p>
     </div>
-  } @else if (errorMessage() && !parentForCreate() && !spaceForAssignAdmin() && !spaceForMove()) {
-    <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
+  } @else if (errorMessage()) {
+    <p-message severity="error" class="m-5 block">{{ errorMessage() }}</p-message>
   } @else if (orgChartNodes().length === 0) {
-    <div class="empty-state">
-      <p i18n="@@spaces-empty" class="empty-text">Aucun espace n'est configuré pour cette école.</p>
+    <div class="grid justify-items-center gap-4 py-8">
+      <p i18n="@@spaces-empty" class="m-0 text-muted-color">Aucun espace n'est configuré pour cette école.</p>
       <p-button
         type="button"
         i18n-label="@@spaces-ensure-root"
@@ -38,15 +33,12 @@
     </div>
   } @else {
     @if (spaceForAssignAdmin(); as space) {
-      <div class="create-panel">
-        <h4 class="create-title">
+      <div class="grid gap-4 border-b border-surface bg-(--au-subtle) p-5">
+        <h4 class="m-0 text-base font-semibold">
           <span i18n="@@spaces-assign-admin-title">Administrateur pour</span>
           « {{ space.name }} »
         </h4>
-        @if (errorMessage()) {
-          <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
-        }
-        <label class="field">
+        <label class="flex flex-col gap-1.5 text-sm font-medium">
           <span i18n="@@spaces-assign-admin-label">Choisir un administrateur</span>
           <p-select
             [options]="userOptions()"
@@ -60,10 +52,10 @@
             [filter]="true"
             filterBy="label"
             appendTo="body"
-            styleClass="w-full"
+            class="w-full"
           />
         </label>
-        <div class="create-actions">
+        <div class="flex justify-end gap-2">
           <p-button
             type="button"
             i18n-label="@@spaces-assign-admin-cancel"
@@ -85,7 +77,21 @@
       </div>
     }
 
-    <div class="chart-scroll">
+    <div
+      #chartViewport
+      class="au-chart-viewport"
+      [class.cursor-grab]="canPan()"
+      [class.cursor-grabbing]="isPanning()"
+      [class.select-none]="isPanning()"
+      (wheel)="onWheel($event)"
+      (pointerdown)="startPan($event)"
+      (pointermove)="pan($event)"
+      (pointerup)="endPan($event)"
+      (pointercancel)="endPan($event)"
+    >
+      <!-- Le conteneur prend la taille de l'arbre une fois zoomé, pour que le défilement reste juste. -->
+      <div class="mx-auto" [style.width.px]="scaledWidth()" [style.height.px]="scaledHeight()">
+      <div #chartCanvas class="w-max origin-top-left" [style.transform]="'scale(' + zoom() + ')'">
       <p-organization-chart
         [value]="orgChartNodes()"
         [collapsible]="true"
@@ -94,148 +100,71 @@
       >
         <ng-template #node let-node>
           @if (node.data; as space) {
-            <div class="space-person-node">
-              <div class="space-person-main">
-                <div
-                  class="space-avatar"
-                  [class.space-avatar--root]="isSchoolRoot(space)"
-                  [class.space-avatar--admin]="hasDirectManager(space)"
-                  [attr.aria-hidden]="true"
-                >
-                  {{ getSpaceInitials(space) }}
+            <div
+              class="au-org-node flex min-w-54 max-w-64 flex-col text-left"
+              role="link"
+              tabindex="0"
+              [attr.aria-label]="'Ouvrir l’espace ' + space.name"
+              (click)="openSpace(space, $event)"
+              (keydown.enter)="openSpace(space, $event)"
+            >
+              <div class="flex items-center gap-3">
+                <p-avatar
+                  [label]="getSpaceInitials(space)"
+                  shape="circle"
+                  [class]="avatarClass(space)"
+                  aria-hidden="true"
+                />
+                <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <div class="truncate text-[15px] font-semibold text-color">{{ space.name }}</div>
+                  <div class="truncate text-xs text-muted-color">{{ getAdminSubtitle(space) }}</div>
                 </div>
-                <div class="space-person-text">
-                  <div class="space-person-name">{{ space.name }}</div>
-                  <div class="space-person-role">{{ getAdminSubtitle(space) }}</div>
-                </div>
+                <p-button
+                  icon="pi pi-ellipsis-v"
+                  severity="secondary"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  [ariaLabel]="'Actions pour ' + space.name"
+                  (click)="$event.stopPropagation()"
+                  (onClick)="openNodeMenu($event, space)"
+                />
               </div>
 
-              <div class="space-node-actions" (click)="$event.stopPropagation()">
-                @if (canAddChild(space)) {
-                  <button
-                    type="button"
-                    class="node-action-btn"
-                    title="Ajouter un sous-espace"
-                    i18n-title="@@spaces-add-child-title"
-                    (click)="openCreateChild(space)"
-                  >
-                    <i class="pi pi-plus"></i>
-                  </button>
-                }
-                @if (canManageAdmin(space) && !hasDirectManager(space)) {
-                  <button
-                    type="button"
-                    class="node-action-btn node-action-btn--admin"
-                    title="Assigner un administrateur"
-                    i18n-title="@@spaces-add-admin-title"
-                    (click)="openAssignAdmin(space)"
-                  >
-                    <i class="pi pi-user-plus"></i>
-                  </button>
-                }
-                @if (canManageAdmin(space) && hasDirectManager(space)) {
-                  <button
-                    type="button"
-                    class="node-action-btn node-action-btn--danger"
-                    title="Retirer l'administrateur"
-                    i18n-title="@@spaces-remove-admin-title"
-                    [disabled]="isAssigningManager()"
-                    (click)="removeAdmin(space)"
-                  >
-                    <i class="pi pi-times"></i>
-                  </button>
-                }
-                @if (canMove(space)) {
-                  <button
-                    type="button"
-                    class="node-action-btn"
-                    title="Déplacer le sous-arbre"
-                    i18n-title="@@spaces-move-title"
-                    [disabled]="isMoving()"
-                    (click)="openMove(space)"
-                  >
-                    <i class="pi pi-arrows-alt"></i>
-                  </button>
-                }
-                @if (space.status === 'ACTIVE' && !space.deletedAt) {
-                  <button
-                    type="button"
-                    class="node-action-btn"
-                    title="Archiver l'espace"
-                    i18n-title="@@spaces-archive-title"
-                    [disabled]="isMutatingSpace()"
-                    (click)="archiveSpace(space)"
-                  >
-                    <i class="pi pi-inbox"></i>
-                  </button>
-                }
-                @if (space.status === 'ARCHIVED') {
-                  <button
-                    type="button"
-                    class="node-action-btn"
-                    title="Restaurer l'espace"
-                    i18n-title="@@spaces-restore-title"
-                    [disabled]="isMutatingSpace()"
-                    (click)="restoreSpace(space)"
-                  >
-                    <i class="pi pi-replay"></i>
-                  </button>
-                }
-                @if (!isSchoolRoot(space) && !space.deletedAt) {
-                  <button
-                    type="button"
-                    class="node-action-btn node-action-btn--danger"
-                    title="Supprimer l'espace"
-                    i18n-title="@@spaces-delete-title"
-                    [disabled]="isMutatingSpace()"
-                    (click)="deleteSpace(space)"
-                  >
-                    <i class="pi pi-trash"></i>
-                  </button>
-                }
-              </div>
+
             </div>
           }
         </ng-template>
       </p-organization-chart>
+      </div>
+      </div>
     </div>
   }
 
   @if (spaceForMove(); as moving) {
-    <div class="modal-backdrop" (click)="!isMoving() && cancelMove()">
-      <div
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="move-space-modal-title"
-        (click)="$event.stopPropagation()"
-      >
-        <div class="modal-header">
-          <h2 id="move-space-modal-title" class="create-title">
-            <span i18n="@@spaces-move-modal-title">Déplacer</span>
+    <p-dialog
+      [visible]="true"
+      (visibleChange)="!$event && cancelMove()"
+      [modal]="true"
+      [closable]="!isMoving()"
+      [draggable]="false"
+      [style]="{ width: '32rem', maxWidth: 'calc(100vw - 2rem)' }"
+    >
+      <ng-template #header>
+        <h2 id="move-space-modal-title" class="m-0 text-lg font-semibold">
+          <span i18n="@@spaces-move-modal-title">Déplacer</span>
             « {{ moving.name }} »
-          </h2>
-          <button
-            type="button"
-            class="modal-close"
-            [disabled]="isMoving()"
-            (click)="cancelMove()"
-            aria-label="Fermer"
-          >
-            ×
-          </button>
-        </div>
+        </h2>
+      </ng-template>
+      <div class="grid gap-4">
 
-        <p i18n="@@spaces-move-hint" class="move-hint">
+        <p i18n="@@spaces-move-hint" class="m-0 text-sm text-muted-color">
           Choisissez un nouveau parent dans la même école. La racine, l'espace lui-même et ses
           descendants sont exclus.
         </p>
 
-        @if (errorMessage()) {
-          <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
-        }
 
-        <label class="field">
+        <label class="flex flex-col gap-1.5 text-sm font-medium">
           <span i18n="@@spaces-move-parent-label">Nouveau parent</span>
           <p-select
             [options]="moveParentOptions()"
@@ -246,13 +175,13 @@
             [filter]="true"
             filterBy="label"
             appendTo="body"
-            styleClass="w-full"
+            class="w-full"
             i18n-placeholder="@@spaces-move-parent-placeholder"
             placeholder="Sélectionner un espace"
           />
         </label>
 
-        <div class="create-actions">
+        <div class="flex justify-end gap-2">
           <p-button
             type="button"
             i18n-label="@@spaces-move-cancel"
@@ -272,39 +201,28 @@
           />
         </div>
       </div>
-    </div>
+    </p-dialog>
   }
 
   @if (parentForCreate(); as parent) {
-    <div class="modal-backdrop" (click)="!isCreating() && cancelCreate()">
-      <div
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="create-space-modal-title"
-        (click)="$event.stopPropagation()"
-      >
-        <div class="modal-header">
-          <h2 id="create-space-modal-title" class="create-title">
-            <span i18n="@@spaces-create-title">Nouveau sous-espace sous</span>
+    <p-dialog
+      [visible]="true"
+      (visibleChange)="!$event && cancelCreate()"
+      [modal]="true"
+      [closable]="!isCreating()"
+      [draggable]="false"
+      [style]="{ width: '32rem', maxWidth: 'calc(100vw - 2rem)' }"
+    >
+      <ng-template #header>
+        <h2 id="create-space-modal-title" class="m-0 text-lg font-semibold">
+          <span i18n="@@spaces-create-title">Nouveau sous-espace sous</span>
             « {{ parent.name }} »
-          </h2>
-          <button
-            type="button"
-            class="modal-close"
-            [disabled]="isCreating()"
-            (click)="cancelCreate()"
-            aria-label="Fermer"
-          >
-            ×
-          </button>
-        </div>
+        </h2>
+      </ng-template>
+      <div class="grid gap-4">
 
-        @if (errorMessage()) {
-          <p-message severity="error" styleClass="w-full">{{ errorMessage() }}</p-message>
-        }
 
-        <label class="field">
+        <label class="flex flex-col gap-1.5 text-sm font-medium">
           <span i18n="@@spaces-create-name">Nom</span>
           <input
             pInputText
@@ -314,16 +232,17 @@
             maxlength="120"
           />
         </label>
-        <label class="field">
+        <label class="flex flex-col gap-1.5 text-sm font-medium">
           <span i18n="@@spaces-create-description">Description (optionnel)</span>
           <textarea
+            pTextarea
             rows="2"
             [ngModel]="newSpaceDescription()"
             (ngModelChange)="newSpaceDescription.set($event)"
             maxlength="500"
           ></textarea>
         </label>
-        <label class="field">
+        <label class="flex flex-col gap-1.5 text-sm font-medium">
           <span i18n="@@spaces-create-admin">Administrateur (optionnel)</span>
           <p-select
             [options]="userOptions()"
@@ -337,11 +256,11 @@
             [filter]="true"
             filterBy="label"
             appendTo="body"
-            styleClass="w-full"
+            class="w-full"
           />
         </label>
 
-        <div class="create-actions">
+        <div class="flex justify-end gap-2">
           <p-button
             type="button"
             i18n-label="@@spaces-create-cancel"
@@ -361,6 +280,39 @@
           />
         </div>
       </div>
-    </div>
+    </p-dialog>
   }
+  </p-card>
+
+  <div class="au-chart-rail" role="toolbar" aria-label="Commandes de l'organigramme">
+    <p-button icon="pi pi-plus" severity="secondary" [text]="true" size="small" ariaLabel="Zoomer" pTooltip="Zoomer" tooltipPosition="left" [disabled]="!orgChartNodes().length || zoom() >= maxZoom" (onClick)="zoomBy(0.1)" />
+    <span class="au-num au-chart-zoom" aria-live="polite">{{ zoomPercent() }}%</span>
+    <p-button icon="pi pi-minus" severity="secondary" [text]="true" size="small" ariaLabel="Dézoomer" pTooltip="Dézoomer" tooltipPosition="left" [disabled]="!orgChartNodes().length || zoom() <= minZoom" (onClick)="zoomBy(-0.1)" />
+    <p-button
+      icon="pi pi-expand"
+      [severity]="autoFit() ? 'primary' : 'secondary'"
+      [text]="true"
+      size="small"
+      ariaLabel="Ajuster à la largeur"
+      [pTooltip]="autoFit() ? 'Ajustement automatique activé' : 'Ajuster à la largeur'"
+      tooltipPosition="left"
+      [attr.aria-pressed]="autoFit()"
+      [disabled]="!orgChartNodes().length"
+      (onClick)="fitToWidth()"
+    />
+    <span class="au-chart-rail-sep" aria-hidden="true"></span>
+    <p-button
+      icon="pi pi-refresh"
+      severity="secondary"
+      [text]="true"
+      size="small"
+      i18n-ariaLabel="@@spaces-refresh"
+      ariaLabel="Actualiser"
+      pTooltip="Actualiser"
+      tooltipPosition="left"
+      [loading]="isLoading()"
+      (onClick)="loadTree(schoolId())"
+    />
+  </div>
+  </div>
 </section>

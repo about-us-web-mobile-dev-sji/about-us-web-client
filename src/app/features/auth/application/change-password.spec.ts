@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { credentialsInterceptor } from '../../../core/http/credentials.interceptor';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -8,8 +9,9 @@ import { routes } from '../../../app.routes';
 import { API_BASE_URL } from '../../../core/config/api.config';
 import { AUTH_REPOSITORY_PROVIDER } from '../infrastructure/repositories/http-auth.repository';
 import { AuthFacade } from './auth.facade';
-import { AdminSettingsPage } from '../../settings/presentation/pages/admin-settings-page/admin-settings-page';
+import { AccountSecurityPage } from '../../settings/presentation/pages/account-security-page/account-security-page';
 import { By } from '@angular/platform-browser';
+import { MessageService } from 'primeng/api';
 
 const command = { currentPassword: 'old-password', newPassword: 'new-password-123' };
 
@@ -25,6 +27,7 @@ describe('Change password flow', () => {
         provideHttpClientTesting(),
         AUTH_REPOSITORY_PROVIDER,
         { provide: API_BASE_URL, useValue: '/api' },
+        MessageService,
       ],
     });
     auth = TestBed.inject(AuthFacade);
@@ -44,14 +47,14 @@ describe('Change password flow', () => {
     await initialization;
   });
   afterEach(() => {
-    // The settings page also lists the devices (sessions panel): not under test here.
+    // Les sessions sont désormais dans l'onglet Activité ; on vide d'éventuelles requêtes restantes.
     http.match('/api/auth/sessions').forEach((request) => request.flush([]));
     http.verify();
   });
 
   it('hides the password fields until editing and clears them on cancellation', async () => {
     const harness = await RouterTestingHarness.create();
-    await harness.navigateByUrl('/s/settings');
+    await harness.navigateByUrl('/s/account/security');
     const root = harness.routeNativeElement!;
     expect(root.querySelector('app-change-password-form')).toBeNull();
     expect((root.querySelector('.password-preview') as HTMLInputElement).readOnly).toBe(true);
@@ -74,9 +77,9 @@ describe('Change password flow', () => {
 
   it('clears auth on 204 and displays confirmation at login without calling logout', async () => {
     const harness = await RouterTestingHarness.create();
-    await harness.navigateByUrl('/s/settings');
-    const page = harness.routeDebugElement!.query(By.directive(AdminSettingsPage))
-      .componentInstance as AdminSettingsPage;
+    await harness.navigateByUrl('/s/account/security');
+    const page = harness.routeDebugElement!.query(By.directive(AccountSecurityPage))
+      .componentInstance as AccountSecurityPage;
     const change = page.changePassword(command);
     await Promise.resolve();
     const request = http.expectOne('/api/auth/password');
@@ -103,19 +106,21 @@ describe('Change password flow', () => {
   ] as const) {
     it(`displays ${code} (HTTP ${status}) without clearing the current session`, async () => {
       const harness = await RouterTestingHarness.create();
-      await harness.navigateByUrl('/s/settings');
-      const page = harness.routeDebugElement!.query(By.directive(AdminSettingsPage))
-        .componentInstance as AdminSettingsPage;
+      await harness.navigateByUrl('/s/account/security');
+      const page = harness.routeDebugElement!.query(By.directive(AccountSecurityPage))
+        .componentInstance as AccountSecurityPage;
+      const notify = vi.spyOn(TestBed.inject(MessageService), 'add');
       const change = page.changePassword(command);
       await Promise.resolve();
       http
         .expectOne('/api/auth/password')
         .flush({ code, message: code, details: null }, { status, statusText: 'Error' });
       await change;
-      expect(page.passwordError()).toContain(message);
+      // L'erreur s'affiche en popup (NotifyService), plus dans la page.
+      expect(notify).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error', detail: expect.stringContaining(message) }));
       expect(auth.sessionId()).toBe('session');
       expect(auth.isLoading()).toBe(false);
-      expect(TestBed.inject(Router).url).toBe('/s/settings');
+      expect(TestBed.inject(Router).url).toBe('/s/account/security');
     });
   }
 });

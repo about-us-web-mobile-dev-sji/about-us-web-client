@@ -1,4 +1,53 @@
+<header class="au-topbar">
+  <a class="au-topbar-brand" routerLink="/s/home" aria-label="About Us — Accueil">
+    <span class="au-topbar-logo"><img src="favicon.png" alt="" width="22" height="22" /></span>
+    <span class="au-topbar-name">About Us</span>
+  </a>
+  <span class="au-topbar-pill">Espace administrateur</span>
+  <!-- Profil : avatar qui ouvre un menu (paramètres du compte, déconnexion). -->
+  <button
+    type="button"
+    class="au-topbar-profile"
+    aria-haspopup="menu"
+    [attr.aria-expanded]="profileMenuOpen()"
+    [attr.aria-label]="'Menu du compte de ' + auth.userName()"
+    (click)="profileMenu.toggle($event)"
+  >
+    <i class="pi pi-user" aria-hidden="true"></i>
+  </button>
+  <p-menu #profileMenu [model]="profileItems" [popup]="true" appendTo="body" styleClass="au-profile-menu" (onShow)="profileMenuOpen.set(true)" (onHide)="profileMenuOpen.set(false)">
+    <ng-template #start>
+      <div class="au-profile-menu-head">
+        <div class="au-profile-menu-name">{{ auth.userName() }}</div>
+        <div class="au-profile-menu-email">{{ auth.user()?.email }}</div>
+      </div>
+    </ng-template>
+    <!-- Thème puis déconnexion, après les entrées (comme le modèle Hostinger). -->
+    <ng-template #end>
+      <div class="au-profile-menu-section">
+        <span id="theme-label" class="au-profile-menu-label">Thème</span>
+        <p-selectbutton
+          class="au-filter au-theme-switch"
+          [options]="themeOptions"
+          optionLabel="label"
+          optionValue="value"
+          [allowEmpty]="false"
+          [ngModel]="theme.mode()"
+          (ngModelChange)="theme.setMode($event)"
+          ariaLabelledBy="theme-label"
+        />
+      </div>
+      <button type="button" class="au-profile-menu-action" (click)="profileMenu.hide(); logout()">
+        <i class="pi pi-sign-out" aria-hidden="true"></i>
+        <span>Se déconnecter</span>
+      </button>
+    </ng-template>
+  </p-menu>
+</header>
+<div class="au-shell">
 <p-sidebar-layout>
+  <!-- Dans l'espace d'une école et dans les journaux, leur barre remplace la navigation principale. -->
+  @if (!flushContent()) {
   <p-sidebar
     id="admin-sidebar"
     [(open)]="sidebarOpen"
@@ -8,20 +57,11 @@
     [overlay]="false"
     [openOnHover]="false"
     width="15rem"
+    iconWidth="4rem"
   >
     <p-sidebar-spacer />
     <p-sidebar-aside>
       <p-sidebar-panel>
-        <p-sidebar-header>
-          <p-sidebar-menu>
-            <p-sidebar-menu-item>
-              <a pSidebarMenuButton routerLink="/s/home" aria-label="About Us — Accueil" style="padding: 0px;">
-                <img src="favicon.png" width="25px" height="25px">
-                <span class="brand-name">About Us</span>
-              </a>
-            </p-sidebar-menu-item>
-          </p-sidebar-menu>
-        </p-sidebar-header>
         <p-sidebar-content>
           <nav aria-label="Navigation administrateur">
             @for (group of navGroups; track group.label) {
@@ -38,11 +78,14 @@
                           #link="routerLinkActive"
                           [isActive]="link.isActive"
                           ariaCurrentWhenActive="page"
-                          [attr.aria-label]="item.label"
+                          [attr.aria-label]="item.opensSpace ? item.label + ' (ouvre un espace dédié)' : item.label"
                           [title]="item.label"
                         >
                           <svg [pIcon]="item.icon" aria-hidden="true"></svg
                           ><span>{{ item.label }}</span>
+                          @if (item.opensSpace) {
+                            <i class="pi pi-chevron-right au-nav-away" aria-hidden="true"></i>
+                          }
                         </a>
                       </p-sidebar-menu-item>
                     }
@@ -55,9 +98,25 @@
         <p-sidebar-footer>
           <p-sidebar-menu>
             <p-sidebar-menu-item>
+              <button
+                pSidebarMenuButton
+                type="button"
+                class="au-collapse"
+                aria-controls="admin-sidebar"
+                [attr.aria-expanded]="sidebarOpen()"
+                [attr.aria-label]="sidebarOpen() ? 'Réduire le menu' : 'Déplier le menu'"
+                [title]="sidebarOpen() ? 'Réduire le menu' : 'Déplier le menu'"
+                (click)="toggleSidebar()"
+              >
+                <svg data-p-icon="sidebar" aria-hidden="true"></svg
+                ><span>{{ sidebarOpen() ? 'Réduire' : 'Déplier' }}</span>
+              </button>
+            </p-sidebar-menu-item>
+            <p-sidebar-menu-item>
               <a
                 pSidebarMenuButton
-                routerLink="/s/settings"
+                class="au-account"
+                routerLink="/s/account"
                 [attr.aria-label]="'Compte de ' + auth.userName()"
               >
                 <p-avatar [label]="initials()" shape="circle" />
@@ -74,23 +133,9 @@
       </p-sidebar-panel>
     </p-sidebar-aside>
   </p-sidebar>
+  }
   <p-sidebar-main>
-    <header class="admin-header">
-      <button
-        pButton
-        pSidebarTrigger
-        target="admin-sidebar"
-        type="button"
-        severity="secondary"
-        text
-        size="small"
-        aria-label="Ouvrir ou fermer le menu administrateur"
-      >
-        <svg data-p-icon="sidebar" aria-hidden="true"></svg>
-      </button>
-      <span>Espace administrateur</span>
-      <app-logout-button class="admin-logout" [text]="true" />
-    </header>
-    <main class="admin-content"><router-outlet /></main>
+    <main class="au-content" [class.is-flush]="flushContent()"><router-outlet /></main>
   </p-sidebar-main>
 </p-sidebar-layout>
+</div>

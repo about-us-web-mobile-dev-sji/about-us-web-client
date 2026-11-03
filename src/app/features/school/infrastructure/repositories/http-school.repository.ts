@@ -4,11 +4,13 @@ import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from '../../../../core/config/api.config';
 import { SCHOOL_REPOSITORY } from '../../domain/ports/school.repository';
 import type { SchoolRepository } from '../../domain/ports/school.repository';
-import type { CreateSchoolCommand, School } from '../../domain/models/school.model';
+import type { CreateSchoolCommand, School, UpdateSchoolCommand } from '../../domain/models/school.model';
+import { toAppError } from '../../../../core/http/to-app-error';
 import type { SchoolDetailDto } from '../dto/school-response.dto';
 import {
   mapCreateSchoolRequest,
   mapSchoolDetail,
+  mapUpdateSchoolRequest,
 } from '../mappers/school.mapper';
 
 @Injectable({ providedIn: 'root' })
@@ -44,6 +46,20 @@ export class HttpSchoolRepository implements SchoolRepository {
       ),
     );
     return mapSchoolDetail(responseDto);
+  }
+
+  async update(id: string, command: UpdateSchoolCommand): Promise<School> {
+    try {
+      const dto = await firstValueFrom(
+        this.http.patch<SchoolDetailDto>(
+          `${this.baseUrl}/schools/${encodeURIComponent(id)}`,
+          mapUpdateSchoolRequest(command),
+        ),
+      );
+      return mapSchoolDetail(dto);
+    } catch (error) {
+      throw toAppError(error);
+    }
   }
 }
 

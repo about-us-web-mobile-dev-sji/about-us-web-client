@@ -1,27 +1,26 @@
 import type { LoginCommand } from '../../../domain/ports/auth.repository';
 import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonDirective } from 'primeng/button';
+import { Button, ButtonDirective } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputPasswordModule } from 'primeng/inputpassword';
 import { MessageModule } from 'primeng/message';
-import { Spinner } from '@primeicons/angular/spinner';
 import { Eye } from '@primeicons/angular/eye';
 import { EyeSlash } from '@primeicons/angular/eye-slash';
 
 @Component({
   imports: [
     ReactiveFormsModule,
+    Button,
     ButtonDirective,
     InputTextModule,
     InputPasswordModule,
     MessageModule,
-    Spinner,
     Eye,
     EyeSlash,
   ],
   selector: 'app-login-form',
-  styleUrl: './login-form.css',
+  host: { class: 'block w-full max-w-80' },
   templateUrl: './login-form.html',
 })
 export class LoginForm {
