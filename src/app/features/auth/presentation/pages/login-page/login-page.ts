@@ -1,3 +1,4 @@
+import { MessageModule } from 'primeng/message';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { LoginCommand } from '../../../domain/ports/auth.repository';
@@ -8,9 +9,8 @@ import { postLoginUrl } from '../../../application/auth-navigation';
 import { errorMessage } from '../../../../../core/i18n/error-messages';
 
 @Component({
-  imports: [LoginForm, GoogleSignInButton],
+  imports: [LoginForm, GoogleSignInButton, MessageModule],
   selector: 'app-login-page',
-  styleUrl: './login-page.css',
   templateUrl: './login-page.html',
 })
 export class LoginPage {

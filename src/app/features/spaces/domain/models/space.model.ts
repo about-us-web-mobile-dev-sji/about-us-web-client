@@ -1,3 +1,5 @@
+import type { UserSummary } from '../../../../shared/users/user-summary';
+
 export enum SpaceKind {
   SCHOOL_ROOT = 'SCHOOL_ROOT',
   STANDARD = 'STANDARD',
@@ -90,8 +92,18 @@ export interface SpaceMembership {
   id: string;
   spaceId: string;
   userId: string;
+  user: UserSummary;
   role: SpaceMembershipRole;
   status: SpaceMembershipStatus;
+  grantedAt: Date | null;
+}
+
+export interface SpaceMembersPage {
+  items: SpaceMembership[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 export interface SpaceEffectiveManagers {

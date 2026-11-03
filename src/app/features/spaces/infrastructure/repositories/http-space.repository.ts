@@ -16,11 +16,13 @@ import type {
   Space,
   SpaceEffectiveManagers,
   SpaceMembership,
+  SpaceMembersPage,
 } from '../../domain/models/space.model';
 import type {
   EnsureSchoolRootResponseDto,
   SpaceEffectiveManagersResponseDto,
   SpaceMembershipResponseDto,
+  SpaceMembersPageDto,
   SpaceResponseDto,
 } from '../dto/space-response.dto';
 import {
@@ -89,6 +91,36 @@ export class HttpSpaceRepository implements SpaceRepository {
         `${this.baseUrl}/spaces/${spaceId}/members/manager`,
         { withCredentials: true },
       ),
+    );
+    return mapMembership(dto);
+  }
+
+  async listMembers(spaceId: string, page: number, limit: number): Promise<SpaceMembersPage> {
+    const dto = await firstValueFrom(
+      this.http.get<SpaceMembersPageDto>(`${this.baseUrl}/spaces/${spaceId}/members`, {
+        params: { page, limit, status: 'ACTIVE' },
+        withCredentials: true,
+      }),
+    );
+    return { ...dto, items: dto.items.map(mapMembership) };
+  }
+
+  async addMember(spaceId: string, userId: string): Promise<SpaceMembership> {
+    const dto = await firstValueFrom(
+      this.http.post<SpaceMembershipResponseDto>(
+        `${this.baseUrl}/spaces/${spaceId}/members`,
+        { userId, role: 'MEMBER' },
+        { withCredentials: true },
+      ),
+    );
+    return mapMembership(dto);
+  }
+
+  async removeMember(spaceId: string, userId: string): Promise<SpaceMembership> {
+    const dto = await firstValueFrom(
+      this.http.delete<SpaceMembershipResponseDto>(`${this.baseUrl}/spaces/${spaceId}/members/${userId}`, {
+        withCredentials: true,
+      }),
     );
     return mapMembership(dto);
   }

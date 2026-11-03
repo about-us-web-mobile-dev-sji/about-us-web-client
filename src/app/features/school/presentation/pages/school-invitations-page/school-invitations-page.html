@@ -1,0 +1,121 @@
+<p-confirmdialog />
+<app-invite-member-dialog [(visible)]="inviteOpen" [schoolId]="schoolId()" (invited)="load()" />
+<p-menu #menu [model]="menuItems" [popup]="true" appendTo="body" />
+<div class="au-page">
+  <p-breadcrumb [home]="crumbHome" [model]="crumbs()" styleClass="bg-transparent! p-0!" />
+
+  <header class="au-page-head">
+    <div>
+      <h1 class="au-page-title">Invitations</h1>
+      <p class="m-0 mt-1 text-sm text-muted-color">Suivez les invitations envoyées, renvoyez-les ou annulez-les.</p>
+    </div>
+    <div class="au-page-actions">
+      <p-button label="Inviter un membre" icon="pi pi-user-plus" (onClick)="inviteOpen.set(true)" />
+    </div>
+  </header>
+
+  <div class="au-filters" role="search">
+    <p-selectbutton
+      class="au-filter"
+      [options]="filters"
+      optionLabel="label"
+      optionValue="value"
+      [allowEmpty]="false"
+      [ngModel]="status()"
+      (ngModelChange)="selectStatus($event)"
+      ariaLabelledBy="invitations-filter-label"
+    />
+    <span id="invitations-filter-label" class="sr-only">Filtrer par statut</span>
+    <p-iconfield class="au-search">
+      <p-inputicon class="pi pi-search" />
+      <input
+        pInputText
+        id="invitations-search"
+        type="search"
+        class="w-full"
+        maxlength="200"
+        placeholder="Rechercher par e-mail"
+        aria-label="Rechercher une invitation par e-mail"
+        [ngModel]="search()"
+        (ngModelChange)="onSearch($event)"
+      />
+    </p-iconfield>
+  </div>
+
+  @if (loadError(); as error) {
+    <p-message severity="error" icon="pi pi-exclamation-circle">
+      <div class="flex flex-wrap items-center gap-3">
+        <span>{{ error }}</span>
+        <p-button label="Réessayer" severity="secondary" [outlined]="true" size="small" (onClick)="load()" />
+      </div>
+    </p-message>
+  }
+
+  <p-card class="au-flush" aria-label="Liste des invitations">
+    <p-table [value]="invitations()" [loading]="isLoading()" [tableStyle]="{ 'min-width': '52rem' }">
+      <ng-template #header>
+        <tr>
+          <th>E-mail</th>
+          <th>Statut</th>
+          <th>Invité par</th>
+          <th>Envoyée le</th>
+          <th>Expire / acceptée le</th>
+          <th class="au-col-actions"><span class="sr-only">Actions</span></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-invitation>
+        <tr>
+          <td>
+            <div class="flex items-center gap-3">
+              <span class="grid size-9 flex-none place-items-center rounded-full bg-primary-100 text-primary" aria-hidden="true">
+                <i class="pi pi-envelope"></i>
+              </span>
+              <span class="font-semibold [overflow-wrap:anywhere]">{{ invitation.email }}</span>
+            </div>
+          </td>
+          <td><p-tag [value]="statusLabel(invitation.status)" [severity]="statusSeverity(invitation.status)" /></td>
+          <td><app-user-chip [user]="invitation.invitedBy" size="sm" /></td>
+          <td class="au-num">{{ invitation.createdAt ? (invitation.createdAt | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+          <td class="au-num">
+            @if (invitation.acceptedAt) {
+              <span class="text-(--p-au-success)">Acceptée le {{ invitation.acceptedAt | date: 'dd/MM/yyyy' }}</span>
+            } @else {
+              <span [class]="invitation.status === 'EXPIRED' ? 'text-(--p-au-warning)' : ''">
+                {{ invitation.expiresAt | date: 'dd/MM/yyyy HH:mm' }}
+              </span>
+            }
+          </td>
+          <td class="au-col-actions">
+            @if (hasActions(invitation)) {
+              <p-button
+                icon="pi pi-ellipsis-v"
+                severity="secondary"
+                [text]="true"
+                [rounded]="true"
+                [loading]="busyId() === invitation.id"
+                [ariaLabel]="'Actions pour l’invitation de ' + invitation.email"
+                (onClick)="openActions($event, invitation)"
+              />
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="6" class="p-8 text-center text-muted-color">
+            {{ search() ? 'Aucune invitation ne correspond à cette recherche.' : 'Aucune invitation dans cette catégorie.' }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    @if (total() > limit()) {
+      <p-paginator
+        [first]="(page() - 1) * limit()"
+        [rows]="limit()"
+        [totalRecords]="total()"
+        [rowsPerPageOptions]="[20, 50, 100]"
+        (onPageChange)="changePage($event)"
+      />
+    }
+  </p-card>
+</div>

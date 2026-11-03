@@ -25,8 +25,8 @@ const MESSAGES: Readonly<Record<string, string>> = {
   SCHOOL_INVITATION_MISMATCH: $localize`:@@error.SCHOOL_INVITATION_MISMATCH:Cette invitation a été envoyée à une autre adresse e-mail que celle de ton compte.`,
   SCHOOL_MEMBERSHIP_ACTION_FORBIDDEN: $localize`:@@error.SCHOOL_MEMBERSHIP_ACTION_FORBIDDEN:Ton accès à cette école a été suspendu ou révoqué.`,
   SCHOOL_ADMINISTRATOR_ALREADY_ASSIGNED: $localize`:@@error.SCHOOL_ADMINISTRATOR_ALREADY_ASSIGNED:Cette école a déjà un administrateur.`,
-  SCHOOL_ROLE_NOT_FOUND: $localize`:@@error.SCHOOL_ROLE_NOT_FOUND:Ce rôle n’existe plus dans l’école.`,
   SCHOOL_NOT_FOUND: $localize`:@@error.SCHOOL_NOT_FOUND:École introuvable.`,
+  SCHOOL_INVITATION_NOT_FOUND: $localize`:@@error.SCHOOL_INVITATION_NOT_FOUND:Cette invitation n’existe pas ou appartient à une autre école.`,
   INVALID_SCHOOL_MEMBERSHIP: $localize`:@@error.INVALID_SCHOOL_MEMBERSHIP:Cette personne est déjà membre de l’école (ou suspendue) : modifie son rôle plutôt que de l’inviter.`,
   INVALID_SCHOOL: $localize`:@@error.INVALID_SCHOOL:Cette école n’accepte pas d’invitation pour le moment.`,
   // Generic HTTP

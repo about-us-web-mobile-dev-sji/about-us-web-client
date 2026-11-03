@@ -12,6 +12,7 @@ import type {
   Space,
   SpaceEffectiveManagers,
   SpaceMembership,
+  SpaceMembersPage,
 } from '../domain/models/space.model';
 
 @Injectable({ providedIn: 'root' })
@@ -40,6 +41,18 @@ export class SpaceService {
 
   removeManager(spaceId: string): Promise<SpaceMembership> {
     return this.repository.removeManager(spaceId);
+  }
+
+  listMembers(spaceId: string, page: number, limit: number): Promise<SpaceMembersPage> {
+    return this.repository.listMembers(spaceId, page, limit);
+  }
+
+  addMember(spaceId: string, userId: string): Promise<SpaceMembership> {
+    return this.repository.addMember(spaceId, userId);
+  }
+
+  removeMember(spaceId: string, userId: string): Promise<SpaceMembership> {
+    return this.repository.removeMember(spaceId, userId);
   }
 
   archiveSpace(command: ArchiveSpaceCommand): Promise<void> {

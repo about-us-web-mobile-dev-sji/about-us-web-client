@@ -1,3 +1,5 @@
+import type { UserSummary } from '../../../../shared/users/user-summary';
+
 import type { SpaceKind, SpaceStatus } from '../../domain/models/space.model';
 
 export interface MemberDesignationDto {
@@ -37,9 +39,18 @@ export interface EnsureSchoolRootResponseDto {
 export interface SpaceMembershipResponseDto {
   id: string;
   spaceId: string;
-  userId: string;
+  user: UserSummary;
   role: string;
   status: string;
+  grantedAt?: string;
+}
+
+export interface SpaceMembersPageDto {
+  items: SpaceMembershipResponseDto[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 export interface SpaceEffectiveManagersResponseDto {

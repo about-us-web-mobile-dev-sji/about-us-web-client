@@ -17,7 +17,6 @@ import type { CreateSchoolCommand, SchoolSummary } from '../../../domain/models/
 @Component({
   imports: [ReactiveFormsModule, ButtonDirective, InputTextModule, MessageModule, Spinner],
   selector: 'app-create-school-form',
-  styleUrl: './create-school-form.css',
   templateUrl: './create-school-form.html',
 })
 export class CreateSchoolForm implements OnChanges {
@@ -47,9 +46,12 @@ export class CreateSchoolForm implements OnChanges {
   }
 
   onSubmit(): void {
+    console.log('onSubmit called with isLoading:', this.isLoading, 'and schoolForm:', this.schoolForm.value);
     if (this.isLoading) return;
+    console.log('Form validity:', this.schoolForm.valid, 'Form values:', this.schoolForm.getRawValue());
     if (this.schoolForm.invalid) {
       this.schoolForm.markAllAsTouched();
+      console.log('Form is invalid. Marked all controls as touched.');
       return;
     }
 

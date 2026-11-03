@@ -1,12 +1,12 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonDirective } from 'primeng/button';
 import { AuthFacade } from '../../../application/auth.facade';
 import { LOGIN_PATH } from '../../../application/auth-navigation';
-import { errorCodeOf } from '../../../../../core/errors/app-error';
-import { errorMessage } from '../../../../../core/i18n/error-messages';
+import { NotifyService } from '../../../../../core/notifications/notify.service';
 
 @Component({
+  host: { class: 'inline-flex flex-col gap-1' },
   selector: 'app-logout-button',
   imports: [ButtonDirective],
   template: `
@@ -22,33 +22,19 @@ import { errorMessage } from '../../../../../core/i18n/error-messages';
     >
       Se déconnecter
     </button>
-    @if (error(); as message) {
-      <small role="alert" class="logout-error">{{ message }}</small>
-    }
-  `,
-  styles: `
-    :host {
-      display: inline-flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-    .logout-error {
-      color: var(--p-red-700);
-    }
   `,
 })
 export class LogoutButton {
   readonly text = input(false);
   readonly auth = inject(AuthFacade);
-  readonly error = signal<string | null>(null);
   private readonly router = inject(Router);
+  private readonly notify = inject(NotifyService);
 
   async logout(): Promise<void> {
-    this.error.set(null);
     try {
       await this.auth.logout();
     } catch (error) {
-      this.error.set(errorMessage(errorCodeOf(error)));
+      this.notify.fromError(error, 'Déconnexion impossible');
       return;
     }
     await this.router.navigateByUrl(LOGIN_PATH, { replaceUrl: true });

@@ -1,13 +1,14 @@
-import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject, model, signal } from '@angular/core';
+import { NotifyService } from '../../../../../core/notifications/notify.service';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { DialogModule } from 'primeng/dialog';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { Router, RouterLink } from '@angular/router';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 import { ButtonModule } from 'primeng/button';
-import { Drawer } from 'primeng/drawer';
-import { TableModule } from 'primeng/table';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
-import { ToastModule } from 'primeng/toast';
 import { SchoolFacade } from '../../../application/school.facade';
 import {
   SchoolStatus,
@@ -18,21 +19,21 @@ import {
 @Component({
   imports: [
     ButtonModule,
-    DatePipe,
-    Drawer,
+    CardModule,
+    DialogModule,
+    InputTextModule,
+    MessageModule,
+    RouterLink,
     ReactiveFormsModule,
-    TableModule,
+    ProgressSpinnerModule,
     TagModule,
-    ToastModule,
   ],
-  providers: [MessageService],
   selector: 'app-schools-list-page',
-  styleUrl: './schools-list-page.css',
   templateUrl: './schools-list-page.html',
 })
 export class SchoolsListPage implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly messageService = inject(MessageService);
+  private readonly notify = inject(NotifyService);
   private readonly router = inject(Router);
   protected readonly facade = inject(SchoolFacade);
 
@@ -40,8 +41,12 @@ export class SchoolsListPage implements OnInit {
 
   readonly showCreateDialog = signal(false);
   readonly isCreating = signal(false);
-  readonly optionsOpen = model(false);
-  readonly selectedSchool = signal<SchoolSummary | null>(null);
+  /** Logos qui n'ont pas pu se charger : on affiche l'initiale à la place. */
+  readonly brokenLogos = signal<ReadonlySet<string>>(new Set());
+
+  markLogoBroken(id: string): void {
+    this.brokenLogos.update((ids) => new Set(ids).add(id));
+  }
 
   readonly createForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -68,20 +73,6 @@ export class SchoolsListPage implements OnInit {
 
   closeCreateDialog(): void {
     this.showCreateDialog.set(false);
-  }
-
-  openOptions(school: SchoolSummary): void {
-    this.selectedSchool.set(school);
-    this.optionsOpen.set(true);
-  }
-
-  closeOptions(): void {
-    this.optionsOpen.set(false);
-    this.selectedSchool.set(null);
-  }
-
-  onOptionsHide(): void {
-    this.selectedSchool.set(null);
   }
 
   async onCreateSubmit(): Promise<void> {
@@ -118,41 +109,19 @@ export class SchoolsListPage implements OnInit {
       } else if (error?.status === 409) {
         detail = 'Une école avec ce nom existe déjà.';
       }
-      this.showToast('error', 'Erreur', detail);
+      this.showToast('error', 'Création impossible', detail);
     } finally {
       this.isCreating.set(false);
     }
   }
 
-  viewSchoolDetails(schoolId: string): void {
-    this.closeOptions();
-    void this.router.navigate(['/s/schools', schoolId]);
-  }
 
-  editSchool(schoolId: string): void {
-    this.closeOptions();
-    void this.router.navigate(['/s/schools', schoolId, 'edit']);
-  }
 
-  replaceAdmin(schoolId: string): void {
-    this.closeOptions();
-    void this.router.navigate(['/s/schools', schoolId, 'replace-admin']);
-  }
 
-  async toggleStatus(school: SchoolSummary): Promise<void> {
-    this.closeOptions();
-    try {
-      const updated = await this.facade.toggleBlock(school);
-      const nowBlocked = updated.status === SchoolStatus.BLOCKED;
-      this.showToast(
-        nowBlocked ? 'warn' : 'success',
-        nowBlocked ? 'École bloquée' : 'École débloquée',
-        `Le statut de "${updated.name}" a été mis à jour.`,
-      );
-    } catch {
-      this.showToast('error', 'Erreur', 'Échec de la mise à jour du statut.');
-    }
-  }
+
+
+
+
 
   protected statusLabel(status: SchoolStatus | null): string {
     if (!status) return '—';
@@ -183,7 +152,7 @@ export class SchoolsListPage implements OnInit {
     }
   }
 
-  private showToast(severity: string, summary: string, detail: string): void {
-    this.messageService.add({ severity, summary, detail, life: 3500 });
+  private showToast(severity: 'success' | 'warn' | 'error', summary: string, detail: string): void {
+    this.notify[severity](summary, detail);
   }
 }

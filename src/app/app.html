@@ -1,26 +1,24 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<router-outlet />
 
-
-
-<main  class="main">
-  <div  class="content" >
-    <router-outlet />
-  </div>
-</main>
-
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-
+<!-- Popups de notification de toute l'application (voir NotifyService et DESIGN.md). -->
+<p-toast key="app" position="top-right" class="au-toast" [breakpoints]="{ '640px': { width: 'calc(100vw - 2rem)', right: '1rem' } }">
+  <ng-template #message let-message>
+    <div class="au-toast-body">
+      <span class="au-toast-icon" [attr.data-severity]="message.severity" aria-hidden="true">
+        <i
+          class="pi"
+          [class.pi-check]="message.severity === 'success'"
+          [class.pi-info]="message.severity === 'info'"
+          [class.pi-exclamation-triangle]="message.severity === 'warn'"
+          [class.pi-times]="message.severity === 'error'"
+        ></i>
+      </span>
+      <div class="min-w-0 flex-1">
+        <p class="au-toast-summary">{{ message.summary }}</p>
+        @if (message.detail) {
+          <p class="au-toast-detail">{{ message.detail }}</p>
+        }
+      </div>
+    </div>
+  </ng-template>
+</p-toast>

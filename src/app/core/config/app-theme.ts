@@ -7,11 +7,11 @@ export const AppTheme = definePreset({
   primitive: {
     borderRadius: {
       none: '0',
-      xs: '2px',
-      sm: '4px',
-      md: '6px',
-      lg: '8px',
-      xl: '12px',
+      xs: '4px',
+      sm: '6px',
+      md: '8px',
+      lg: '12px',
+      xl: '16px',
     },
     emerald: {
       '50': '#ecfdf5',
@@ -305,7 +305,8 @@ export const AppTheme = definePreset({
       lineHeight: '1.5',
       fontFamily: 'inherit',
       fontWeight: 'normal',
-      fontSize: '0.875rem',
+      // Taille de base unique de l'application (16px), journaux compris.
+      fontSize: '1rem',
     },
     transitionDuration: '0.2s',
     focusRing: {
@@ -319,20 +320,21 @@ export const AppTheme = definePreset({
     iconSize: '0.875rem',
     anchorGutter: '2px',
     primary: {
-      '50': '#f2f7fe',
-      '100': '#e0ebfd',
-      '200': '#b3ccfb',
-      '300': '#80aaf8',
-      '400': '#4d88f5',
-      '500': '#0055f1',
-      '600': '#0048cd',
-      '700': '#003ca9',
-      '800': '#002f85',
-      '900': '#002260',
-      '950': '#001544',
-      color: 'light-dark({primary.500}, {primary.400})',
-      contrastColor: 'light-dark(#ffffff, {surface.900})',
-      hoverColor: 'light-dark({primary.600}, {primary.300})',
+      '50': '#eef4ff',
+      '100': '#e8effe',
+      '200': '#b8cefc',
+      '300': '#85abfa',
+      '400': '#4d84f5',
+      '500': '#0050e6',
+      '600': '#0042bf',
+      '700': '#003699',
+      '800': '#002a78',
+      '900': '#0a1d57',
+      '950': '#06123a',
+      // Thème sombre : le bleu de la marque, un peu plus lumineux, toujours avec du texte blanc.
+      color: 'light-dark({primary.500}, #3a74f2)',
+      contrastColor: '#ffffff',
+      hoverColor: 'light-dark({primary.600}, #5287f5)',
       activeColor: 'light-dark({primary.700}, {primary.200})',
     },
     formField: {
@@ -364,11 +366,11 @@ export const AppTheme = definePreset({
       filledBackground: 'light-dark({surface.50}, {surface.800})',
       filledHoverBackground: 'light-dark({surface.50}, {surface.800})',
       filledFocusBackground: 'light-dark({surface.50}, {surface.800})',
-      borderColor: 'light-dark({surface.300}, {surface.600})',
-      hoverBorderColor: 'light-dark({surface.400}, {surface.500})',
+      borderColor: 'light-dark({surface.200}, {surface.600})',
+      hoverBorderColor: 'light-dark({surface.300}, {surface.500})',
       focusBorderColor: '{primary.color}',
       invalidBorderColor: 'light-dark({red.400}, {red.300})',
-      color: 'light-dark({surface.700}, {surface.0})',
+      color: 'light-dark({surface.900}, {surface.0})',
       disabledColor: 'light-dark({surface.500}, {surface.400})',
       placeholderColor: 'light-dark({surface.500}, {surface.400})',
       invalidPlaceholderColor: 'light-dark({red.600}, {red.400})',
@@ -413,7 +415,7 @@ export const AppTheme = definePreset({
       },
     },
     content: {
-      borderRadius: '{border.radius.md}',
+      borderRadius: '{border.radius.lg}',
       background: 'light-dark({surface.0}, {surface.900})',
       hoverBackground: 'light-dark({surface.100}, {surface.800})',
       borderColor: 'light-dark({surface.200}, {surface.700})',
@@ -493,19 +495,21 @@ export const AppTheme = definePreset({
         shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
       },
     },
+    // Neutres de la charte About Us (gris légèrement bleutés).
+    // 0 cartes · 50 fond général · 100 barre latérale · 200 bordures · 500 texte secondaire · 900 texte.
     surface: {
       '0': '#ffffff',
-      '50': 'light-dark({slate.50}, {zinc.50})',
-      '100': 'light-dark({slate.100}, {zinc.100})',
-      '200': 'light-dark({slate.200}, {zinc.200})',
-      '300': 'light-dark({slate.300}, {zinc.300})',
-      '400': 'light-dark({slate.400}, {zinc.400})',
-      '500': 'light-dark({slate.500}, {zinc.500})',
-      '600': 'light-dark({slate.600}, {zinc.600})',
-      '700': 'light-dark({slate.700}, {zinc.700})',
-      '800': 'light-dark({slate.800}, {zinc.800})',
-      '900': 'light-dark({slate.900}, {zinc.900})',
-      '950': 'light-dark({slate.950}, {zinc.950})',
+      '50': 'light-dark(#f7f8fa, {zinc.50})',
+      '100': 'light-dark(#eceef3, {zinc.100})',
+      '200': 'light-dark(#e2e6f0, {zinc.200})',
+      '300': 'light-dark(#c9d0df, {zinc.300})',
+      '400': 'light-dark(#8f99ad, {zinc.400})',
+      '500': 'light-dark(#5b6478, {zinc.500})',
+      '600': 'light-dark(#4a5266, {zinc.600})',
+      '700': 'light-dark(#343b4f, {zinc.700})',
+      '800': 'light-dark(#262c3e, {zinc.800})',
+      '900': 'light-dark(#1b2133, {zinc.900})',
+      '950': 'light-dark(#0e1320, {zinc.950})',
     },
     highlight: {
       background: 'light-dark({primary.50}, color-mix(in srgb, {primary.400}, transparent 84%))',
@@ -515,8 +519,8 @@ export const AppTheme = definePreset({
       focusColor: 'light-dark({primary.800}, rgba(255,255,255,.87))',
     },
     text: {
-      color: 'light-dark({surface.700}, {surface.0})',
-      hoverColor: 'light-dark({surface.800}, {surface.0})',
+      color: 'light-dark({surface.900}, {surface.0})',
+      hoverColor: 'light-dark({surface.950}, {surface.0})',
       mutedColor: 'light-dark({surface.500}, {surface.400})',
       hoverMutedColor: 'light-dark({surface.600}, {surface.300})',
     },
@@ -1087,22 +1091,22 @@ export const AppTheme = definePreset({
         background: '{content.background}',
         borderRadius: '{border.radius.xl}',
         color: '{content.color}',
-        shadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+        shadow: 'none',
       },
       body: {
-        padding: '1.125rem',
-        gap: '0.5rem',
+        padding: '1.5rem',
+        gap: '1rem',
       },
       caption: {
         gap: '0.5rem',
       },
       title: {
-        fontSize: '1.125rem',
-        fontWeight: '500',
+        fontSize: '1.25rem',
+        fontWeight: '600',
       },
       subtitle: {
         color: '{text.muted.color}',
-        fontSize: '1rem',
+        fontSize: '0.875rem',
         fontWeight: '{typography.font.weight}',
       },
     },
@@ -1497,11 +1501,11 @@ export const AppTheme = definePreset({
         hoverBackground: '{content.hover.background}',
         selectedBackground: '{content.background}',
         borderColor: '{datatable.border.color}',
-        color: '{content.color}',
+        color: '{surface.700}',
         hoverColor: '{content.hover.color}',
         selectedColor: '{content.color}',
         gap: '0.5rem',
-        padding: '0.5rem 0.875rem',
+        padding: '0.625rem 1rem',
         focusRing: {
           width: '{focus.ring.width}',
           style: '{focus.ring.style}',
@@ -1516,9 +1520,10 @@ export const AppTheme = definePreset({
           padding: '0.75rem 1.125rem',
         },
       },
+      // En-têtes discrets (13px, gris foncé), comme les tableaux de hPanel.
       columnTitle: {
         fontWeight: '600',
-        fontSize: '{typography.font.size}',
+        fontSize: '0.8125rem',
       },
       row: {
         background: '{content.background}',
@@ -1538,7 +1543,7 @@ export const AppTheme = definePreset({
       },
       bodyCell: {
         borderColor: '{datatable.border.color}',
-        padding: '0.5rem 0.875rem',
+        padding: '0.75rem 1rem',
         fontWeight: '{typography.font.size}',
         fontSize: '{typography.font.size}',
         selectedBorderColor: 'light-dark({primary.100}, {primary.900})',
@@ -3212,8 +3217,8 @@ export const AppTheme = definePreset({
         color: '{content.color}',
         selectedColor: '{highlight.color}',
         hoverColor: '{content.hover.color}',
-        padding: '0.625rem 0.875rem',
-        toggleablePadding: '0.625rem 0.875rem 1.125rem 0.875rem',
+        padding: '0.875rem 1rem',
+        toggleablePadding: '0.875rem 1rem 1.375rem 1rem',
         borderRadius: '{content.border.radius}',
         fontSize: '{typography.font.size}',
         fontWeight: '{typography.font.weight}',
@@ -3245,7 +3250,7 @@ export const AppTheme = definePreset({
         },
       },
       connector: {
-        color: '{content.border.color}',
+        color: '{surface.300}',
         borderRadius: '{content.border.radius}',
         height: '24px',
       },
@@ -3673,7 +3678,7 @@ export const AppTheme = definePreset({
         },
       },
       layout: {
-        background: '#ffffff',
+        background: 'var(--au-panel)',
       },
       header: {
         padding: '0.5rem',
@@ -3690,7 +3695,7 @@ export const AppTheme = definePreset({
         padding: '0.5rem',
       },
       panel: {
-        background: '#f6f6f6',
+        background: 'var(--au-panel)',
         color: '{content.color}',
         floatingBorderRadius: '{content.border.radius}',
         floatingShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
@@ -3722,18 +3727,18 @@ export const AppTheme = definePreset({
         gap: '{navigation.list.gap}',
       },
       menuButton: {
-        padding: '0.25rem 0.625rem',
-        gap: '{navigation.item.gap}',
-        height: '2rem',
-        borderRadius: '{navigation.item.border.radius}',
+        padding: '0.25rem 0.75rem',
+        gap: '0.75rem',
+        height: '2.375rem',
+        borderRadius: '8px',
         fontSize: '{navigation.item.label.font.size}',
         fontWeight: '{navigation.item.label.font.weight}',
         color: '{navigation.item.color}',
         focusBackground: '{navigation.item.focus.background}',
         focusColor: '{navigation.item.focus.color}',
-        activeBackground: '#ffffff',
+        activeBackground: 'var(--au-active)',
         activeColor: '{primary.color}',
-        iconOnlyWidth: '2rem',
+        iconOnlyWidth: '2.375rem',
         withActionPaddingEnd: '2rem',
         icon: {
           color: '{navigation.item.icon.color}',
@@ -3785,7 +3790,7 @@ export const AppTheme = definePreset({
         color: '{navigation.item.color}',
         focusBackground: '{navigation.item.focus.background}',
         focusColor: '{navigation.item.focus.color}',
-        activeBackground: '#ffffff',
+        activeBackground: 'var(--au-active)',
         activeColor: '{primary.color}',
         icon: {
           color: '{navigation.item.icon.color}',
@@ -3794,9 +3799,9 @@ export const AppTheme = definePreset({
         },
       },
       main: {
-        background: '#ffffff',
-        floatingBackground: '#ffffff',
-        insetBackground: '#ffffff',
+        background: 'var(--au-bg)',
+        floatingBackground: 'var(--au-bg)',
+        insetBackground: 'var(--au-bg)',
         margin: '0.5rem',
         borderRadius: '{content.border.radius}',
         shadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
@@ -4808,5 +4813,511 @@ export const AppTheme = definePreset({
       },
     },
   },
-  css: '\n',
+  // Tokens de marque About Us hors du vocabulaire PrimeNG : variables --p-au-*.
+  extend: {
+    au: {
+      fontSans: "'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontMono: "'DM Mono', ui-monospace, Menlo, monospace",
+      // Orange du « U » du logo : remplissage uniquement (texte posé dessus en surface.900).
+      accent: '#fc4a2c',
+      accentInk: '#c2361a',
+      accentSoft: '#ffede6',
+      success: '#137a55',
+      successSoft: '#e3f6ee',
+      warning: '#9a5200',
+      warningSoft: '#fff2dc',
+      danger: '#c1271d',
+      dangerSoft: '#fde9e7',
+      // Fond du shell : halo bleu sourd centré en haut, qui tend vers le noir.
+      shellGradient:
+        'radial-gradient(ellipse 55% 240px at 50% 0%, #1e4bb0 0%, #143a8f 24%, #0c2563 50%, #061338 74%, #000000 100%)',
+      floatShadow: '0 8px 24px rgba(16, 24, 48, 0.12)',
+    },
+  },
+  // Styles de mise en page qui n'ont pas d'équivalent en token (voir DESIGN.md).
+  // Les variables --p-* sont générées par PrimeNG à partir des tokens ci-dessus.
+  css: `
+html, body {
+  margin: 0;
+  font-family: var(--p-au-font-sans);
+  font-size: 1rem;
+  color: var(--p-text-color);
+  background: var(--au-bg);
+}
+code, pre, kbd { font-family: var(--p-au-font-mono); }
+
+/* ---------- Rôles de couleur : un thème clair et un thème sombre, chacun conçu pour lui-même ---------- */
+/* Les classes .au-* lisent ces rôles, jamais un gris numéroté. Le thème clair reprend la charte d'origine. */
+:root {
+  --au-bg: var(--p-surface-50);            /* fond de page */
+  --au-panel: var(--p-surface-100);        /* barres latérales, pistes de filtres */
+  --au-panel-hover: var(--p-surface-200);  /* survol dans une barre latérale */
+  --au-card: var(--p-surface-0);           /* cartes, en-têtes de liste, champs maison */
+  --au-active: var(--p-surface-0);         /* élément actif (navigation, pilule choisie) */
+  --au-hover: var(--p-surface-100);        /* survol dans une carte */
+  --au-subtle: var(--p-surface-50);        /* fonds discrets : pieds de carte, rayures, panneau de détail */
+  --au-border-strong: var(--p-surface-300);
+  --au-border-hover: var(--p-surface-400);
+  --au-text-head: var(--p-surface-700);    /* en-têtes de tableau */
+  --au-on-color: #ffffff;                  /* texte et icônes posés sur une couleur (bandeau, bleu, rouge) */
+}
+
+/* ---------- Thème sombre (classe au-dark sur <html>, posée par ThemeService) ---------- */
+/* Conçu à part : noirs graphite à peine froids, élévation par la lumière (plus on monte, plus c'est clair),
+   filets discrets, couleurs d'état désaturées. color-scheme: dark active les valeurs sombres des tokens
+   PrimeNG (light-dark) et les contrôles natifs ; la palette zinc ci-dessous leur donne nos propres noirs. */
+:root.au-dark {
+  color-scheme: dark;
+  --p-zinc-950: #0b0c10;
+  --p-zinc-900: #14161c;
+  --p-zinc-800: #1c1f26;
+  --p-zinc-700: #282b34;
+  --p-zinc-600: #383c47;
+  --p-zinc-500: #5c6271;
+  --p-zinc-400: #9aa0ad;
+  --p-zinc-300: #c3c7cf;
+  --p-zinc-200: #dcdfe4;
+  --p-zinc-100: #eceef1;
+  --p-zinc-50: #f6f7f9;
+  --au-bg: #0b0c10;
+  --au-panel: #0f1115;
+  --au-panel-hover: #191b21;
+  --au-card: #14161c;
+  --au-active: #22252d;
+  --au-hover: #1c1f26;
+  --au-subtle: #111318;
+  --au-border-strong: #383c47;
+  --au-border-hover: #4d5260;
+  --au-text-head: #c3c7cf;
+  --p-au-success: #4cc38a;
+  --p-au-success-soft: rgba(76, 195, 138, 0.12);
+  --p-au-warning: #e5a53a;
+  --p-au-warning-soft: rgba(229, 165, 58, 0.12);
+  --p-au-danger: #ec6a62;
+  --p-au-danger-soft: rgba(236, 106, 98, 0.12);
+  --p-au-accent-soft: rgba(252, 74, 44, 0.14);
+}
+:root.au-dark ::selection { background: rgba(77, 132, 245, 0.35); color: #fff; }
+/* Ombres des éléments flottants : plus profondes et plus noires sur fond sombre. */
+:root.au-dark .p-menu, :root.au-dark .p-dialog, :root.au-dark .p-select-overlay, :root.au-dark .au-toast .p-toast-message { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 44px -12px rgba(0, 0, 0, 0.75); }
+/* Pilule choisie : un filet clair remplace l'ombre portée, invisible sur fond sombre. */
+:root.au-dark .au-filter.p-selectbutton .p-togglebutton-checked .p-togglebutton-content { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); }
+
+/* ---------- Cartes : bordure, jamais d'ombre ---------- */
+.p-card { border: 1px solid var(--p-content-border-color); }
+.p-card.au-flush .p-card-body { padding: 0; gap: 0; }
+.p-card.au-flush { overflow: hidden; }
+
+/* ---------- Shell ---------- */
+.au-layout {
+  display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
+  background-color: #000; background-image: var(--p-au-shell-gradient); background-repeat: no-repeat;
+}
+.au-topbar {
+  flex-shrink: 0; display: flex; align-items: center; gap: 0.75rem; height: 52px; padding: 0 0.75rem;
+  color: var(--au-on-color);
+}
+.au-topbar .p-button-text.p-button-secondary { color: var(--au-on-color); }
+.au-topbar .p-button-text.p-button-secondary:not(:disabled):hover { background: rgba(255, 255, 255, 0.1); }
+.au-topbar-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.au-topbar-logout { margin-left: auto; }
+/* Profil dans la barre du haut : bouton rond (icône personne, filet clair), ouvre un menu façon Hostinger. */
+.au-topbar-profile { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; margin-left: auto; padding: 0; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 999px; background: transparent; color: var(--au-on-color); cursor: pointer; transition: background 150ms; }
+.au-topbar-profile:hover, .au-topbar-profile[aria-expanded='true'] { background: rgba(255, 255, 255, 0.12); }
+.au-topbar-profile:focus-visible { outline: 2px solid var(--au-on-color); outline-offset: 2px; }
+.au-topbar-profile .pi { font-size: 1rem; }
+/* Le menu suit les tokens de tous les menus (arrondi lg 12px, entrées 4 × 10px, écart 8px) ;
+   seul l'en-tête est propre : son texte s'aligne sur celui des entrées (4px de liste + 10px d'entrée). */
+.au-profile-menu.p-menu { min-width: 16rem; border-radius: var(--p-border-radius-lg); }
+.au-profile-menu-head { padding: 0.75rem 0.875rem; border-bottom: 1px solid var(--p-content-border-color); }
+.au-profile-menu-name { font-weight: 600; color: var(--p-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.au-profile-menu-section { display: grid; gap: 0.5rem; margin-top: 0.25rem; padding: 0.75rem 0.875rem; border-top: 1px solid var(--p-content-border-color); }
+.au-profile-menu-label { font-size: 0.875rem; font-weight: 500; color: var(--p-text-color); }
+.au-theme-switch.p-selectbutton { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.au-theme-switch.p-selectbutton .p-togglebutton-content { justify-content: center; height: 30px; padding: 0 0.5rem; font-size: 0.875rem; }
+/* « Se déconnecter » : même gabarit qu'une entrée de menu (4 × 10px de marge, écart 8px), sous un filet. */
+.au-profile-menu-action { display: flex; align-items: center; gap: 0.5rem; width: calc(100% - 0.5rem); margin: 0 0.25rem 0.25rem; padding: 0.25rem 0.625rem; min-height: 2.25rem; border: 0; border-top: 1px solid var(--p-content-border-color); border-radius: 0; background: transparent; font: inherit; color: var(--p-text-color); text-align: left; cursor: pointer; }
+.au-profile-menu-action:hover { border-radius: var(--p-border-radius-sm); background: var(--au-hover); }
+.au-profile-menu-action:focus-visible { outline: 2px solid var(--p-primary-color); outline-offset: -2px; }
+.au-profile-menu-action .pi { color: var(--p-text-muted-color); }
+.au-profile-menu-email { margin-top: 0.125rem; font-size: 0.8125rem; color: var(--p-text-muted-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Titre de section en tête d'une barre dédiée (paramètres du compte). */
+.au-subnav-title { margin: 0.25rem 0 0.5rem; padding: 0 0.75rem; font-size: 0.8125rem; font-weight: 600; color: var(--p-text-muted-color); }
+/* Formulaire de mot de passe dans une carte de paramètres : champs empilés (26rem max), actions en pied. */
+.au-password-form { display: grid; gap: 1.25rem; }
+.au-password-form > div:not(.au-password-form-actions) { max-width: 26rem; }
+.au-password-form .p-password, .au-password-form .p-inputtext { width: 100%; }
+.au-password-form-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-top: 1.25rem; border-top: 1px solid var(--p-content-border-color); }
+/* Session ouverte (façon GitHub) : icône grise, nom, « Cet appareil » à pastille verte, activité relative ; action texte à droite. */
+.au-session { display: flex; align-items: center; gap: 1rem; padding-top: 0.875rem; padding-bottom: 0.875rem; border-bottom: 1px solid var(--p-content-border-color); }
+.au-session:last-child { border-bottom: 0; }
+.au-session-icon { flex: none; width: 1.25rem; font-size: 1.125rem; text-align: center; color: var(--p-text-muted-color); }
+.au-session-name { display: flex; align-items: center; gap: 0.625rem; min-width: 0; margin: 0; font-weight: 500; color: var(--p-text-color); }
+.au-session-current { display: inline-flex; flex: none; align-items: center; gap: 0.375rem; font-size: 0.8125rem; font-weight: 500; color: var(--p-au-success); }
+.au-session-current > span { width: 0.4375rem; height: 0.4375rem; border-radius: 999px; background: var(--p-au-success); }
+.au-session-meta { margin: 0.125rem 0 0; font-size: 0.875rem; color: var(--p-text-muted-color); }
+.au-password-preview { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; letter-spacing: 0.15em; color: var(--p-text-color); outline: 0; }
+.au-topbar-brand { display: inline-flex; align-items: center; gap: 0.75rem; color: inherit; text-decoration: none; border-radius: var(--p-border-radius-md); }
+.au-topbar-brand:focus-visible { outline: 2px solid var(--au-on-color); outline-offset: 2px; }
+.au-topbar-logo { display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--p-border-radius-md); background: var(--au-on-color); }
+.au-topbar-pill {
+  display: inline-flex; align-items: center; height: 28px; padding: 0 0.75rem; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28); background: rgba(255, 255, 255, 0.08); font-size: 12px; font-weight: 600;
+}
+@media (max-width: 640px) { .au-topbar-pill { display: none; } }
+.au-shell { flex: 1; min-height: 0; display: flex; margin: 0 0.5rem 0.5rem; border-radius: var(--p-border-radius-xl); overflow: hidden; background: var(--au-bg); }
+.au-shell p-sidebar-layout { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.au-shell p-sidebar-main { display: flex; flex-direction: column; min-height: 0; min-width: 0; background: var(--au-bg); }
+.au-content { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: auto; padding: 2rem clamp(1rem, 3vw, 2rem); }
+.au-content > :not(router-outlet) { display: block; width: 100%; max-width: 1110px; margin-inline: auto; }
+.au-content.is-flush { padding: 0; overflow: hidden; }
+.au-content.is-flush > :not(router-outlet) { max-width: none; flex: 1; min-height: 0; }
+
+/* ---------- Navigation principale ---------- */
+.au-shell [pSidebarMenuButton] { font-weight: 500; color: var(--p-text-color); }
+.au-nav-away { margin-left: auto; font-size: 0.7rem; color: var(--p-text-muted-color); }
+.au-shell p-sidebar[data-collapsible='icon'] .au-nav-away { display: none; }
+.au-shell [pSidebarMenuButton]:hover { background: var(--au-panel-hover); }
+/* Actif : uniquement un fond différent de la barre (blanc), sans bordure. */
+.au-shell [pSidebarMenuButton].active-link,
+.au-shell [pSidebarMenuButton].active-link:hover { background: var(--au-active); color: var(--p-text-color); }
+/* Icônes : même taille dépliée et réduite. */
+.au-shell [pSidebarMenuButton] svg { width: 18px; height: 18px; flex: none; color: var(--p-text-muted-color); }
+.au-shell [pSidebarMenuButton].active-link svg { color: var(--p-primary-color); }
+.au-collapse { width: 100%; border: 0; background: transparent; font: inherit; font-size: 16px; font-weight: 500; color: var(--p-text-muted-color); cursor: pointer; }
+/* Rail (barre réduite) : icônes seules, centrées. */
+.au-shell p-sidebar[data-collapsible='icon'] [pSidebarMenuButton] { justify-content: center; width: 40px; height: 40px; margin-inline: auto; padding: 0; }
+.au-shell p-sidebar[data-collapsible='icon'] [pSidebarMenuButton] > span { display: none; }
+.au-shell p-sidebar[data-collapsible='icon'] p-sidebar-group-label { height: 0.5rem; overflow: hidden; }
+
+/* ---------- Barre latérale de l'espace d'une école ---------- */
+/* Remplace la navigation principale dans l'espace d'une école : même apparence qu'elle. */
+.au-subnav { display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem 0.75rem; overflow-y: auto; background: var(--au-panel); border-right: 1px solid var(--p-content-border-color); }
+.au-subnav-tab { display: flex; align-items: center; gap: 0.75rem; height: 40px; padding: 0 0.75rem; border-radius: var(--p-border-radius-md); color: var(--p-text-color); font-size: 16px; font-weight: 500; text-decoration: none; }
+.au-subnav-tab i { width: 18px; font-size: 16px; text-align: center; color: var(--p-text-muted-color); }
+.au-subnav-tab:hover { background: var(--au-panel-hover); }
+.au-subnav-tab:focus-visible { outline: 2px solid var(--p-primary-color); outline-offset: 2px; }
+.au-subnav-tab.is-active { background: var(--au-active); }
+.au-subnav-tab.is-active i { color: var(--p-primary-color); }
+.au-subnav-tab svg { width: 18px; height: 18px; flex: none; color: var(--p-text-muted-color); }
+.au-subnav-school { width: 2.25rem; height: 2.25rem; border-radius: var(--p-border-radius-md); font-weight: 600; }
+/* Barre réduite : icônes seules, centrées (4rem, comme la navigation principale). */
+/* Même animation que la navigation principale (PrimeNG Sidebar : largeur sur 250ms). */
+.au-workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+@media (min-width: 900px) {
+  .au-workspace { grid-template-columns: 248px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); transition: grid-template-columns 250ms cubic-bezier(.4, 0, .2, 1); }
+  .au-workspace.is-collapsed { grid-template-columns: 4rem minmax(0, 1fr); }
+}
+.au-subnav { overflow-x: hidden; transition: padding 250ms cubic-bezier(.4, 0, .2, 1); }
+.au-subnav-tab { white-space: nowrap; transition: padding 250ms cubic-bezier(.4, 0, .2, 1), background 150ms; }
+.au-subnav-tab span { min-width: 0; overflow: hidden; text-overflow: ellipsis; transition: opacity 150ms cubic-bezier(.4, 0, .2, 1); }
+.au-subnav.is-collapsed { padding: 1rem 0.5rem; align-items: stretch; }
+.au-subnav.is-collapsed > a[pButton] { align-self: center; }
+/* L'icône reste centrée dans les 3rem utiles ; le libellé s'efface sans sauter. */
+.au-subnav.is-collapsed .au-subnav-tab { padding: 0 calc((3rem - 18px) / 2); gap: 0; }
+.au-subnav.is-collapsed .au-subnav-tab span { opacity: 0; width: 0; }
+.au-subnav-school { animation: au-fade-in 250ms cubic-bezier(.4, 0, .2, 1); }
+@keyframes au-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .au-workspace, .au-subnav, .au-subnav-tab, .au-subnav-tab span { transition: none; }
+  .au-subnav-school { animation: none; }
+}
+/* Sur mobile la barre passe au-dessus du contenu : pas de mode réduit. */
+@media (max-width: 899px) { .au-subnav .au-collapse { display: none; } }
+
+/* ---------- Journaux d'événements (console de logs, pleine largeur) ---------- */
+/* Filtres à gauche (groupes repliables), barre de recherche + Live en haut, liste dense et alignée. */
+.au-logs { display: grid; grid-template-columns: 16rem minmax(0, 1fr); flex: 1; min-height: 0; background: var(--au-card); }
+.au-logs-mono { font-family: var(--p-au-font-mono); font-size: 1rem; font-variant-numeric: tabular-nums; }
+.au-logs-filters { display: flex; flex-direction: column; gap: 0.25rem; min-height: 0; overflow-y: auto; padding: 1rem 0.75rem; border-right: 1px solid var(--p-content-border-color); background: var(--au-panel); }
+.au-logs-filters-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0 0.25rem 0.75rem; }
+.au-logs-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--p-text-color); }
+.au-logs-group { padding: 0.25rem 0; border-top: 1px solid var(--p-content-border-color); }
+.au-logs-group-toggle { display: flex; align-items: center; gap: 0.5rem; width: 100%; height: 2.25rem; padding: 0 0.25rem; border: 0; border-radius: var(--p-border-radius-md); background: transparent; font: inherit; font-size: 1rem; font-weight: 600; color: var(--p-text-color); cursor: pointer; }
+.au-logs-group-toggle i { font-size: 0.7rem; color: var(--p-text-muted-color); transition: transform 150ms; }
+.au-logs-group-toggle[aria-expanded='false'] i { transform: rotate(-90deg); }
+.au-logs-group-toggle:focus-visible, .au-logs-option:focus-visible, .au-logs-live:focus-visible { outline: 2px solid var(--p-primary-color); outline-offset: 1px; }
+.au-logs-options { display: grid; gap: 1px; margin: 0 0 0.5rem; padding: 0; list-style: none; }
+.au-logs-option { display: flex; align-items: center; gap: 0.625rem; width: 100%; height: 2rem; padding: 0 0.5rem; border: 0; border-radius: var(--p-border-radius-md); background: transparent; font: inherit; font-size: 1rem; color: var(--p-text-color); text-align: left; cursor: pointer; }
+.au-logs-option:hover { background: var(--au-panel-hover); }
+.au-logs-option-key { margin-left: auto; font-size: 0.6875rem; color: var(--p-text-muted-color); }
+.au-logs-check { display: grid; place-items: center; width: 1rem; height: 1rem; flex: none; border: 1px solid var(--au-border-strong); border-radius: 4px; background: var(--au-card); }
+.au-logs-check i { font-size: 0.55rem; color: var(--au-on-color); opacity: 0; }
+.au-logs-option.is-selected .au-logs-check { border-color: var(--p-primary-color); background: var(--p-primary-color); }
+.au-logs-option.is-selected .au-logs-check i { opacity: 1; }
+.au-logs-scope { display: grid; gap: 0.375rem; padding: 0.75rem 0.25rem; border-top: 1px solid var(--p-content-border-color); font-size: 1rem; color: var(--p-text-color); }
+.au-logs-scope-label { color: var(--p-text-muted-color); }
+.au-logs-scope-id { overflow-wrap: anywhere; color: var(--p-text-muted-color); }
+.au-logs-link { margin-top: 0.5rem; color: var(--p-primary-color); text-decoration: none; }
+.au-logs-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.au-logs-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.au-logs-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--p-content-border-color); }
+.au-logs-bar .p-inputtext { height: 2.5rem; }
+.au-logs-live { display: inline-flex; align-items: center; gap: 0.5rem; height: 2.5rem; padding: 0 0.875rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-md); background: var(--au-card); font: inherit; font-size: 1rem; font-weight: 500; color: var(--p-text-color); cursor: pointer; }
+.au-logs-live:hover { background: var(--au-hover); }
+.au-logs-live-dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; background: var(--au-border-strong); }
+.au-logs-live.is-on .au-logs-live-dot { background: var(--p-au-success); box-shadow: 0 0 0 0 color-mix(in srgb, var(--p-au-success) 50%, transparent); animation: au-live 1.6s ease-out infinite; }
+@keyframes au-live { to { box-shadow: 0 0 0 6px transparent; } }
+@media (prefers-reduced-motion: reduce) { .au-logs-live.is-on .au-logs-live-dot { animation: none; } }
+.au-logs-body { display: grid; grid-template-columns: minmax(0, 1fr); flex: 1; min-height: 0; }
+.au-logs-body.has-detail { grid-template-columns: minmax(0, 1fr) minmax(22rem, 26rem); }
+.au-logs-list { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.au-logs-scroll { flex: 1; min-height: 0; padding: 0.25rem 0.75rem 0; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--au-border-strong) transparent; }
+/* Lignes fines (32px), alternées, en-tête collant. Préfixe .au-logs : passe avant la hauteur globale des tableaux (64px). */
+.au-logs .au-logs-table .p-datatable-thead > tr > th { position: sticky; top: 0; z-index: 1; height: 2.25rem; padding: 0 1rem; background: var(--au-card); border-bottom: 1px solid var(--p-content-border-color); font-size: 1rem; font-weight: 500; color: var(--p-text-muted-color); }
+.au-logs .au-logs-table .p-datatable-tbody > tr { cursor: pointer; }
+.au-logs .au-logs-table .p-datatable-tbody > tr > td { height: 2rem; padding: 0 1rem; border: 0; font-size: 1rem; line-height: 2rem; white-space: nowrap; }
+.au-logs .au-logs-table .p-datatable-tbody > tr:nth-child(even) > td { background: var(--au-subtle); }
+.au-logs .au-logs-table .p-datatable-tbody > tr:hover > td { background: var(--au-hover); }
+.au-logs .au-logs-table .p-datatable-tbody > tr.is-selected > td { background: color-mix(in srgb, var(--p-primary-color) 10%, var(--au-card)); }
+.au-logs .au-logs-table .p-datatable-tbody > tr > td:first-child { border-radius: 6px 0 0 6px; }
+.au-logs .au-logs-table .p-datatable-tbody > tr > td:last-child { border-radius: 0 6px 6px 0; }
+/* Panneau de détail : en-tête (type, nom, ↑ ↓, copier, fermer), date, propriétés, données. */
+.au-logs-detail { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--p-content-border-color); background: var(--au-subtle); }
+.au-logs-detail-head { display: flex; align-items: center; gap: 0.25rem; padding: 0.5rem 0.5rem 0.5rem 1rem; border-bottom: 1px solid var(--p-content-border-color); background: var(--au-card); font-size: 1rem; }
+.au-logs-detail-head .au-logs-type { margin-right: 0.375rem; }
+.au-logs-detail-body { display: grid; gap: 0.875rem; align-content: start; min-height: 0; overflow-y: auto; padding: 1rem; scrollbar-width: thin; }
+.au-logs-detail-when { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0; font-size: 1rem; font-weight: 500; color: var(--p-text-color); }
+.au-logs-detail-when > span:first-child { display: inline-flex; align-items: center; gap: 0.5rem; }
+.au-logs-detail-when i { font-size: 0.7rem; color: var(--p-text-muted-color); }
+.au-logs-detail-when .au-logs-mono { font-weight: 400; color: var(--p-text-muted-color); }
+.au-logs-props { margin: 0; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); background: var(--au-card); }
+.au-logs-props > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.625rem 0.875rem; border-bottom: 1px solid var(--p-content-border-color); font-size: 1rem; }
+.au-logs-props > div:last-child { border-bottom: 0; }
+.au-logs-props dt { flex: none; color: var(--p-text-muted-color); }
+.au-logs-props dd { min-width: 0; margin: 0; overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; color: var(--p-text-color); }
+.au-logs-props > div.is-block { display: grid; gap: 0.25rem; }
+.au-logs-props > div.is-block dd { text-align: left; white-space: normal; }
+.au-logs-payload { overflow: hidden; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); background: var(--au-card); }
+.au-logs-payload header { display: flex; align-items: center; justify-content: space-between; padding: 0.25rem 0.25rem 0.25rem 0.875rem; border-bottom: 1px solid var(--p-content-border-color); font-size: 1rem; font-weight: 500; color: var(--p-text-color); }
+.au-logs-payload pre { margin: 0; padding: 0.75rem 0.875rem; overflow: auto; max-height: 22rem; font-size: 0.75rem; line-height: 1.25rem; color: var(--p-text-color); white-space: pre; }
+@media (max-width: 1100px) { .au-logs-body.has-detail { grid-template-columns: minmax(0, 1fr); } .au-logs-body.has-detail .au-logs-list { display: none; } }
+.au-logs-actor { display: block; overflow: hidden; text-overflow: ellipsis; color: var(--p-text-color); }
+.au-logs-type { display: inline-block; padding: 0 0.375rem; line-height: 1.125rem; border: 1px solid var(--p-content-border-color); border-radius: 4px; background: var(--au-card); font-family: var(--p-au-font-mono); font-size: 0.75rem; color: var(--p-text-color); }
+.au-logs-name { color: var(--p-text-color); }
+.au-logs-message { max-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--p-text-muted-color); }
+.au-logs-empty { height: auto !important; padding: 3rem 1rem !important; text-align: center; white-space: normal !important; color: var(--p-text-muted-color); }
+.au-logs-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.375rem 0.75rem 0.375rem 1rem; border-top: 1px solid var(--p-content-border-color); color: var(--p-text-muted-color); }
+@media (max-width: 900px) {
+  .au-logs { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  .au-logs-filters { max-height: 14rem; border-right: 0; border-bottom: 1px solid var(--p-content-border-color); }
+}
+
+/* ---------- Gabarits de page ---------- */
+.au-page { display: grid; gap: 1.5rem; }
+
+.au-page-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.au-page-title { margin: 0; font-size: 28px; line-height: 36px; font-weight: 500; letter-spacing: -0.01em; color: var(--p-text-color); }
+.au-page-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.au-overview { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 1.5rem; align-items: start; }
+.au-overview > * { min-width: 0; display: grid; gap: 1.5rem; }
+/* La synthèse (colonne de droite) reste visible pendant que le contenu défile. */
+.au-overview > aside { position: sticky; top: 2rem; }
+@media (max-width: 1024px) { .au-overview { grid-template-columns: minmax(0, 1fr); } .au-overview > aside { position: static; } }
+/* Filtres d'une liste : pilules segmentées (p-selectbutton.au-filter) à gauche, recherche à droite. */
+.au-filters { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.au-filters .au-search { width: 20rem; max-width: 100%; }
+/* La recherche a la même hauteur que la rangée de pilules (34px + 2 × 4px de conteneur). */
+.au-filters .au-search .p-inputtext { height: 42px; }
+.au-filter.p-selectbutton { gap: 2px; padding: 4px; border-radius: 999px; background: var(--au-panel); }
+.au-filter.p-selectbutton .p-togglebutton { padding: 0; border: 0 !important; border-radius: 999px !important; background: transparent; color: var(--p-text-muted-color); font-weight: 500; }
+.au-filter.p-selectbutton .p-togglebutton-content { height: 34px; padding: 0 1rem; border-radius: 999px; }
+.au-filter.p-selectbutton .p-togglebutton:not(:disabled):not(.p-togglebutton-checked):hover { background: transparent; color: var(--p-text-color); }
+.au-filter.p-selectbutton .p-togglebutton.p-togglebutton-checked { background: transparent; color: var(--p-text-color); }
+.au-filter.p-selectbutton .p-togglebutton-checked .p-togglebutton-content { background: var(--au-active); box-shadow: 0 1px 2px rgba(16, 24, 48, 0.08); }
+.au-kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem 1.5rem; margin: 0; padding: 1rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); }
+.au-kv dt { font-size: 12px; line-height: 16px; color: var(--p-text-muted-color); }
+.au-kv dd { margin: 2px 0 0; font-weight: 500; overflow-wrap: anywhere; }
+
+/* ---------- Connexion : le dégradé du bandeau en plein écran, une carte compacte au centre ---------- */
+.au-login { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; min-height: 100dvh; padding: 2rem 1rem; background-color: #000; background-image: var(--p-au-shell-gradient); background-repeat: no-repeat; background-size: 100% 100%; }
+.au-login-card { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; max-width: 26rem; padding: 2rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-xl); background: var(--au-card); box-shadow: 0 24px 64px -24px rgba(0, 0, 0, 0.55); }
+.au-login-head { display: flex; align-items: center; gap: 0.625rem; }
+.au-login-logo { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-md); background: var(--au-on-color); }
+.au-login-brand { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; color: var(--p-text-color); }
+.au-login-title { margin: 0; font-size: 1.5rem; line-height: 2rem; font-weight: 600; letter-spacing: -0.015em; color: var(--p-text-color); }
+.au-login-sub { margin: 0.25rem 0 0; font-size: 0.875rem; color: var(--p-text-muted-color); }
+.au-login-or { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8125rem; color: var(--p-text-muted-color); }
+.au-login-or::before, .au-login-or::after { content: ''; flex: 1; height: 1px; background: var(--p-content-border-color); }
+.au-google-button { gap: 0.625rem; }
+.au-login-foot { margin: 0; font-size: 0.8125rem; color: rgba(255, 255, 255, 0.55); }
+
+/* ---------- Espace ouvert : seconde barre latérale collée à celle de l'école ---------- */
+.au-space-layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); flex: 1; min-height: 0; min-width: 0; }
+.au-space-nav { border-right: 1px solid var(--p-content-border-color); background: var(--au-subtle); }
+.au-space-id { display: flex; align-items: center; gap: 0.625rem; margin: 0.25rem 0 0.75rem; padding: 0 0.75rem; }
+.au-space-id .pi { flex: none; font-size: 0.875rem; color: var(--p-text-muted-color); }
+.au-space-name { min-width: 0; overflow: hidden; font-weight: 600; color: var(--p-text-color); text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 899px) { .au-space-layout { grid-template-columns: minmax(0, 1fr); } .au-space-nav { border-right: 0; border-bottom: 1px solid var(--p-content-border-color); } }
+/* État vide centré dans une carte : pastille d'icône neutre, titre, phrase. */
+.au-empty { display: grid; justify-items: center; gap: 0.5rem; padding: 3.5rem 1.5rem; text-align: center; }
+.au-empty-icon { display: grid; place-items: center; width: 3rem; height: 3rem; margin-bottom: 0.5rem; border-radius: var(--p-border-radius-lg); background: var(--au-panel); color: var(--p-text-muted-color); font-size: 1.25rem; }
+.au-empty-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--p-text-color); }
+.au-empty-text { max-width: 36ch; margin: 0; font-size: 0.875rem; color: var(--p-text-muted-color); }
+
+/* ---------- Cartes d'écoles (grille de la page Écoles) : neutres, bordées, sans couleur de fond ---------- */
+.au-school-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 1.25rem; margin: 0; padding: 0; list-style: none; }
+.au-school-card { display: flex; flex-direction: column; gap: 1.75rem; height: 100%; padding: 1.75rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-xl); background: var(--au-card); color: var(--p-text-color); text-decoration: none; transition: border-color 150ms, box-shadow 150ms; }
+.au-school-card:hover { border-color: var(--au-border-strong); box-shadow: 0 6px 20px -12px rgba(16, 24, 48, 0.25); }
+.au-school-card:focus-visible { outline: 2px solid var(--p-primary-color); outline-offset: 2px; }
+.au-school-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.au-school-logo { display: grid; place-items: center; width: 3rem; height: 3rem; flex: none; overflow: hidden; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); background: var(--au-card); font-size: 1.25rem; font-weight: 600; color: var(--p-text-color); }
+.au-school-logo img { width: 100%; height: 100%; padding: 0.25rem; object-fit: contain; }
+.au-school-logo.is-initial { border-color: transparent; background: var(--au-panel); }
+.au-school-name { margin: 0; overflow: hidden; font-size: 1.0625rem; font-weight: 600; line-height: 1.5rem; text-overflow: ellipsis; white-space: nowrap; }
+.au-school-site { margin: 0.25rem 0 0; overflow: hidden; font-size: 0.875rem; color: var(--p-text-muted-color); text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- Panneaux de réglages (cartes à en-tête, façon hPanel « Account information ») ---------- */
+/* <p-card class="au-flush au-panel"> > .au-panel-head, .au-panel-desc, .au-panel-row… */
+.au-panel-head { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--p-content-border-color); }
+.au-panel-head h2 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--p-text-color); }
+.au-panel-icon { display: grid; place-items: center; width: 2rem; height: 2rem; flex: none; border-radius: var(--p-border-radius-md); background: var(--p-primary-100); color: var(--p-primary-color); }
+.au-panel-icon.is-danger { background: var(--p-au-danger-soft); color: var(--p-au-danger); }
+.au-panel-desc { margin: 0; padding: 0.875rem 1.5rem; font-size: 1rem; color: var(--p-text-muted-color); border-bottom: 1px solid var(--p-content-border-color); background: var(--au-subtle); }
+.au-panel-row { display: grid; grid-template-columns: minmax(9rem, 1fr) minmax(0, 2fr) 2.5rem; align-items: center; gap: 1rem; min-height: 4rem; padding: 0.625rem 1.5rem; border-bottom: 1px solid var(--p-content-border-color); }
+.au-panel-row:last-child { border-bottom: 0; }
+.au-panel-row > dt { font-size: 1rem; color: var(--p-text-muted-color); }
+.au-panel-row > dd { margin: 0; min-width: 0; font-size: 1rem; font-weight: 500; color: var(--p-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.au-panel-row > .au-panel-action { justify-self: end; }
+/* Ligne en cours d'édition : la valeur devient un champ, l'action deux boutons (enregistrer / annuler). */
+.au-panel-row.is-editing { grid-template-columns: minmax(9rem, 1fr) minmax(0, 2fr) auto; background: var(--au-subtle); }
+.au-panel-row.is-editing > dd.au-panel-edit { display: grid; gap: 0.25rem; overflow: visible; white-space: normal; font-weight: 400; }
+@media (max-width: 640px) { .au-panel-row { grid-template-columns: minmax(0, 1fr) 2.5rem; } .au-panel-row > dd { grid-column: 1; grid-row: 2; } .au-panel-row > .au-panel-action { grid-row: 1 / span 2; grid-column: 2; } }
+.au-panel-body { padding: 1.25rem 1.5rem; }
+/* Paramètres d'un objet (façon Stripe / Linear) : en-tête d'identité, puis sections
+   « intitulé et explication | contenu ». Neutre : le bleu reste aux actions principales. */
+.au-settings-hero { display: flex; align-items: center; gap: 1.25rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--p-content-border-color); }
+.au-settings-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 0.5rem; margin: 0.5rem 0 0; font-size: 1rem; color: var(--p-text-muted-color); }
+.au-settings { display: grid; }
+.au-settings-section { display: grid; grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); gap: 1.5rem 3rem; padding: 2rem 0; border-bottom: 1px solid var(--p-content-border-color); }
+.au-settings-section:first-child { padding-top: 0.5rem; }
+.au-settings-section:last-child { border-bottom: 0; }
+.au-settings-intro h2 { margin: 0; font-size: 1rem; line-height: 1.5rem; font-weight: 600; color: var(--p-text-color); }
+.au-settings-intro p { margin: 0.375rem 0 0; font-size: 1rem; line-height: 1.375rem; color: var(--p-text-muted-color); max-width: 32ch; }
+.au-settings-item { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; min-height: 4rem; padding: 0.875rem 1.5rem; border-bottom: 1px solid var(--p-content-border-color); }
+.au-settings-item:last-child { border-bottom: 0; }
+.au-settings-item-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--p-text-color); }
+.au-settings-item-text { margin: 0.25rem 0 0; font-size: 1rem; line-height: 1.375rem; color: var(--p-text-muted-color); max-width: 56ch; }
+.au-settings-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 0.75rem 1.5rem; border-top: 1px solid var(--p-content-border-color); background: var(--au-subtle); font-size: 1rem; color: var(--p-text-muted-color); }
+.au-settings-danger { border-color: color-mix(in srgb, var(--p-au-danger) 30%, var(--p-content-border-color)) !important; }
+@media (max-width: 900px) { .au-settings-section { grid-template-columns: minmax(0, 1fr); gap: 1rem; } }
+@media (max-width: 640px) { .au-settings-hero { align-items: flex-start; } }
+/* Identité d'un objet en tête de son panneau Profil : logo (ou initiale), nom, statut. */
+.au-identity { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; }
+.au-identity-logo { display: grid; place-items: center; width: 4rem; height: 4rem; flex: none; overflow: hidden; padding: 0.375rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); background: var(--au-card); }
+.au-identity-logo img { width: 100%; height: 100%; object-fit: contain; }
+.au-identity-logo.is-initial { padding: 0; background: var(--au-panel); color: var(--p-text-color); font-size: 1.5rem; font-weight: 600; }
+.au-identity-name { margin: 0; font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; color: var(--p-text-color); overflow-wrap: anywhere; }
+
+/* Ligne d'action et zone sensible (façon Supabase). */
+.au-setting-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 1rem 1.25rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); background: var(--au-card); }
+.au-setting-icon { display: grid; place-items: center; width: 2rem; height: 2rem; flex: none; border-radius: var(--p-border-radius-md); color: var(--p-text-muted-color); }
+.au-setting-body { flex: 1; min-width: 14rem; }
+.au-setting-body h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--p-text-color); }
+.au-setting-body p { margin: 0.25rem 0 0; font-size: 1rem; line-height: 1.375rem; color: var(--p-text-muted-color); }
+.au-danger-zone { display: flex; gap: 0.875rem; padding: 1rem 1.25rem; border: 1px solid color-mix(in srgb, var(--p-au-danger) 25%, transparent); border-radius: var(--p-border-radius-lg); background: color-mix(in srgb, var(--p-au-danger-soft) 45%, var(--au-card)); }
+.au-danger-zone .au-setting-icon { background: var(--p-au-danger); color: var(--au-on-color); width: 1.75rem; height: 1.75rem; }
+
+/* ---------- Notifications (popups) ---------- */
+/* Position : en haut à droite, sous le bandeau (52px) ; largeur 22rem. */
+/* !important : p-toast écrit top/right dans un style inline, sans entrée pour les régler. */
+.au-toast.p-toast-top-right { top: 4.25rem !important; right: 1.5rem !important; width: 22rem; }
+@media (max-width: 640px) { .au-toast.p-toast-top-right { right: 1rem !important; width: calc(100vw - 2rem); } }
+.au-toast .p-toast-message { margin-bottom: 0.75rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); background: var(--au-card); color: var(--p-text-color); box-shadow: var(--p-au-float-shadow); backdrop-filter: none; }
+.au-toast .p-toast-message-content { padding: 0.875rem 1rem; border: 0; align-items: flex-start; }
+.au-toast .p-toast-close-button { border: 0; outline: 0; box-shadow: none; color: var(--p-text-muted-color); }
+.au-toast .p-toast-close-button:focus-visible { outline: 2px solid var(--p-primary-color); outline-offset: 1px; }
+.au-toast .p-toast-close-button:hover { background: var(--au-hover); }
+.au-toast-body { display: flex; align-items: flex-start; gap: 0.75rem; flex: 1; min-width: 0; }
+.au-toast-icon { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; flex: none; border-radius: 999px; color: var(--au-on-color); font-size: 0.75rem; }
+.au-toast-icon[data-severity='success'] { background: var(--p-au-success); }
+.au-toast-icon[data-severity='info'] { background: var(--p-primary-color); }
+.au-toast-icon[data-severity='warn'] { background: var(--p-au-warning); }
+.au-toast-icon[data-severity='error'] { background: var(--p-au-danger); }
+.au-toast-summary { margin: 0; font-size: 1rem; font-weight: 600; line-height: 1.5rem; }
+.au-toast-detail { margin: 0.125rem 0 0; font-size: 1rem; line-height: 1.375rem; color: var(--p-text-muted-color); }
+
+/* ---------- Organigramme des espaces ---------- */
+.space-org-node--root.p-organizationchart-node, .space-org-node--root .p-organizationchart-node { border-color: var(--p-primary-color); }
+.space-org-node--archived.p-organizationchart-node, .space-org-node--archived .p-organizationchart-node { opacity: 0.7; }
+
+/* Action destructive dans un menu (MenuItem.styleClass = 'au-menu-danger'). */
+.au-menu-danger .p-menu-item-label, .au-menu-danger .p-menu-item-icon { color: var(--p-au-danger); }
+
+/* Zone qui défile sans barre visible (molette, trackpad, glisser). */
+.au-scroll-hidden { scrollbar-width: none; -ms-overflow-style: none; }
+/* Barre de défilement fine et visible, aux couleurs du thème. */
+.au-scroll-thin { scrollbar-width: thin; scrollbar-color: var(--au-border-strong) transparent; }
+.au-scroll-hidden::-webkit-scrollbar { display: none; }
+/* L'organigramme PrimeNG a son propre défilement : on le laisse au conteneur. */
+.au-scroll-hidden .p-organizationchart { overflow: visible; }
+/* ---------- Modal du thème (app-modal, sur p-dialog) ---------- */
+/* Sobre et compact : blanc, filet, ombre douce. Les variantes ne changent que la pastille d'icône
+   (et la mise en page pour spotlight), jamais le fond. */
+.au-modal.p-dialog { border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); box-shadow: 0 1px 2px rgba(16, 24, 48, 0.04), 0 16px 40px -12px rgba(16, 24, 48, 0.22); }
+.au-modal .p-dialog-header { align-items: flex-start; gap: 0.75rem; padding: 1.25rem 1rem 0 1.5rem; }
+.au-modal .p-dialog-header-actions { margin-top: -0.25rem; }
+.au-modal .p-dialog-close-button { width: 2rem; height: 2rem; color: var(--p-text-muted-color); }
+.au-modal .p-dialog-content { padding: 1.25rem 1.5rem 1.5rem; }
+.au-modal .p-dialog-footer { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 1rem 1.5rem; border-top: 1px solid var(--p-content-border-color); }
+.au-modal .p-dialog-footer:empty { display: none; }
+.au-modal-head { display: flex; align-items: flex-start; gap: 0.875rem; min-width: 0; }
+/* Pastille d'icône « contour » : blanche, filet, ombre légère (neutral). */
+.au-modal-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; flex: none; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-md); background: var(--au-card); color: var(--p-text-color); font-size: 0.95rem; box-shadow: 0 1px 2px rgba(16, 24, 48, 0.06); }
+.au-modal-heading { min-width: 0; }
+.au-modal-title { margin: 0; font-size: 1rem; line-height: 1.5rem; font-weight: 600; color: var(--p-text-color); text-wrap: balance; }
+.au-modal-description { margin: 0.125rem 0 0; font-size: 1rem; line-height: 1.375rem; color: var(--p-text-muted-color); text-wrap: pretty; }
+.au-modal-icon + .au-modal-heading { padding-top: 0.0625rem; }
+
+/* brand : la pastille prend la couleur de l'action (bleu du A). */
+.au-modal--brand .au-modal-icon { border-color: transparent; background: var(--p-primary-100); color: var(--p-primary-color); box-shadow: none; }
+/* danger : la pastille passe au rouge, l'action principale est en severity="danger". */
+.au-modal--danger .au-modal-icon { border-color: transparent; background: var(--p-au-danger-soft); color: var(--p-au-danger); box-shadow: none; }
+/* spotlight : confirmation de succès ou annonce courte, centrée. */
+.au-modal--spotlight .p-dialog-header { position: relative; justify-content: center; padding: 1.75rem 1.5rem 0; text-align: center; }
+.au-modal--spotlight .au-modal-head { flex-direction: column; align-items: center; gap: 0.875rem; }
+.au-modal--spotlight .au-modal-icon { width: 3rem; height: 3rem; border-radius: 999px; font-size: 1.15rem; }
+.au-modal--spotlight .p-dialog-header-actions { position: absolute; top: 0.75rem; right: 0.75rem; margin: 0; }
+.au-modal--spotlight .p-dialog-content { text-align: center; }
+.au-modal--spotlight .p-dialog-footer { justify-content: center; border-top: 0; padding-top: 0; padding-bottom: 1.5rem; }
+
+@media (max-width: 640px) {
+  .au-modal .p-dialog-footer { flex-direction: column-reverse; align-items: stretch; }
+}
+
+/* Organigramme : la carte du graphe, et ses commandes dans une barre verticale à côté (façon canevas). */
+.au-org-node { cursor: pointer; border-radius: var(--p-border-radius-md); }
+.au-org-node:focus-visible { outline: 2px solid var(--p-primary-color); outline-offset: 6px; }
+.au-chart-layout { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.75rem; align-items: start; }
+.au-chart-card { min-height: 24rem; }
+/* Hauteur fixe : la carte et son contenu forment une colonne, la zone de l'arbre prend le reste et défile. */
+.au-chart-card, .au-chart-card .p-card-body, .au-chart-card .p-card-content { display: flex; flex-direction: column; min-height: 0; }
+.au-chart-card .p-card-body, .au-chart-card .p-card-content { flex: 1; }
+.au-chart-viewport { flex: 1; min-height: 0; overflow: auto; padding: 1.5rem 1.25rem 2rem; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--au-border-strong) transparent; }
+.au-chart-viewport::-webkit-scrollbar { width: 10px; height: 10px; }
+.au-chart-viewport::-webkit-scrollbar-track { background: transparent; }
+.au-chart-viewport::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: var(--au-border-strong); background-clip: padding-box; }
+.au-chart-viewport::-webkit-scrollbar-thumb:hover { background-color: var(--au-border-hover); }
+.au-chart-viewport .p-organizationchart { overflow: visible; }
+/* Fond de canevas : gris très clair et grille de points, pour détacher les nœuds blancs sans ajouter de couleur. */
+.au-chart-card.p-card { background-color: var(--au-subtle); background-image: radial-gradient(var(--au-border-strong) 1px, transparent 1px); background-size: 20px 20px; background-position: 10px 10px; }
+.au-chart-card .p-organizationchart-node:not(.space-org-node--root, .space-org-node--root *) { border-color: var(--au-border-strong); }
+.au-chart-card .p-organizationchart-node:not(.space-org-node--root, .space-org-node--root *):hover { border-color: var(--au-border-hover); }
+.au-chart-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.375rem; border: 1px solid var(--p-content-border-color); border-radius: var(--p-border-radius-lg); background: var(--au-card); }
+.au-chart-zoom { width: 2.5rem; padding: 0.125rem 0; text-align: center; font-size: 0.75rem; font-weight: 500; color: var(--p-text-muted-color); }
+.au-chart-rail-sep { width: 1.25rem; height: 1px; margin: 0.25rem 0; background: var(--p-content-border-color); }
+@media (max-width: 640px) {
+  .au-chart-layout { grid-template-columns: minmax(0, 1fr); }
+  .au-chart-rail { position: static; order: -1; flex-direction: row; justify-self: end; }
+  .au-chart-rail-sep { width: 1px; height: 1.25rem; margin: 0 0.25rem; }
+}
+
+/* ---------- Tableaux : un seul rendu ---------- */
+.p-datatable .p-datatable-thead > tr > th { white-space: nowrap; font-size: 1rem; font-weight: 600; color: var(--au-text-head); }
+.p-datatable .p-datatable-tbody > tr > td { height: 64px; }
+.p-datatable .p-datatable-tbody > tr:last-child > td { border-bottom: 0; }
+.p-card.au-flush .p-paginator { border-top: 1px solid var(--p-content-border-color); border-radius: 0; }
+.au-col-actions { width: 56px; text-align: right; white-space: nowrap; }
+.au-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+`,
 });

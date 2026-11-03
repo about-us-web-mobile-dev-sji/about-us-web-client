@@ -1,4 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
-
+/*
+ * Branchement uniquement : aucun style ici (sauf le token Tailwind aligné sur la taille de base, ci-dessous).
+ * Le thème (couleurs, typographie, formes, mise en page) vit dans src/app/core/config/app-theme.ts.
+ * tailwindcss-primeui expose les tokens du thème à Tailwind (bg-primary, bg-surface-0, text-muted-color…).
+ */
 @import 'tailwindcss';
-@import "primeicons/primeicons.css";
+@import 'tailwindcss-primeui';
+@import 'primeicons/primeicons.css';
+
+
+/* Taille de base de l'application : 16px (voir typography.fontSize dans app-theme.ts). */
+@theme {
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.5rem;
+}

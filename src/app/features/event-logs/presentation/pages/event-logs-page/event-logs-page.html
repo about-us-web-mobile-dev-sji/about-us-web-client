@@ -1,58 +1,200 @@
-<main class="event-logs-page">
-  <header class="page-header">
-    <div>
-      <p i18n="@@event-logs-administration" class="eyebrow">Administration</p>
-      <h1 i18n="@@event-logs-title">Journaux d’événements</h1>
-    </div>
-    <button
-      i18n="@@event-logs-refresh"
-      type="button"
-      (click)="eventLogsFacade.load()"
-      [disabled]="eventLogsFacade.isLoading()"
-    >
-      {{ eventLogsFacade.isLoading() ? 'Chargement...' : 'Actualiser' }}
-    </button>
-  </header>
-
-  @if (eventLogsFacade.error(); as error) {
-    <p class="error" role="alert">{{ error }}</p>
-  }
-
-  @if (!entityId) {
-    <form class="filters" (submit)="$event.preventDefault(); applyFilters(search.value, entityTypeFilter.value)">
-      <input #search type="search" placeholder="Rechercher un journal">
-      <select #entityTypeFilter aria-label="Filtrer par type d’entité">
-        <option i18n="@@event-logs-all-types" value="">Tous les types</option>
-        <option i18n value="user">user</option>
-        <option value="super-admin">super-admin</option>
-      </select>
-      <button i18n="@@event-logs-filter" type="submit">Filtrer</button>
-    </form>
-  }
-
-  <section class="log-list" aria-label="Liste des journaux d’événements">
-      @if (eventLogsFacade.isLoading()) {
-        <p i18n="@@event-logs-loading" class="empty-state">Chargement des journaux...</p>
-      } @else if (eventLogsFacade.logs().length === 0) {
-        <p i18n="@@event-logs-empty" class="empty-state">Aucun journal disponible.</p>
-      } @else {
-        @for (log of eventLogsFacade.logs(); track log.id) {
-          <article class="log-row">
-            <time [attr.datetime]="log.occurredAt">{{ formatDate(log.occurredAt) }}</time>
-            <strong><a [routerLink]="['/s/events/log', log.id]">{{ log.name }}</a></strong>
-            <span>{{ log.entityType }} · {{ log.entityId }}</span>
-            <code>{{ formatPayload(log.payload) }}</code>
-          </article>
-        }
+<div class="au-logs">
+  <!-- Filtres -->
+  <aside class="au-logs-filters" aria-label="Navigation et filtres des journaux">
+    <!-- Cette barre remplace la navigation principale : on revient à l'accueil par ce bouton. -->
+    <a pButton routerLink="/s/home" [text]="true" severity="secondary" class="mb-2 self-start">
+      <i pButtonIcon class="pi pi-arrow-left"></i>
+      <span pButtonLabel>Retour</span>
+    </a>
+    <div class="au-logs-filters-head">
+      <h1 class="au-logs-title">Journaux</h1>
+      @if (!isAggregate) {
+        <p-button label="Réinitialiser" size="small" severity="secondary" [outlined]="true" [disabled]="!hasFilters()" (onClick)="reset()" />
       }
-  </section>
+    </div>
 
-  @if (!entityId) {
-    <footer class="pagination">
-      <span>{{ eventLogsFacade.total() }} journal(aux)</span>
-      <button type="button" (click)="eventLogsFacade.changePage(eventLogsFacade.page() - 1)" [disabled]="eventLogsFacade.page() <= 1">Précédent</button>
-      <span>Page {{ eventLogsFacade.page() }} / {{ eventLogsFacade.totalPages() }}</span>
-      <button type="button" (click)="eventLogsFacade.changePage(eventLogsFacade.page() + 1)" [disabled]="eventLogsFacade.page() >= eventLogsFacade.totalPages()">Suivant</button>
-    </footer>
-  }
-</main>
+    @if (isAggregate) {
+      <div class="au-logs-scope">
+        <span class="au-logs-scope-label">Historique de</span>
+        <span class="au-logs-mono">{{ typeLabel(entityType) }}</span>
+        <span class="au-logs-mono au-logs-scope-id">{{ entityId }}</span>
+        <a routerLink="/s/events" class="au-logs-link">Voir tous les journaux</a>
+      </div>
+    } @else {
+      <div class="au-logs-group">
+        <button type="button" class="au-logs-group-toggle" [attr.aria-expanded]="openGroups().has('type')" aria-controls="filter-type" (click)="toggleGroup('type')">
+          <i class="pi pi-chevron-down" aria-hidden="true"></i>Type d’élément
+        </button>
+        @if (openGroups().has('type')) {
+          <ul id="filter-type" class="au-logs-options">
+            @for (option of entityTypes; track option.value) {
+              <li>
+                <button type="button" class="au-logs-option" [class.is-selected]="selectedType() === option.value" [attr.aria-pressed]="selectedType() === option.value" (click)="selectType(option.value)">
+                  <span class="au-logs-check" aria-hidden="true"><i class="pi pi-check"></i></span>
+                  <span class="truncate">{{ option.label }}</span>
+                  <span class="au-logs-mono au-logs-option-key">{{ option.value }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="au-logs-group">
+        <button type="button" class="au-logs-group-toggle" [attr.aria-expanded]="openGroups().has('event')" aria-controls="filter-event" (click)="toggleGroup('event')">
+          <i class="pi pi-chevron-down" aria-hidden="true"></i>Événement
+        </button>
+        @if (openGroups().has('event')) {
+          <ul id="filter-event" class="au-logs-options">
+            @for (option of eventNames; track option.value) {
+              <li>
+                <button type="button" class="au-logs-option" [class.is-selected]="search() === option.value" [attr.aria-pressed]="search() === option.value" (click)="selectEvent(option.value)">
+                  <span class="au-logs-check" aria-hidden="true"><i class="pi pi-check"></i></span>
+                  <span class="truncate">{{ option.label }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </aside>
+
+  <!-- Liste -->
+  <section class="au-logs-main" aria-label="Liste des journaux">
+    <div class="au-logs-bar">
+      <p-button icon="pi pi-refresh" severity="secondary" [outlined]="true" [loading]="facade.isLoading()" ariaLabel="Actualiser" pTooltip="Actualiser" tooltipPosition="bottom" (onClick)="refresh()" />
+      @if (!isAggregate) {
+        <p-iconfield class="min-w-0 flex-1">
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            type="search"
+            class="w-full"
+            placeholder="Rechercher dans les journaux…"
+            aria-label="Rechercher dans les journaux"
+            [ngModel]="search()"
+            (ngModelChange)="onSearch($event)"
+          />
+        </p-iconfield>
+      } @else {
+        <span class="flex-1"></span>
+      }
+      <button type="button" class="au-logs-live" [class.is-on]="live()" [attr.aria-pressed]="live()" (click)="toggleLive()">
+        <span class="au-logs-live-dot" aria-hidden="true"></span>Live
+      </button>
+    </div>
+
+    @if (facade.error(); as error) {
+      <p-message severity="error" icon="pi pi-exclamation-circle" class="mx-4 mt-3 block">{{ error }}</p-message>
+    }
+
+    <div class="au-logs-body" [class.has-detail]="selected()">
+    <div class="au-logs-list">
+    <div class="au-logs-scroll">
+      <p-table [value]="facade.logs()" [loading]="facade.isLoading() && !live()" class="au-logs-table" [tableStyle]="{ 'min-width': '60rem' }">
+        <ng-template #header>
+          <tr>
+            <th class="w-[10.5rem]">Heure</th>
+            <th class="w-[8rem]">Type</th>
+            <th class="w-[16rem]">Événement</th>
+            <th class="w-[13rem]">Acteur</th>
+            <th>Message</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-log>
+          @let at = formatTime(log.occurredAt);
+          <tr [class.is-selected]="selected()?.id === log.id" [attr.aria-selected]="selected()?.id === log.id" (click)="select(log)">
+            <td class="au-logs-mono"><span class="text-muted-color">{{ at.day }}</span> {{ at.time }}</td>
+            <td><span class="au-logs-type">{{ log.entityType }}</span></td>
+            <td class="au-logs-mono">
+              <span class="au-logs-name">{{ log.name }}</span>
+            </td>
+            <td>
+              @if (log.actor) {
+                <span class="au-logs-actor" [title]="log.actor.email ?? ''">{{ log.actor.fullName || log.actor.email || log.actor.id }}</span>
+              } @else {
+                <span class="au-logs-mono text-muted-color">système</span>
+              }
+            </td>
+            <td class="au-logs-message" [title]="log.message">{{ log.message }}</td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr>
+            <td colspan="5" class="au-logs-empty">
+              {{ hasFilters() ? 'Aucun journal ne correspond à ces filtres.' : 'Aucun journal pour le moment.' }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    @if (!isAggregate) {
+      <footer class="au-logs-foot">
+        <span class="au-logs-mono" aria-live="polite">{{ rangeLabel() }}</span>
+        <div class="flex gap-1">
+          <p-button icon="pi pi-chevron-left" size="small" severity="secondary" [text]="true" ariaLabel="Page précédente" [disabled]="facade.page() <= 1 || facade.isLoading()" (onClick)="changePage(-1)" />
+          <p-button icon="pi pi-chevron-right" size="small" severity="secondary" [text]="true" ariaLabel="Page suivante" [disabled]="facade.page() >= facade.totalPages() || facade.isLoading()" (onClick)="changePage(1)" />
+        </div>
+      </footer>
+    }
+    </div>
+
+    <!-- Détail d'un journal, à droite de la liste -->
+    @if (selected(); as log) {
+      @let at = formatTime(log.occurredAt);
+      <aside class="au-logs-detail" aria-label="Détail du journal">
+        <header class="au-logs-detail-head">
+          <span class="au-logs-type">{{ log.entityType }}</span>
+          <span class="au-logs-mono min-w-0 flex-1 truncate font-medium" [title]="log.name">{{ log.name }}</span>
+          <p-button icon="pi pi-chevron-up" size="small" severity="secondary" [text]="true" ariaLabel="Journal précédent" [disabled]="!hasSibling(-1)" (onClick)="step(-1)" />
+          <p-button icon="pi pi-chevron-down" size="small" severity="secondary" [text]="true" ariaLabel="Journal suivant" [disabled]="!hasSibling(1)" (onClick)="step(1)" />
+          <p-button [icon]="copied() === 'id' ? 'pi pi-check' : 'pi pi-copy'" size="small" severity="secondary" [text]="true" ariaLabel="Copier l’identifiant" pTooltip="Copier l’identifiant" tooltipPosition="bottom" (onClick)="copy('id', log.id)" />
+          <p-button icon="pi pi-times" size="small" severity="secondary" [text]="true" ariaLabel="Fermer le détail" (onClick)="close()" />
+        </header>
+
+        <div class="au-logs-detail-body">
+          <p class="au-logs-detail-when">
+            <span><i class="pi pi-circle" aria-hidden="true"></i>Survenu</span>
+            <span class="au-logs-mono">{{ at.day }} {{ at.time }}</span>
+          </p>
+
+          <dl class="au-logs-props">
+            <div><dt>Identifiant</dt><dd class="au-logs-mono">{{ log.id }}</dd></div>
+            <div><dt>Type</dt><dd class="au-logs-mono">{{ log.entityType }}</dd></div>
+            <div>
+              <dt>Élément</dt>
+              <dd class="au-logs-mono">
+                <a class="au-logs-link" [routerLink]="['/s/events/aggregate', log.entityType, log.entityId]" title="Voir l’historique de cet élément">{{ log.entityId }}</a>
+              </dd>
+            </div>
+            <div>
+              <dt>Acteur</dt>
+              <dd>
+                @if (log.actor) {
+                  {{ log.actor.fullName || log.actor.email || log.actor.id }}
+                  @if (log.actor.fullName && log.actor.email) {
+                    <span class="au-logs-mono text-muted-color"> · {{ log.actor.email }}</span>
+                  }
+                } @else {
+                  <span class="text-muted-color">Système</span>
+                }
+              </dd>
+            </div>
+            <div class="is-block"><dt>Message</dt><dd>{{ log.message || '—' }}</dd></div>
+          </dl>
+
+          <section class="au-logs-payload" aria-label="Données">
+            <header>
+              <span>Données</span>
+              <p-button [icon]="copied() === 'payload' ? 'pi pi-check' : 'pi pi-copy'" size="small" severity="secondary" [text]="true" ariaLabel="Copier les données" (onClick)="copy('payload', payloadText(log))" />
+            </header>
+            <pre class="au-logs-mono">{{ payloadText(log) }}</pre>
+          </section>
+        </div>
+      </aside>
+    }
+    </div>
+  </section>
+</div>

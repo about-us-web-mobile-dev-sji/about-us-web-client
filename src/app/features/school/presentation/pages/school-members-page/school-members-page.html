@@ -1,0 +1,100 @@
+<app-invite-member-dialog [(visible)]="inviteOpen" [schoolId]="schoolId()" />
+<div class="au-page">
+  <p-breadcrumb [home]="crumbHome" [model]="crumbs()" styleClass="bg-transparent! p-0!" />
+  <header class="au-page-head">
+    <div>
+      <h1 class="au-page-title">Membres</h1>
+      <p class="m-0 mt-1 text-sm text-muted-color">
+        {{ total() }} {{ total() > 1 ? 'personnes ont' : 'personne a' }} accès à cette école.
+      </p>
+    </div>
+    <div class="au-page-actions">
+      <p-button label="Inviter un membre" icon="pi pi-user-plus" (onClick)="inviteOpen.set(true)" />
+    </div>
+  </header>
+
+  <div class="au-filters" role="search">
+    <p-selectbutton
+      class="au-filter"
+      [options]="filters"
+      optionLabel="label"
+      optionValue="value"
+      [allowEmpty]="false"
+      [ngModel]="role()"
+      (ngModelChange)="selectRole($event)"
+      ariaLabelledBy="members-filter-label"
+    />
+    <span id="members-filter-label" class="sr-only">Filtrer par rôle</span>
+    <p-iconfield class="au-search">
+      <p-inputicon class="pi pi-search" />
+      <input
+        pInputText
+        id="members-search"
+        type="search"
+        class="w-full"
+        maxlength="200"
+        placeholder="Rechercher par nom ou e-mail"
+        aria-label="Rechercher un membre"
+        [ngModel]="search()"
+        (ngModelChange)="onSearch($event)"
+      />
+    </p-iconfield>
+  </div>
+
+  @if (loadError(); as error) {
+    <p-message severity="error" icon="pi pi-exclamation-circle">
+      <div class="flex flex-wrap items-center gap-3">
+        <span>{{ error }}</span>
+        <p-button label="Réessayer" severity="secondary" [outlined]="true" size="small" (onClick)="load()" />
+      </div>
+    </p-message>
+  }
+
+  <p-card class="au-flush" aria-label="Liste des membres">
+    <p-table [value]="members()" [loading]="isLoading()" [tableStyle]="{ 'min-width': '44rem' }">
+      <ng-template #header>
+        <tr>
+          <th>Membre</th>
+          <th>Rôle</th>
+          @if (fullView()) {
+            <th>Statut</th>
+            <th>Ajouté par</th>
+            <th>Depuis le</th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template #body let-member>
+        <tr>
+          <td><app-user-chip [user]="member.user" [showEmail]="true" /></td>
+          <td>
+            <p-tag
+              [value]="member.role === 'ADMIN' ? 'Administrateur' : 'Membre'"
+              [severity]="member.role === 'ADMIN' ? 'info' : 'secondary'"
+            />
+          </td>
+          @if (fullView()) {
+            <td><p-tag [value]="statusLabel(member.status)" [severity]="statusSeverity(member.status)" /></td>
+            <td><app-user-chip [user]="member.grantedBy" size="sm" /></td>
+            <td class="au-num">{{ member.grantedAt ? (member.grantedAt | date: 'dd/MM/yyyy') : '—' }}</td>
+          }
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="5" class="p-8 text-center text-muted-color">
+            {{ search() ? 'Aucun membre ne correspond à cette recherche.' : 'Aucun membre dans cette catégorie.' }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    @if (total() > limit()) {
+      <p-paginator
+        [first]="(page() - 1) * limit()"
+        [rows]="limit()"
+        [totalRecords]="total()"
+        [rowsPerPageOptions]="[20, 50, 100]"
+        (onPageChange)="changePage($event)"
+      />
+    }
+  </p-card>
+</div>

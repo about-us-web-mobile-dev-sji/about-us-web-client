@@ -2,17 +2,25 @@ import type {
   ReplaceAdministratorCommand,
   ReplaceAdministratorResult,
   AcceptedInvitation,
-  InvitableRole,
   InviteMemberCommand,
   SentInvitation,
+  InvitationPage,
+  SchoolInvitation,
+  MemberPage,
+  SchoolMember,
+  SchoolMemberRole,
 } from '../../domain/models/school-membership.model';
+import { InvitationStatus } from '../../domain/models/school-membership.model';
 import type {
   ReplaceAdministratorRequestDto,
   ReplaceAdministratorResponseDto,
   AcceptInvitationResponseDto,
   InvitationResponseDto,
   InviteMemberRequestDto,
-  SchoolRoleResponseDto,
+  SchoolInvitationDto,
+  SchoolInvitationPageDto,
+  SchoolMemberDto,
+  SchoolMemberPageDto,
 } from '../dto/school-membership-response.dto';
 
 export function mapReplaceAdministratorRequest(
@@ -28,8 +36,8 @@ export function mapReplaceAdministratorResponse(
 ): ReplaceAdministratorResult {
   return {
     schoolId: dto.schoolId,
-    previousAdminUserId: dto.previousAdminUserId,
-    newAdminUserId: dto.newAdminUserId,
+    previousAdmin: dto.previousAdmin,
+    newAdmin: dto.newAdmin,
     membershipRevoked: dto.membershipRevoked,
     newMembershipCreated: dto.newMembershipCreated,
   };
@@ -39,19 +47,55 @@ export function mapAcceptedInvitation(dto: AcceptInvitationResponseDto): Accepte
   return { schoolId: dto.school.id, schoolName: dto.school.name };
 }
 
-/** The administrator is appointed by replacement, never by invitation. */
-const ADMIN_ROLE_KEY = 'SCHOOL_ADMIN';
-
-export function mapInvitableRoles(dtos: SchoolRoleResponseDto[]): InvitableRole[] {
-  return dtos
-    .filter((dto) => dto.key !== ADMIN_ROLE_KEY)
-    .map((dto) => ({ id: dto.id, name: dto.name, description: dto.description }));
-}
-
 export function mapInviteMemberRequest(command: InviteMemberCommand): InviteMemberRequestDto {
-  return { email: command.email.trim().toLowerCase(), roleId: command.roleId };
+  return { email: command.email.trim().toLowerCase() };
 }
 
 export function mapSentInvitation(dto: InvitationResponseDto): SentInvitation {
   return { email: dto.email, expiresAt: new Date(dto.expiresAt) };
+}
+
+export function mapSchoolInvitation(dto: SchoolInvitationDto): SchoolInvitation {
+  return {
+    id: dto.id,
+    schoolId: dto.schoolId,
+    email: dto.email,
+    status: dto.status as InvitationStatus,
+    expiresAt: new Date(dto.expiresAt),
+    createdAt: dto.createdAt ? new Date(dto.createdAt) : null,
+    invitedBy: dto.invitedBy ?? null,
+    acceptedAt: dto.acceptedAt ? new Date(dto.acceptedAt) : null,
+    acceptedBy: dto.acceptedBy ?? null,
+  };
+}
+
+export function mapInvitationPage(dto: SchoolInvitationPageDto): InvitationPage {
+  return {
+    items: dto.items.map(mapSchoolInvitation),
+    total: dto.total,
+    page: dto.page,
+    limit: dto.limit,
+    totalPages: dto.totalPages,
+  };
+}
+
+export function mapSchoolMember(dto: SchoolMemberDto): SchoolMember {
+  return {
+    id: dto.id ?? null,
+    user: dto.user,
+    role: dto.role as SchoolMemberRole,
+    status: dto.status ?? null,
+    grantedBy: dto.grantedBy ?? null,
+    grantedAt: dto.grantedAt ? new Date(dto.grantedAt) : null,
+  };
+}
+
+export function mapMemberPage(dto: SchoolMemberPageDto): MemberPage {
+  return {
+    items: dto.items.map(mapSchoolMember),
+    total: dto.total,
+    page: dto.page,
+    limit: dto.limit,
+    totalPages: dto.totalPages,
+  };
 }

@@ -3,24 +3,37 @@ import { UsersFacade } from '../../../application/users.facade';
 import { User, UserStatus } from '../../../domain/models/user.model';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { PaginatorModule } from 'primeng/paginator';
 import { MenuItem } from 'primeng/api';
 import { Menu, MenuModule } from 'primeng/menu';
+import { CardModule } from 'primeng/card';
+import { AvatarModule } from 'primeng/avatar';
+import { TagModule } from 'primeng/tag';
+import { MessageModule } from 'primeng/message';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-users-page',
   templateUrl: './users-page.html',
-  styleUrl: './users-page.css',
   standalone: true,
   imports: [
     TableModule,
     InputTextModule,
-    SelectModule,
+    SelectButtonModule,
+    FormsModule,
     ButtonModule,
     PaginatorModule,
-    MenuModule
+    MenuModule,
+    CardModule,
+    AvatarModule,
+    TagModule,
+    MessageModule,
+    IconFieldModule,
+    InputIconModule,
 
   ]
 })
@@ -76,16 +89,27 @@ export class UsersPage implements OnInit {
   }
 
 
-  readonly statusOptions = [
-    {
-      label: 'Actif',
-      value: UserStatus.ACTIVE
-    },
-    {
-      label: 'Suspendu',
-      value: UserStatus.SUSPENDED
-    }
+  readonly statusFilters: { label: string; value: UserStatus | null }[] = [
+    { label: 'Tous', value: null },
+    { label: 'Actifs', value: UserStatus.ACTIVE },
+    { label: 'Suspendus', value: UserStatus.SUSPENDED },
   ];
+  statusFilter: UserStatus | null = null;
+
+  initials(user: User): string {
+    const letters = [user.firstName, user.lastName]
+      .map((part) => part?.trim().charAt(0) ?? '')
+      .join('');
+    return (letters || user.email.charAt(0)).toUpperCase();
+  }
+
+  statusLabel(status: UserStatus): string {
+    return status === UserStatus.ACTIVE ? 'Actif' : 'Suspendu';
+  }
+
+  statusSeverity(status: UserStatus): 'success' | 'danger' {
+    return status === UserStatus.ACTIVE ? 'success' : 'danger';
+  }
 
   ngOnInit(): void {
     void this.facade.users.load();

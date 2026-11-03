@@ -1,6 +1,8 @@
-<section class="sessions" aria-labelledby="sessions-title">
-  <header class="sessions-header">
-    <h2 id="sessions-title" i18n="@@auth.sessions.title">Appareils connectés</h2>
+<p-card [attr.aria-labelledby]="embedded() ? null : 'sessions-title'" [class]="embedded() ? 'au-flush' : 'max-w-[40rem]'">
+  <!-- Intégré dans une section de paramètres : le titre est celui de la section, l'action passe en pied de carte. -->
+  @if (!embedded()) {
+  <header class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <h2 id="sessions-title" class="m-0 text-xl font-semibold" i18n="@@auth.sessions.title">Appareils connectés</h2>
     <button
       pButton
       type="button"
@@ -14,45 +16,62 @@
       Se déconnecter de tous les appareils
     </button>
   </header>
+  }
 
   @if (error(); as message) {
-    <p role="alert" class="sessions-error">{{ message }}</p>
+    <p-message severity="error" role="alert" [class]="embedded() ? 'mx-6 my-4 block' : 'mb-3'">{{ message }}</p-message>
   }
 
   @if (isLoadingList()) {
-    <p i18n="@@auth.sessions.loading">Chargement des appareils…</p>
+    <p [class]="embedded() ? 'm-0 px-6 py-4 text-muted-color' : 'm-0 text-muted-color'" i18n="@@auth.sessions.loading">Chargement des appareils…</p>
   } @else {
-    <ul class="sessions-list">
+    <ul class="m-0 flex list-none flex-col p-0">
       @for (session of sessions(); track session.id) {
-        <li class="session">
-          <div>
-            <p class="session-device">
-              {{ deviceLabel(session) }}
+        <li class="au-session" [class.px-6]="embedded()">
+          <i [class]="session.clientType === 'MOBILE' ? 'pi pi-mobile au-session-icon' : 'pi pi-desktop au-session-icon'" aria-hidden="true"></i>
+          <div class="min-w-0 flex-1">
+            <p class="au-session-name">
+              <span class="truncate">{{ deviceLabel(session) }}</span>
               @if (session.current) {
-                <span class="session-current" i18n="@@auth.sessions.current">Cet appareil</span>
+                <span class="au-session-current" i18n="@@auth.sessions.current"><span aria-hidden="true"></span>Cet appareil</span>
               }
             </p>
-            <p class="session-meta" i18n="@@auth.sessions.meta">
-              Connecté le {{ session.createdAt | date: 'short' }} · dernière activité
-              {{ session.lastActivityAt | date: 'short' }}
+            <p class="au-session-meta" i18n="@@auth.sessions.meta">
+              Actif {{ timeAgo(session.lastActivityAt) }} · connecté le {{ formatDate(session.createdAt) }}
             </p>
           </div>
           <button
             pButton
             type="button"
             severity="secondary"
-            text
+            [text]="true"
             size="small"
             [disabled]="auth.isLoading()"
             (click)="revoke(session)"
-            i18n="@@auth.sessions.revoke"
           >
-            Déconnecter
+            {{ session.current ? 'Se déconnecter' : 'Révoquer' }}
           </button>
         </li>
       } @empty {
-        <li i18n="@@auth.sessions.empty">Aucune session active.</li>
+        <li class="py-4 text-muted-color" [class.px-6]="embedded()" i18n="@@auth.sessions.empty">Aucune session active.</li>
       }
     </ul>
   }
-</section>
+  @if (embedded()) {
+  <div class="au-settings-footer">
+    <span>Ferme la session sur tous vos appareils, celui-ci compris.</span>
+      <button
+      pButton
+      type="button"
+      severity="danger"
+      outlined
+      size="small"
+      [disabled]="auth.isLoading() || isLoadingList()"
+      (click)="logoutEverywhere()"
+      i18n="@@auth.sessions.logoutEverywhere"
+    >
+      Se déconnecter de tous les appareils
+    </button>
+  </div>
+  }
+</p-card>

@@ -1,0 +1,36 @@
+<app-modal [(visible)]="visible" title="Ajouter un membre" [busy]="isSaving()">
+  <div class="grid gap-1.5">
+    <label for="space-new-member" class="text-sm font-medium">Membre de l'école</label>
+    <p-select
+      inputId="space-new-member"
+      class="w-full"
+      [options]="candidates()"
+      optionValue="id"
+      optionLabel="fullName"
+      [ngModel]="selectedId()"
+      (ngModelChange)="selectedId.set($event)"
+      [filter]="true"
+      [filterFields]="['fullName', 'email']"
+      filterPlaceholder="Rechercher par nom ou e-mail"
+      (onFilter)="onFilter($event)"
+      [loading]="isSearching()"
+      [invalid]="touched() && !selectedId()"
+      placeholder="Choisir un membre"
+      emptyMessage="Aucun membre disponible."
+      emptyFilterMessage="Aucun membre ne correspond."
+      appendTo="body"
+    >
+      <ng-template #selectedItem let-user><app-user-chip [user]="user" size="sm" /></ng-template>
+      <ng-template #item let-user><app-user-chip [user]="user" [showEmail]="true" size="sm" /></ng-template>
+    </p-select>
+    @if (touched() && !selectedId()) {
+      <p-message severity="error" variant="simple" size="small">Choisissez le membre à ajouter.</p-message>
+    } @else {
+      <small class="text-xs leading-5 text-muted-color">Seuls les membres actifs de l'école qui ne sont pas déjà dans l'espace sont proposés.</small>
+    }
+  </div>
+  <ng-container modalFooter>
+    <p-button label="Annuler" severity="secondary" [outlined]="true" [disabled]="isSaving()" (onClick)="visible.set(false)" />
+    <p-button label="Ajouter" [loading]="isSaving()" (onClick)="submit()" />
+  </ng-container>
+</app-modal>

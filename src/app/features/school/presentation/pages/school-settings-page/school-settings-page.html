@@ -1,0 +1,223 @@
+<p-confirmdialog />
+<p-dialog
+  header="Remplacer l'administrateur"
+  [visible]="showReplaceDialog()"
+  (visibleChange)="!$event && !isSubmitting() && showReplaceDialog.set(false)"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '32rem' }"
+  [breakpoints]="{ '640px': 'calc(100vw - 2rem)' }"
+>
+  @if (showReplaceDialog()) {
+    <app-replace-admin-form
+      [schoolId]="schoolId"
+      [excludedUserIds]="adminIds()"
+      [isLoading]="isSubmitting()"
+      (submitReplace)="onReplace($event)"
+      (cancel)="showReplaceDialog.set(false)"
+    />
+  }
+</p-dialog>
+
+<!-- Ligne « libellé | valeur | action », éditable en place (Entrée enregistre, Échap annule). -->
+<ng-template #editableRow let-item>
+  <div class="au-panel-row" [class.is-editing]="editing() === item.key">
+    <dt>
+      @if (editing() === item.key) {
+        <label [for]="'edit-' + item.key">{{ item.label }}</label>
+      } @else {
+        {{ item.label }}
+      }
+    </dt>
+    @if (editing() === item.key) {
+      <dd class="au-panel-edit">
+        <input
+          #editInput
+          pInputText
+          pSize="small"
+          class="w-full"
+          [id]="'edit-' + item.key"
+          [type]="item.inputType"
+          [placeholder]="item.placeholder"
+          [formControl]="draft"
+          [invalid]="draft.invalid && draft.touched"
+          [attr.aria-describedby]="draft.invalid && draft.touched ? 'edit-error' : null"
+          (keydown.enter)="saveEdit(item)"
+          (keydown.escape)="cancelEdit()"
+        />
+        @if (draft.invalid && draft.touched) {
+          <p-message id="edit-error" severity="error" size="small" variant="simple">{{ fieldError(item.key) }}</p-message>
+        }
+      </dd>
+      <div class="au-panel-action flex gap-1">
+        <p-button icon="pi pi-check" size="small" [rounded]="true" [loading]="isSaving()" [ariaLabel]="'Enregistrer : ' + item.label" (onClick)="saveEdit(item)" />
+        <p-button icon="pi pi-times" size="small" severity="secondary" [text]="true" [rounded]="true" [disabled]="isSaving()" ariaLabel="Annuler" (onClick)="cancelEdit()" />
+      </div>
+    } @else {
+      <dd [title]="item.value || ''">
+        @if (item.value && item.href) {
+          <a class="text-color underline decoration-surface-300 underline-offset-4 hover:decoration-current" [href]="item.href" target="_blank" rel="noopener">{{ item.value }}</a>
+        } @else if (item.value) {
+          {{ item.value }}
+        } @else {
+          <span class="font-normal text-muted-color">Non renseigné</span>
+        }
+      </dd>
+      <p-button
+        class="au-panel-action"
+        icon="pi pi-pencil"
+        severity="secondary"
+        [outlined]="true"
+        [rounded]="true"
+        size="small"
+        [disabled]="editing() !== null"
+        [ariaLabel]="'Modifier : ' + item.label"
+        (onClick)="startEdit(item)"
+      />
+    }
+  </div>
+</ng-template>
+
+<div class="au-page">
+  <p-breadcrumb [home]="crumbHome" [model]="crumbs()" styleClass="bg-transparent! p-0!" />
+
+  @if (isLoading()) {
+    <div class="grid gap-6" aria-busy="true" aria-label="Chargement des paramètres">
+      <div class="flex items-center gap-4">
+        <p-skeleton size="4rem" borderRadius="12px" />
+        <div class="grid flex-1 gap-2"><p-skeleton width="16rem" height="1.75rem" /><p-skeleton width="22rem" height="0.875rem" /></div>
+      </div>
+      <p-skeleton height="10rem" borderRadius="16px" />
+      <p-skeleton height="12rem" borderRadius="16px" />
+    </div>
+  } @else if (loadError(); as error) {
+    <p-message severity="error" icon="pi pi-exclamation-circle">{{ error }}</p-message>
+  } @else if (school(); as current) {
+    <!-- En-tête : l'école elle-même, et d'où elle vient. -->
+    <header class="au-settings-hero">
+      @if (current.logo && !logoFailed()) {
+        <span class="au-identity-logo">
+          <img [src]="current.logo" [alt]="'Logo de ' + current.name" (error)="logoFailed.set(true)" />
+        </span>
+      } @else {
+        <span class="au-identity-logo is-initial" aria-hidden="true">{{ current.name.charAt(0).toUpperCase() }}</span>
+      }
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h1 class="au-page-title [overflow-wrap:anywhere]">{{ current.name }}</h1>
+          <p-tag [value]="statusLabel(current.status)" [severity]="statusSeverity(current.status)" />
+        </div>
+        <p class="au-settings-meta">
+          <span>Créée par</span>
+          <app-user-chip [user]="current.createdBy" size="sm" />
+          @for (item of historyItems(current); track item.label) {
+            <span aria-hidden="true">·</span>
+            <span>{{ item.label }} <span class="au-num text-color">{{ item.value }}</span></span>
+          }
+        </p>
+      </div>
+    </header>
+
+    <div class="au-settings">
+      <!-- Profil -->
+      <section class="au-settings-section" aria-labelledby="school-profile-title">
+        <div class="au-settings-intro">
+          <h2 id="school-profile-title">Profil</h2>
+          <p>Le nom et le logo identifient l'école partout dans la plateforme.</p>
+        </div>
+        <p-card class="au-flush">
+          <dl class="m-0">
+            @for (item of profileItems(current); track item.key) {
+              <ng-container *ngTemplateOutlet="editableRow; context: { $implicit: item }" />
+            }
+          </dl>
+        </p-card>
+      </section>
+
+      <!-- Coordonnées -->
+      <section class="au-settings-section" aria-labelledby="school-contact-title">
+        <div class="au-settings-intro">
+          <h2 id="school-contact-title">Coordonnées</h2>
+          <p>Visibles par les membres. Utilisez le crayon pour modifier un champ.</p>
+        </div>
+        <p-card class="au-flush">
+          <dl class="m-0">
+            @for (item of contactItems(current); track item.key) {
+              <ng-container *ngTemplateOutlet="editableRow; context: { $implicit: item }" />
+            }
+          </dl>
+        </p-card>
+      </section>
+
+      <!-- Administration -->
+      <section class="au-settings-section" aria-labelledby="school-admin-title">
+        <div class="au-settings-intro">
+          <h2 id="school-admin-title">Administration</h2>
+          <p>L'administrateur gère les membres, les invitations et les espaces de l'école.</p>
+        </div>
+        <p-card class="au-flush">
+          @if (adminsLoading()) {
+            <div class="au-settings-item" aria-busy="true" aria-label="Chargement des administrateurs">
+              <div class="flex items-center gap-2.5">
+                <p-skeleton shape="circle" size="2.25rem" />
+                <div class="grid gap-1.5"><p-skeleton width="9rem" height="0.875rem" /><p-skeleton width="12rem" height="0.75rem" /></div>
+              </div>
+            </div>
+          } @else if (adminsError()) {
+            <div class="au-settings-item">
+              <span class="text-sm text-muted-color">Impossible de charger les administrateurs.</span>
+              <p-button label="Réessayer" size="small" severity="secondary" [text]="true" (onClick)="loadAdmins()" />
+            </div>
+          } @else {
+            <ul class="m-0 list-none p-0" aria-label="Administrateurs actuels">
+              @for (admin of admins(); track admin.id) {
+                <li class="au-settings-item">
+                  <app-user-chip [user]="admin" [showEmail]="true" />
+                  <p-tag value="Administrateur" severity="secondary" />
+                </li>
+              } @empty {
+                <li class="au-settings-item text-sm text-muted-color">Cette école n'a pas encore d'administrateur.</li>
+              }
+            </ul>
+          }
+          <div class="au-settings-footer">
+            <span>Le remplacement révoque l'accès de l'administrateur actuel.</span>
+            <p-button
+              [label]="admins().length ? 'Remplacer l\'administrateur' : 'Désigner un administrateur'"
+              severity="secondary"
+              [outlined]="true"
+              size="small"
+              [disabled]="adminsLoading()"
+              (onClick)="showReplaceDialog.set(true)"
+            />
+          </div>
+        </p-card>
+      </section>
+
+      <!-- Zone sensible -->
+      <section class="au-settings-section" aria-labelledby="school-danger-title">
+        <div class="au-settings-intro">
+          <h2 id="school-danger-title">Zone sensible</h2>
+          <p>Actions qui touchent l'accès de tous les membres.</p>
+        </div>
+        <p-card class="au-flush" [class.au-settings-danger]="!isBlocked()">
+          <div class="au-settings-item">
+            @if (isBlocked()) {
+              <div class="min-w-0">
+                <h3 class="au-settings-item-title">Débloquer l'école</h3>
+                <p class="au-settings-item-text">L'école est bloquée. Le déblocage rend l'accès à ses membres immédiatement.</p>
+              </div>
+              <p-button label="Débloquer l'école" severity="secondary" [outlined]="true" size="small" [loading]="isToggling()" (onClick)="confirmToggleBlock()" />
+            } @else {
+              <div class="min-w-0">
+                <h3 class="au-settings-item-title">Bloquer l'école</h3>
+                <p class="au-settings-item-text">Ses membres ne pourront plus s'y connecter jusqu'au déblocage. Les données sont conservées.</p>
+              </div>
+              <p-button label="Bloquer l'école" severity="danger" [outlined]="true" size="small" [loading]="isToggling()" (onClick)="confirmToggleBlock()" />
+            }
+          </div>
+        </p-card>
+      </section>
+    </div>
+  }
+</div>

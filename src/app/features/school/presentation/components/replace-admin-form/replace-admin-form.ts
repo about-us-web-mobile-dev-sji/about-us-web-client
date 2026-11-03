@@ -1,44 +1,74 @@
-import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { SelectModule, type SelectFilterEvent } from 'primeng/select';
+import { UserChip } from '../../../../../shared/components/user-chip/user-chip';
+import type { UserSummary } from '../../../../../shared/users/user-summary';
+import { SchoolMembershipFacade } from '../../../application/school-membership.facade';
 
+/** Choisit, parmi les membres actifs de l'école, celui qui deviendra administrateur. */
 @Component({
-  imports: [
-    ReactiveFormsModule,
-    ButtonModule,
-    InputTextModule,
-    MessageModule,
-  ],
   selector: 'app-replace-admin-form',
-  styleUrl: './replace-admin-form.css',
+  imports: [FormsModule, ButtonModule, MessageModule, SelectModule, UserChip],
   templateUrl: './replace-admin-form.html',
 })
-export class ReplaceAdminForm {
-  @Input() isLoading = false;
-  @Input() schoolId = '';
+export class ReplaceAdminForm implements OnInit {
+  readonly schoolId = input.required<string>();
+  /** Les administrateurs actuels ne sont pas proposés. */
+  readonly excludedUserIds = input<string[]>([]);
+  readonly isLoading = input(false);
+  readonly submitReplace = output<string>();
+  readonly cancel = output<void>();
 
-  private readonly fb = inject(FormBuilder);
+  private readonly memberships = inject(SchoolMembershipFacade);
 
-  @Output() submitReplace = new EventEmitter<string>();
+  readonly candidates = signal<UserSummary[]>([]);
+  readonly isSearching = signal(false);
+  readonly selectedId = signal<string | null>(null);
+  readonly touched = signal(false);
+  readonly options = computed(() => this.candidates().filter((user) => !this.excludedUserIds().includes(user.id)));
 
-  readonly replaceForm = this.fb.nonNullable.group({
-    newAdminUserId: ['', [Validators.required, Validators.minLength(1)]],
-  });
+  private searchTimer: ReturnType<typeof setTimeout> | undefined;
+  private requestId = 0;
 
-  get newAdminUserIdControl() {
-    return this.replaceForm.controls.newAdminUserId;
+  ngOnInit(): void {
+    void this.search('');
+  }
+
+  /** La recherche interroge l'API (nom ou e-mail) : l'école peut compter des centaines de membres. */
+  onFilter(event: SelectFilterEvent): void {
+    clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => void this.search(event.filter ?? ''), 300);
+  }
+
+  private async search(term: string): Promise<void> {
+    const request = ++this.requestId;
+    this.isSearching.set(true);
+    try {
+      const page = await this.memberships.listMembers(this.schoolId(), {
+        role: undefined,
+        search: term.trim() || undefined,
+        page: 1,
+        limit: 50,
+      });
+      if (request !== this.requestId) return;
+      // Seul un membre actif peut recevoir l'administration de l'école.
+      const active = page.items.filter((member) => member.status === null || member.status === 'ACTIVE');
+      const selected = this.candidates().find((user) => user.id === this.selectedId());
+      const users = active.map((member) => member.user);
+      this.candidates.set(selected && !users.some((user) => user.id === selected.id) ? [selected, ...users] : users);
+    } catch {
+      if (request === this.requestId) this.candidates.set([]);
+    } finally {
+      if (request === this.requestId) this.isSearching.set(false);
+    }
   }
 
   onSubmit(): void {
-    if (this.isLoading) return;
-    if (this.replaceForm.invalid) {
-      this.replaceForm.markAllAsTouched();
-      return;
-    }
-
-    const formValue = this.replaceForm.getRawValue();
-    this.submitReplace.emit(formValue.newAdminUserId);
+    if (this.isLoading()) return;
+    this.touched.set(true);
+    const id = this.selectedId();
+    if (id) this.submitReplace.emit(id);
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { SchoolService } from './school.service';
-import type { CreateSchoolCommand, School, SchoolSummary } from '../domain/models/school.model';
+import type { CreateSchoolCommand, School, SchoolSummary, UpdateSchoolCommand } from '../domain/models/school.model';
 import { mapSchoolToSummary } from '../infrastructure/mappers/school.mapper';
 
 @Injectable({ providedIn: 'root' })
@@ -15,6 +15,7 @@ export class SchoolFacade {
 
   async createSchool(command: CreateSchoolCommand): Promise<School> {
     try {
+      console.log("on creating sschool with command:", command);
       const school = await this.service.createSchool(command);
       this.cacheDetail(school);
       const summary = mapSchoolToSummary(school);
@@ -87,6 +88,15 @@ export class SchoolFacade {
         return next;
       });
     }
+  }
+
+  /** Modifie l'école et met à jour le cache et la liste (cartes, sélecteur d'école). */
+  async updateSchool(id: string, command: UpdateSchoolCommand): Promise<School> {
+    const updated = await this.service.updateSchool(id, command);
+    this.cacheDetail(updated);
+    const summary = mapSchoolToSummary(updated);
+    this.schools.update((items) => items.map((item) => (item.id === summary.id ? summary : item)));
+    return updated;
   }
 
   private cacheDetail(school: School): void {

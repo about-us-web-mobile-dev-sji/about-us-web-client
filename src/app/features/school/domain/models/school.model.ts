@@ -1,3 +1,5 @@
+import type { UserSummary } from '../../../../shared/users/user-summary';
+
 export enum SchoolStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
@@ -21,10 +23,11 @@ export interface School {
   phoneNumber: string | null;
   email: string | null;
   website: string | null;
+  logo: string | null;
   status: SchoolStatus | null;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: string | null;
+  createdBy: UserSummary | null;
 }
 
 /** Ligne de liste enrichie (merge liste + cache détail create/toggle). */
@@ -32,10 +35,11 @@ export interface SchoolSummary extends SchoolListItem {
   phoneNumber: string | null;
   email: string | null;
   website: string | null;
+  logo: string | null;
   status: SchoolStatus | null;
   createdAt: string | null;
   updatedAt: string | null;
-  createdBy: string | null;
+  createdBy: UserSummary | null;
 }
 
 /** Corps accepté par POST /schools (CreateSchoolDto). */
@@ -45,4 +49,17 @@ export interface CreateSchoolCommand {
   phoneNumber?: string;
   email?: string;
   website?: string;
+  logo?: string;
+}
+
+/**
+ * Corps de PATCH /schools/:id : seuls les champs présents sont modifiés.
+ * `null` vide un champ facultatif (téléphone, e-mail, site web, logo).
+ */
+export interface UpdateSchoolCommand {
+  name?: string;
+  phoneNumber?: string | null;
+  email?: string | null;
+  website?: string | null;
+  logo?: string | null;
 }

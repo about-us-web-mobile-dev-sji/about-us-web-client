@@ -1,22 +1,40 @@
-<main class="event-log-detail-page">
-  <a i18n="@@event-log-back" class="back-link" routerLink="/s/events">Retour aux journaux</a>
-  <header class="page-header">
-    <p i18n="@@event-log-detail-header" class="eyebrow">Détail du journal</p>
-    <h1 i18n="@@event-log-name">{{ log?.name || 'Journal d’événement' }}</h1>
+<div class="au-page mx-auto max-w-[820px]">
+  <a pButton routerLink="/s/events" [text]="true" class="justify-self-start">
+    <i pButtonIcon class="pi pi-arrow-left"></i>
+    <span pButtonLabel i18n="@@event-log-back">Retour aux journaux</span>
+  </a>
+  <header class="au-page-head">
+    <h1 i18n="@@event-log-name" class="au-page-title">{{ log?.name || 'Journal d’événement' }}</h1>
   </header>
 
   @if (eventLogsFacade.isLoading()) {
-    <p i18n="@@event-log-loading" class="empty-state">Chargement du détail...</p>
+    <p-card><p i18n="@@event-log-loading" class="m-0 text-center text-muted-color">Chargement du détail...</p></p-card>
   } @else if (eventLogsFacade.error(); as error) {
-    <p class="error" role="alert">{{ error }}</p>
+    <p-message severity="error" icon="pi pi-exclamation-circle">{{ error }}</p-message>
   } @else if (log) {
-    <dl class="details">
-      <div><dt i18n="@@event-log-id">Identifiant</dt><dd>{{ log.id }}</dd></div>
-      <div><dt i18n="@@event-log-entity-type">Type d’entité</dt><dd>{{ log.entityType }}</dd></div>
-      <div><dt i18n="@@event-log-entity-id">Identifiant de l’entité</dt><dd>{{ log.entityId }}</dd></div>
-      <div><dt i18n="@@event-log-actor">Acteur</dt><dd>{{ log.actorId || 'Non renseigné' }}</dd></div>
-      <div><dt i18n="@@event-log-date">Date</dt><dd>{{ formatDate(log.occurredAt) }}</dd></div>
-      <div class="payload"><dt i18n="@@event-log-payload">Payload</dt><dd><pre>{{ log.payload | json }}</pre></dd></div>
-    </dl>
+    <p-card class="au-flush">
+      <dl class="m-0 divide-y divide-(--p-content-border-color)">
+        @for (row of rows(log); track row.label) {
+          <div class="grid gap-1.5 px-5 py-4 sm:grid-cols-[minmax(150px,0.35fr)_1fr] sm:gap-5">
+            <dt class="text-sm text-muted-color">{{ row.label }}</dt>
+            <dd class="m-0 [overflow-wrap:anywhere]">{{ row.value }}</dd>
+          </div>
+        }
+        <div class="grid gap-1.5 px-5 py-4 sm:grid-cols-[minmax(150px,0.35fr)_1fr] sm:gap-5">
+          <dt class="text-sm text-muted-color" i18n="@@event-log-actor">Acteur</dt>
+          <dd class="m-0">
+            @if (log.actor) {
+              <app-user-chip [user]="log.actor" [showEmail]="true" />
+            } @else {
+              <span class="text-muted-color">Système</span>
+            }
+          </dd>
+        </div>
+        <div class="grid gap-1.5 px-5 py-4 sm:grid-cols-[minmax(150px,0.35fr)_1fr] sm:gap-5">
+          <dt class="text-sm text-muted-color" i18n="@@event-log-payload">Payload</dt>
+          <dd class="m-0"><pre class="m-0 overflow-auto whitespace-pre-wrap text-[13px] text-muted-color">{{ log.payload | json }}</pre></dd>
+        </div>
+      </dl>
+    </p-card>
   }
-</main>
+</div>

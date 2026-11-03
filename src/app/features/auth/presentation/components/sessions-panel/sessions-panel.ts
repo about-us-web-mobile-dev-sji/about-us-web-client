@@ -1,5 +1,7 @@
-import { Component, inject, signal, type OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { CardModule } from 'primeng/card';
+import { MessageModule } from 'primeng/message';
+import { TagModule } from 'primeng/tag';
+import { Component, inject, input, signal, type OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonDirective } from 'primeng/button';
 import { AuthFacade } from '../../../application/auth.facade';
@@ -8,21 +10,40 @@ import type { ActiveSession } from '../../../domain/models/active-session.model'
 import { deviceLabel } from './device-label';
 import { errorCodeOf } from '../../../../../core/errors/app-error';
 import { errorMessage } from '../../../../../core/i18n/error-messages';
+import { NotifyService } from '../../../../../core/notifications/notify.service';
 
 /** UC-21 / UC-22: the user's signed-in devices, with per-device and global sign-out. */
 @Component({
   selector: 'app-sessions-panel',
-  imports: [ButtonDirective, DatePipe],
+  imports: [ButtonDirective, CardModule, MessageModule, TagModule],
   templateUrl: './sessions-panel.html',
-  styleUrl: './sessions-panel.css',
 })
 export class SessionsPanel implements OnInit {
+  /** Dans une section de paramètres : carte sans titre propre, alignée sur les autres, action en pied. */
+  readonly embedded = input(false);
   readonly auth = inject(AuthFacade);
   private readonly router = inject(Router);
+  private readonly notify = inject(NotifyService);
   readonly sessions = signal<ActiveSession[]>([]);
   readonly isLoadingList = signal(true);
   readonly error = signal<string | null>(null);
   readonly deviceLabel = deviceLabel;
+
+  /** « 3 nov. 2026 », en français (DatePipe utiliserait la locale anglaise par défaut). */
+  formatDate(value: Date): string {
+    return value.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  /** « à l'instant », « il y a 5 min », « il y a 3 h », « il y a 2 j », puis la date. */
+  timeAgo(value: Date): string {
+    const minutes = Math.round((Date.now() - value.getTime()) / 60_000);
+    if (minutes < 1) return 'à l’instant';
+    if (minutes < 60) return `il y a ${minutes} min`;
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return `il y a ${hours} h`;
+    const days = Math.round(hours / 24);
+    return days < 30 ? `il y a ${days} j` : `le ${this.formatDate(value)}`;
+  }
 
   ngOnInit(): void {
     void this.load();
@@ -51,12 +72,11 @@ export class SessionsPanel implements OnInit {
   }
 
   private async run(action: () => Promise<void>): Promise<boolean> {
-    this.error.set(null);
     try {
       await action();
       return true;
     } catch (error) {
-      this.error.set(errorMessage(errorCodeOf(error)));
+      this.notify.fromError(error, 'Déconnexion impossible');
       return false;
     }
   }

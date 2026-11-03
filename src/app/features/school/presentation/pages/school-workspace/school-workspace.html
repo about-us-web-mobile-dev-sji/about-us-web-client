@@ -1,0 +1,85 @@
+<div class="au-workspace grid h-full" [class.is-collapsed]="collapsed()">
+  <aside id="school-subnav" class="au-subnav" [class.is-collapsed]="collapsed()" aria-label="Navigation de l'école">
+    <a
+      pButton
+      routerLink="/s/schools"
+      [text]="true"
+      severity="secondary"
+      class="mb-2 self-start"
+      [attr.aria-label]="collapsed() ? 'Retour aux écoles' : null"
+      [title]="collapsed() ? 'Retour aux écoles' : ''"
+    >
+      <i pButtonIcon class="pi pi-arrow-left"></i>
+      @if (!collapsed()) {
+        <span pButtonLabel>Retour aux écoles</span>
+      }
+    </a>
+    @if (collapsed()) {
+      <!-- Barre réduite : l'école courante, à la place du sélecteur. -->
+      @if (school(); as current) {
+        @if (current.logo) {
+          <img [src]="current.logo" alt="" class="au-subnav-school mx-auto mb-3 object-contain" [title]="current.name" />
+        } @else {
+          <span class="au-subnav-school mx-auto mb-3 grid place-items-center bg-primary text-primary-contrast" [title]="current.name">
+            {{ current.name.charAt(0).toUpperCase() }}
+          </span>
+        }
+      }
+    } @else {
+    <label class="px-1 text-sm font-semibold text-color" for="ws-school">Sélectionner une école</label>
+    <p-select
+      inputId="ws-school"
+      class="mb-3 w-full"
+      [options]="facade.schools()"
+      optionLabel="name"
+      optionValue="id"
+      [ngModel]="schoolId()"
+      (ngModelChange)="switchSchool($event)"
+      [filter]="facade.schools().length > 8"
+      filterBy="name"
+      placeholder="Chargement…"
+      appendTo="body"
+    />
+    }
+
+    <nav class="grid gap-0.5">
+      @for (tab of tabs; track tab.label) {
+        <a
+          class="au-subnav-tab"
+          [routerLink]="link(tab.path)"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: tab.exact }"
+          ariaCurrentWhenActive="page"
+          [attr.aria-label]="tab.label"
+          [title]="collapsed() ? tab.label : ''"
+        >
+          <i [class]="tab.icon" aria-hidden="true"></i>
+          <span>{{ tab.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <button
+      type="button"
+      class="au-subnav-tab au-collapse mt-auto"
+      aria-controls="school-subnav"
+      [attr.aria-expanded]="!collapsed()"
+      [attr.aria-label]="collapsed() ? 'Déplier le menu de l’école' : 'Réduire le menu de l’école'"
+      [title]="collapsed() ? 'Déplier le menu' : 'Réduire le menu'"
+      (click)="toggleCollapsed()"
+    >
+      <svg data-p-icon="sidebar" aria-hidden="true"></svg>
+      <span>{{ collapsed() ? 'Déplier' : 'Réduire' }}</span>
+    </button>
+  </aside>
+
+  <!-- Un espace ouvert apporte sa propre barre (collée à celle-ci) et gère ses marges : pas de colonne ici. -->
+  <section class="min-w-0" [class]="stuck() ? 'flex min-h-0' : 'au-scroll-hidden overflow-y-auto px-[clamp(1rem,3vw,2rem)] py-8'">
+    <div [class]="stuck() ? 'flex min-h-0 min-w-0 flex-1' : 'mx-auto max-w-[1110px]'">
+      <!-- Recrée l'onglet quand on change d'école, pour recharger ses données. -->
+      @for (id of [schoolId()]; track id) {
+        <router-outlet />
+      }
+    </div>
+  </section>
+</div>
