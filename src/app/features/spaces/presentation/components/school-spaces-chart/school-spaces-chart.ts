@@ -498,7 +498,7 @@ export class SchoolSpacesChart {
       const overflow = getComputedStyle(parent).overflowY;
       if (overflow === 'auto' || overflow === 'scroll') return parent;
     }
-    return null;
+      return null;
   }
 
   zoomBy(step: number): void {
