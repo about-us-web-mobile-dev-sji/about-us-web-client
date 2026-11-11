@@ -19,6 +19,7 @@ import { TableModule } from 'primeng/table';
 import { API_BASE_URL } from '../../../../../core/config/api.config';
 import { NotifyService } from '../../../../../core/notifications/notify.service';
 import { AppModal } from '../../../../../shared/components/modal/modal';
+import { convertImageToWebp } from '../../../application/convert-image-to-webp';
 
 type MediaCategorie = 'photo' | 'document' | 'pdf';
 type MediaSource = 'web' | 'local';
@@ -100,7 +101,7 @@ const ACCEPT_BY_CATEGORIE: Record<MediaCategorie, string> = {
         variant="brand"
         icon="pi pi-plus"
         title="Ajouter un média"
-        description="Choisissez le type, la source, puis donnez un nom au média."
+        description="Les photos sont converties en WebP dans le navigateur avant l'envoi."
         [busy]="uploading()"
         size="md"
       >
@@ -373,19 +374,25 @@ export class SpaceResourcesPage implements OnInit {
 
     this.uploading.set(true);
     try {
-      await firstValueFrom(
-        this.http.post(`${this.baseUrl}/mediatheque/import-url`, {
-          nom,
-          categorie: this.categorieDraft,
-          sourceUrl,
-          espaceId: this.spaceId,
-        }),
-      );
+      if (this.categorieDraft === 'photo') {
+        const remote = await this.fetchRemoteImage(sourceUrl);
+        const webp = await convertImageToWebp(remote, remote.name || 'image.webp');
+        await this.postLocalFile(nom, webp);
+      } else {
+        await firstValueFrom(
+          this.http.post(`${this.baseUrl}/mediatheque/import-url`, {
+            nom,
+            categorie: this.categorieDraft,
+            sourceUrl,
+            espaceId: this.spaceId,
+          }),
+        );
+      }
       this.notify.success('Média importé');
       this.closeAddModal();
       await this.load();
     } catch (error) {
-      this.notify.fromError(error, "Impossible d'importer le média");
+      this.notifyUploadError(error, "Impossible d'importer le média");
     } finally {
       this.uploading.set(false);
     }
@@ -400,25 +407,61 @@ export class SpaceResourcesPage implements OnInit {
 
     this.uploading.set(true);
     try {
-      const contentBase64 = await this.readFileAsBase64(file);
-      await firstValueFrom(
-        this.http.post(`${this.baseUrl}/mediatheque/import-local`, {
-          nom,
-          categorie: this.categorieDraft,
-          fileName: file.name,
-          mimeType: file.type || 'application/octet-stream',
-          contentBase64,
-          espaceId: this.spaceId,
-        }),
-      );
+      const toUpload =
+        this.categorieDraft === 'photo'
+          ? await convertImageToWebp(file, file.name)
+          : file;
+      await this.postLocalFile(nom, toUpload);
       this.notify.success('Média ajouté', nom);
       this.closeAddModal();
       await this.load();
     } catch (error) {
-      this.notify.fromError(error, "Impossible d'ajouter le média");
+      this.notifyUploadError(error, "Impossible d'ajouter le média");
     } finally {
       this.uploading.set(false);
     }
+  }
+
+  private notifyUploadError(error: unknown, summary: string): void {
+    if (error instanceof Error && error.message && !('status' in error)) {
+      this.notify.error(summary, error.message);
+      return;
+    }
+    this.notify.fromError(error, summary);
+  }
+
+  private async postLocalFile(nom: string, file: File): Promise<void> {
+    const contentBase64 = await this.readFileAsBase64(file);
+    await firstValueFrom(
+      this.http.post(`${this.baseUrl}/mediatheque/import-local`, {
+        nom,
+        categorie: this.categorieDraft,
+        fileName: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        contentBase64,
+        espaceId: this.spaceId,
+      }),
+    );
+  }
+
+  private async fetchRemoteImage(sourceUrl: string): Promise<File> {
+    let response: Response;
+    try {
+      response = await fetch(sourceUrl, { mode: 'cors', redirect: 'follow' });
+    } catch {
+      throw new Error(
+        "Impossible de télécharger l'image (CORS). Importez-la depuis un dossier local.",
+      );
+    }
+    if (!response.ok) {
+      throw new Error(`Téléchargement impossible (HTTP ${response.status})`);
+    }
+    const blob = await response.blob();
+    if (!blob.type.startsWith('image/')) {
+      throw new Error("L'URL ne pointe pas vers une image");
+    }
+    const pathName = new URL(sourceUrl).pathname.split('/').pop() || 'image';
+    return new File([blob], pathName, { type: blob.type });
   }
 
   private readFileAsBase64(file: File): Promise<string> {
